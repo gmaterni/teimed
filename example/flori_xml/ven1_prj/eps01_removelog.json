@@ -1,0 +1,17 @@
+{
+  "log": "0",
+  "remove_dir": [
+    {
+      "dir": "ven1",
+      "pattern": "eps01.xml"
+    },
+    {
+      "dir": "ven1",
+      "pattern": "eps01_format.xml"
+    },
+    {
+      "dir": "ven1/log",
+      "pattern": "*.*"
+    }
+  ]
+}

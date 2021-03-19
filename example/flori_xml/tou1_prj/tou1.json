@@ -1,0 +1,10 @@
+{
+  "log": "0",
+  "exe": [
+    "prjmgr.py tou1_prj/tou1_txt.json",
+    "prjmgr.py tou1_prj/tou1_setid.json",
+    "prjmgr.py tou1_prj/tou1_over.json",
+    "prjmgr.py tou1_prj/tou1_note.json",
+    "prjmgr.py tou1_prj/tou1_format.json"
+  ]
+}

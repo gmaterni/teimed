@@ -1,0 +1,17 @@
+{
+  "log": "0",
+  "remove_dir": [
+    {
+      "dir": "tor1",
+      "pattern": "eps01.xml"
+    },
+    {
+      "dir": "tor1",
+      "pattern": "eps01_format.xml"
+    },
+    {
+      "dir": "tor1/log",
+      "pattern": "*.*"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "log": "0",
+  "exe": [
+    "prjmgr.py par1_prj/eps01_txt.json",
+    "prjmgr.py par1_prj/eps01_setid.json",
+    "prjmgr.py par1_prj/eps01_over.json",
+    "prjmgr.py par1_prj/eps01_note.json",
+    "prjmgr.py par1_prj/eps01_format.json"
+  ]
+}

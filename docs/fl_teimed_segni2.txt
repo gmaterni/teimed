@@ -1,0 +1,29 @@
+Segmentazione della scrittura
+
++$     <w ana="#aggl-s">$</w>
+++$    <w ana="#aggl-c">$</w>
+=$     <w ana="#aggl">$</w>
++_$    <w ana="#aggl-s-uncert">$</w>
+++_$   <w ana="#aggl-c-uncert">$</w>
+=_$    <w ana="#aggl-uncert">$</w>
++°$    <w ana="#aggl" ana="#degl">$</w>
+'$     <w ana="#elis">$</w>
+\$     <w ana="#encl">$</w>
+°$     <w ana="#degl">$</w>
+
+
+{ }  <span from="$" to="$" type="directspeech"> </span>
+{_ } <span from="$" to="$" type="monologue"> </span>
+
+
+CRITERI PER LA PRODUZIONE DEGLI SPAZI
+
+Diplomatica:
+1. le <w> tipizzate da ana="#aggl-s, aggl-c, aggl, elis" NON producono uno spazio a destra;
+2. le <w> tipizzate da ana="#aggl-s-uncert, aggl-c-uncert, aggl-uncert" AL POSTO dello spazio a destra producono un trattino - ;
+3. le <w> tipizzate da ana="#encl" si attaccano alla parola precedente ovvero le <w> seguite da una <w> tipizzata con ana="#encl" NON producono uno spazio a destra ;
+
+Interpretativa:
+1. tutte le <w> producono uno spazio a destra TRANNE quando sono seguite da un <pc resp="#ed"> ma
+2. le <w> tipizzate da un ana="#elis" AL POSTO dello spazio a destra producono un ' ;
+3. le <w> tipizzate da un ana="#encl" A SINISTRA producono un · ovvero le <w> seguite da una <w> tipizzata con ana="#encl" A DESTRA producono un · al posto dello spazio.

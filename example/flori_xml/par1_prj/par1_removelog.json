@@ -1,0 +1,17 @@
+{
+  "log": "0",
+  "remove_dir": [
+    {
+      "dir": "par1",
+      "pattern": "par1.xml"
+    },
+    {
+      "dir": "par1",
+      "pattern": "par1_format.xml"
+    },
+    {
+      "dir": "par1/log",
+      "pattern": "*.*"
+    }
+  ]
+}

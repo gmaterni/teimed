@@ -1,0 +1,11 @@
+/usr/local/bin/checkover.py
+/usr/local/bin/checktxt.py
+/usr/local/bin/prjmgr.py
+/usr/local/bin/teimedit.py
+/usr/local/bin/teiminfo
+/usr/local/bin/teimsetid.py
+/usr/local/bin/teimnote.py
+/usr/local/bin/teimspan.py
+/usr/local/bin/teimxml.py
+/usr/local/bin/teimxmllint.py
+/usr/local/lib/python3.8/dist-packages/teimed-0.9.0-py3.8.egg

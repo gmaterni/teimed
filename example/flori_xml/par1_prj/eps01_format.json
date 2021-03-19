@@ -1,0 +1,10 @@
+{
+  "log": "0",
+  "exe.1": [
+    [
+      "teimxmlformat.py",
+      "-i par1/log/eps01_id_over_note.xml",
+      "-o par1/eps01.xml "
+    ]
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "log": "0",
+  "exe": [
+    [
+      "checktxt.py",
+      "-i par1/par1.txt",
+      "-o par1/log/par1_checktxt.log"
+    ]
+  ]
+}

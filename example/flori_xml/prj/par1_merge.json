@@ -1,0 +1,14 @@
+{
+  "log": "0",
+  "remove_dir": [
+    {
+      "dir": "par1",
+      "pattern": "par1.txt"
+    }
+  ],
+  "merge_dir": {
+    "dir": "par1",
+    "pattern": "*.txt",
+    "out_path": "par1/par1.txt"
+  }
+}

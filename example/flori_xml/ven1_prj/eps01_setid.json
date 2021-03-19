@@ -1,0 +1,11 @@
+{
+  "log": "0",
+  "exe": [
+    [
+      "teimsetid.py",
+      "-i ven1/log/eps01_teim.txt",
+      "-o ven1/log/eps01_id.xml",
+      "-s G -n 'pb:1,cb:1,lg:1,l:1'"
+    ]
+  ]
+}

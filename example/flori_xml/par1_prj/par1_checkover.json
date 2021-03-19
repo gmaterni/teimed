@@ -1,0 +1,11 @@
+{
+  "log": "0",
+  "exe": [
+    [
+      "checkover.py",
+      "-i par1/par1.txt",
+      "-c cfg/overflow.csv",
+      "-o par1/log/par1_checkover.log"
+    ]
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "log": "0",
+  "exe": [
+    [
+      "teimxml.py ",
+      "-i tor1/tor1.txt",
+      "-t cfg/teimed.csv",
+      "-o tor1/log/tor1_teim.txt"
+    ]
+  ]
+}

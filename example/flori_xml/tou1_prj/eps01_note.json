@@ -1,0 +1,11 @@
+{
+  "log": "0",
+  "exe": [
+    [
+      "teimnote.py",
+      "-i tou1/log/eps01_id_over.xml",
+      "-o tou1/log/eps01_id_over_note.xml",
+      "-n tou1/note.csv"
+    ]
+  ]
+}

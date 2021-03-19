@@ -1,0 +1,44 @@
+
+CUw = "@@"   # carattere temp di CU per parole composte
+Cw1 = "$$"   # carattere  temporaneo
+Cw2 = "§§ "  # carattere  temporaneo
+CNw = "$"    # carattere temp per note
+
+# segmentazione
+AP = "'"   # <w ana="#elis">$</w>
+SL = "\\"  # <w ana="#encl">$</w>
+SLA = "+\\"  # <w ana="#encl" "#aggl">$</w>
+CR = "°"  v# <w ana="#degl">$</w>
+
+AGLCU  = '++_'  # <w ana="#aggl-c-uncert">$</w>
+AGLCUw = '++@'  # per uso temporaneo di appoggio7
+
+AGLU   = '+=_'  # <w ana="#aggl-uncert">$</w>
+AGLUw  = '+=@'  # per uso temporaneo di appoggio7
+
+AGLSU  = '+_'   # <w ana="#aggl-s-uncert">$</w>
+AGLSUw = '+@'   # per uso temporaneo di appoggio7
+
+AGLC = '++'     # <w ana="#aggl-c">$</w>
+AGLa = '+='     # <w ana="#aggl">$</w>
+AGLb = '+°'     # <w ana="#aggl #degl">$</w>
+
+AGLS = '+'      # <w ana="#aggl-s">$</w>
+
+# tags
+OPPB  = "<pb"
+OPCB  = "<cb"
+OPLG  = "<lg"
+OPL   = "<l"
+OPW   = "<w"
+OPC   = "<pc"
+
+OPTR      = "<ptr"
+OPDMGLOW  = "["
+OPDMGMED  = "[_"
+OPDMGHIGH = "[__"
+CLSDMG    = "]"
+
+
+
+
