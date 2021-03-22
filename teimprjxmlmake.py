@@ -48,7 +48,7 @@ TEXT = "text"
 TEXT_LOG = "text_log"
 
 
-class MakeXmlPrj(object):
+class TeimPrjXmlMake(object):
 
     def __init__(self,
                  work_name,
@@ -167,7 +167,7 @@ class MakeXmlPrj(object):
 
 
 def do_main(work, witness, text=""):
-    mk = MakeXmlPrj(work, witness, text)
+    mk = TeimPrjXmlMake(work, witness, text)
     mk.make_dirs()
     mk.print_dir()
 
@@ -217,20 +217,20 @@ flori_xml|ven1|eps
 
 Crea le directory SE NON esistno
 
-maketeimxmlprj.py project.csv>
+teimprjxmlmake.py project.csv>
 crea :
     flori_xml/
     flori_xml/__prj__
     flori_xml/par1
     flori_xml/par1/eps
     ..
-maketeimxmlprj.py <work> <witnes> ")
+teimprjxmlmake.py <work> <witnes> ")
 crea :
     work/
     work/__prj__
     work/witness
 
-maketeimxmlprj.py <work> <witnes> < text>")
+teimprjxmlmake.py <work> <witnes> < text>")
 crea :
     work/
     work/__prj__

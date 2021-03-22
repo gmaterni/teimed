@@ -12,7 +12,7 @@ def pp(data):
     return pprint.pformat(data, indent=2, width=40)
 
 
-class MakeTextPrj(object):
+class TeimPrjTextMake(object):
 
     def __init__(self):
         self.pwd = os.getcwd()
@@ -67,7 +67,7 @@ class MakeTextPrj(object):
                 "par_name": "$F",
                 "exe_file": [
                     [
-                        "maketeimxmlprj.py work witness $F"
+                        "teimprjxmlmake.py work witness $F"
                     ]
                 ]
             }
@@ -111,29 +111,31 @@ class MakeTextPrj(object):
 # [work,witness]
 # [witness]
 
+def do_main(work,witness):
+    mk = TeimPrjTextMake()
+    mk.make_work_witness(work, witness)
 
-def do_main(args):
-    mk = MakeTextPrj()
-    le = len(args)
-    if le == 1:
-        witness = args[0]
-        mk.make_witness(witness)
-    elif le == 2:
-        work, witness = args
-        mk.make_work_witness(work, witness)
-
+def do_main_witness(witness):
+    mk = TeimPrjTextMake()
+    mk.make_witness(witness)
 
 if __name__ == "__main__":
-    if len(sys.argv) not in [2, 3]:
+    le = len(sys.argv)
+    if le == 2:
+        witness = sys.argv[1]
+        do_main_witness(witness)
+    elif le == 3:
+        work, witness = sys.argv[1:]
+        do_main(work, witness)
+    else:
         s="""
-Crea le dirextory per i text che sono stati aggiunti
+Crea le direttory per i text che sono stati aggiunti
 al witness indicato
 
-maketeimtextprj.py <work> <witness>
+teimprjtextmake.py <work> <witness>
 
 Se si esegue lo script  nella dir di work:
-maketeimtextprj.py <witness>
+teimprjtextmake.py <witness>
         """
         print(s)
         sys.exit(0)
-    do_main(sys.argv[1:])

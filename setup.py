@@ -13,8 +13,8 @@ setup(
     scripts=[
         "checkover.py",
         "checktxt.py",
-        "maketeimxmlprj.py",
-        "maketeimtextprj.py",
+        "teimprjxmlmake.py",
+        "teimprjtextmake.py",
         "prjmgr.py",
         "savetext.py",
         "teimedit.py",

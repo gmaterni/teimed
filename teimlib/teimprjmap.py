@@ -8,12 +8,12 @@ from ualog import Log
 import pathlib as pth
 import pprint
 
-__date__ = "15-03-2021"
-__version__ = "0.1.2"
+__date__ = "20-03-2021"
+__version__ = "0.1.3"
 __author__ = "Marta Materni"
 
-WITNESS_NAME_RIF="_xml.json"
-TEXT_NAME_RIF="_txt.json"
+WITNESS_NAME_RIF = "_xml.json"
+TEXT_NAME_RIF = "_txt.json"
 
 
 class TeimPrjMap(object):
@@ -23,9 +23,10 @@ class TeimPrjMap(object):
     setta i comandi per witness_names (cmds)
     setta i domandi per witnes_text (txt_cmds)
     i dati sono accessibili mediante property
-    
+
     il nome del progetto (work) + senza estensione
     """
+
     def __init__(self):
         self._prj_name = ""
         self._run_dir = pth.Path().cwd()
@@ -33,6 +34,7 @@ class TeimPrjMap(object):
         self._prj_dir = ""
         #####################################
         self._witness_names = []
+        self._witness_text_names = []
         self._cmds = {}
         self._txt_cmds = {}
 
@@ -43,7 +45,7 @@ class TeimPrjMap(object):
 
     @property
     def prj_name(self):
-        return self._prj_name
+        return str(self._prj_name)
 
     @property
     def run_dir(self):
@@ -60,6 +62,10 @@ class TeimPrjMap(object):
     @property
     def witness_names(self):
         return self._witness_names
+
+    @property
+    def witness_text_names(self):
+        return self._witness_text_names
 
     @property
     def cmds(self):
@@ -137,8 +143,8 @@ class TeimPrjMap(object):
             self._prj_dir = self._run_dir
             self._run_dir_pos = 1
 
-    def set_prj_dir(self,prj_name=""):
-        self._prj_name=prj_name
+    def set_prj_dir(self, prj_name=""):
+        self._prj_name = prj_name
         if self._prj_name == "":
             self.check_prj_dir()
         else:
@@ -173,18 +179,19 @@ class TeimPrjMap(object):
             for wtn_name in self._witness_names:
                 if json_name.find(wtn_name) == 0:
                     self._cmds[wtn_name].append([json_name, json_cmd])
+
     # ven1_prj/eps01_txt.jsons
     def set_witness_text_cmds(self):
         self._txt_cmds = {}
         lst = []
-        try: 
+        self._witness_text_names = []
+        try:
             # print(f"**** self._prj_dir: {self._prj_dir}")
             for wtn in self._witness_names:
                 wtn_prj = f"{wtn}_prj"
                 #path_wtn_prj = pth.Path().joinpath(wtn_prj)
                 #print(f"** path_wtn_prj: {path_wtn_prj} ")
-                # TODO
-                path_wtn_prj= pth.Path().joinpath(self._prj_dir,wtn_prj)
+                path_wtn_prj = pth.Path().joinpath(self._prj_dir, wtn_prj)
                 # print(f"** path_wtn_prj: {path_wtn_prj} ")
                 if path_wtn_prj.exists():
                     for txt_cmd in path_wtn_prj.iterdir():
@@ -192,20 +199,20 @@ class TeimPrjMap(object):
                         lst.append(txt_cmd)
         except Exception as e:
             print(str(e))
-            #sys.exit(0)
-
+            # sys.exit(0)
         for x in sorted(lst):
-            # TODO riferimento per individurare text
+            # riferimento per individurare text
             # p = x.name.find("_txt.json")
             p = x.name.find(TEXT_NAME_RIF)
             if p < 0:
                 continue
             wtn_name = x.parent.name.replace("_prj", "")
             txt_name = x.name[0:p]
+            self._witness_text_names.append([wtn_name, txt_name])
             if wtn_name not in self._txt_cmds.keys():
                 self._txt_cmds[wtn_name] = {}
             self._txt_cmds[wtn_name][txt_name] = []
-
+        #
         for x in sorted(lst):
             wtn_prj = x.parent.name
             txt_cmd = x.name
@@ -224,6 +231,7 @@ class TeimPrjMap(object):
         print(f"run_dir_pos  :{self.run_dir_pos}")
         print(f"prj_dir      :{self.prj_dir}")
         print(f"witness_names:{self.pp(self.witness_names,80)}")
+        print(f"witness_text_names:{self.pp(self.witness_text_names,80)}")
         return self
 
     def prn_cmds(self):
@@ -234,7 +242,7 @@ class TeimPrjMap(object):
         print(f"txt_cmds     :{self.pp(self.txt_cmds,60)}")
         return self
 
-    def main(self,prj_name=None):
+    def main(self, prj_name=None):
         self.set_prj_dir(prj_name)
         if self._run_dir_pos == 0:
             print("Project Not Found")
@@ -244,4 +252,4 @@ class TeimPrjMap(object):
         return self
 
     # work="nome projetto"
-    #TeimPrjMgr().main(work)
+    # TeimPrjMgr().main(work)
