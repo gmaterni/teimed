@@ -16,7 +16,7 @@ setup(
         "teimprjxmlmake.py",
         "teimprjtextmake.py",
         "prjmgr.py",
-        "savetext.py",
+        "trimprjsave.py",
         "teimedit.py",
         "teimnote.py",
         "teimover.py",

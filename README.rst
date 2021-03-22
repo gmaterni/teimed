@@ -13,7 +13,7 @@ maketeimtext.py
         costrizione struttura prohetto per episodio
         aggiunto nel witness
 
-savetext.py
+trimprjsave.py
         (da dentro progetto) salva file tsto in back
 
 prjmgr.py
