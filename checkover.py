@@ -7,7 +7,7 @@ import re
 import sys
 from ualog import Log
 import pprint
-from teimed.readovertags import read_over_tags
+from teimlib.readovertags import read_over_tags
 
 __date__ = "19-0-2021"
 __version__ = "0.1.1"

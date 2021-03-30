@@ -7,16 +7,22 @@ import teimlib.__init__
 setup(
     name='teimed',
     version=teimlib.__init__.__version__,
-    py_modules=['teiminfo','ualog'],
+    py_modules=['teiminfo',
+                'ualog',
+                'prjmgr'
+                'teimprjxmlmake',
+                'teimprjtextmake',
+                'teimprjsave'
+                ],
     packages=find_packages(),
-    #packages=['teimed'],
+    # packages=['teimed'],
     scripts=[
         "checkover.py",
         "checktxt.py",
         "teimprjxmlmake.py",
         "teimprjtextmake.py",
         "prjmgr.py",
-        "trimprjsave.py",
+        "teimprjsave.py",
         "teimedit.py",
         "teimnote.py",
         "teimover.py",

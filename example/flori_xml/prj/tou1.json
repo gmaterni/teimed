@@ -1,9 +1,0 @@
-{
-  "log": "0",
-  "exe": [
-    "prjmgr.py prj/tou1_removelog.json",
-    "prjmgr.py prj/tou1_merge.json",
-    "prjmgr.py prj/tou1_txt.json",
-    "prjmgr.py prj/tou1_xml.json"
-  ]
-}
