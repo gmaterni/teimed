@@ -8,8 +8,8 @@ from pdb import set_trace
 from teimlib import template_xml_prj
 import json
 
-__date__ = "17-03-2021"
-__version__ = "0.1.5"
+__date__ = "32-03-2021"
+__version__ = "0.1.6"
 __author__ = "Marta Materni"
 
 help = """
@@ -148,6 +148,7 @@ class TeimPrjXmlMake(object):
         print(self.dir_witness_name)
         print(self.dir_witness_log_name)
         print(self.dir_witness_prj_name)
+        print("")
 
     def make_dirs(self):
         self.make_dir(self.dir_work)

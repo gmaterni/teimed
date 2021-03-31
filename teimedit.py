@@ -4,7 +4,6 @@
 from pdb import set_trace
 from teimxml import do_main as do_main_xml
 from teimsetid import do_main as do_main_setid
-# from teimxmllint import do_main as do_main_xmllint
 from teimover import do_main as do_main_over
 from teimnote import do_main as do_main_note
 from checktxt import do_main as do_main_checktxt
@@ -12,18 +11,16 @@ from checkover import do_main as do_main_checkover
 import os
 import tkinter as tk
 from tkinter.font import Font
-import tkinter.filedialog as fd
+import tkinter.filedialog as fdialog
 from tkinter import END
 from ualog import Log
 import sys
 import json
 from lxml import etree
 import stat
-import time
-import threading
 
 __date__ = "30-03-2021"
-__version__ = "0.10.2"
+__version__ = "0.11.0"
 __author__ = "Marta Materni"
 
 logediterr = Log("w")
@@ -97,7 +94,7 @@ FG_SEP = "#FFFFFF"
 
 BG_TEXT = "#333333"
 FG_TEXT = "#ffffff"
-CURS_TEXT="#00ff00"
+CURS_TEXT = "#00ff00"
 
 BG_LOG = "#000000"
 FG_LOG = "#ffff00"
@@ -208,9 +205,9 @@ class TeimEdit(object):
         cfg_path = os.path.join(self.cfg_dir, name)
         return cfg_path
 
-    def get_out_path(self, name):
-        out_path = os.path.join(self.log_dir, name)
-        return out_path
+    def get_log_path(self, name):
+        log_path = os.path.join(self.log_dir, name)
+        return log_path
 
     def write_file(self, path, s):
         with open(path, 'w') as f:
@@ -263,21 +260,21 @@ class TeimEdit(object):
         self.path_xml_format = self.get_text_path(name)
         #
         name = text_src.replace(".txt", "_MED_.txt")
-        self.path_entity_txt = self.get_out_path(name)
+        self.path_entity_txt = self.get_log_path(name)
 
         name = text_src.replace(".txt", "_WID.xml")
-        self.path_id_xml = self.get_out_path(name)
+        self.path_id_xml = self.get_log_path(name)
 
         name = text_src.replace(".txt", "_OVER.xml")
-        self.path_fromto_xml = self.get_out_path(name)
+        self.path_fromto_xml = self.get_log_path(name)
 
-        self.path_tmp = self.get_out_path('tmp')
+        self.path_tmp = self.get_log_path('tmp')
         #
         name = self.text_src.replace(".txt", "CHECK_TXT.txt")
-        self.path_check_txt = self.get_out_path(name)
+        self.path_check_txt = self.get_log_path(name)
 
         name = self.text_src.replace(".txt", "CHECK_OVER.txt")
-        self.path_check_over = self.get_out_path(name)
+        self.path_check_over = self.get_log_path(name)
 
     #####################################################
 
@@ -318,9 +315,9 @@ class TeimEdit(object):
             activebackground=BG2_MENU,
             activeforeground=FG2_MENU,
             relief="raised")
-        mv_file.add_command(label='Open', command=self.open_txt)
-        mv_file.add_command(label='Save', command=self.save_txt)
-        mv_file.add_command(label='Save As...', command=self.save_txt_as)
+        mv_file.add_command(label='Open', command=self.open_text)
+        mv_file.add_command(label='Save', command=self.save_text)
+        mv_file.add_command(label='Save As...', command=self.save_text_as)
         mv_file.add_separator()
         mv_file.add_command(label='Exit', command=self.quit)
 
@@ -332,7 +329,8 @@ class TeimEdit(object):
             activebackground=BG2_MENU,
             activeforeground=FG2_MENU,
             relief="raised")
-        mv_check.add_command(label='Check Entity', command=self.elab_checktxt)
+        mv_check.add_command(label='Check Entity',
+                             command=self.elab_checktxt)
         mv_check.add_command(label='Check Overflow',
                              command=self.elab_checkover)
 
@@ -355,11 +353,11 @@ class TeimEdit(object):
             activebackground=BG2_MENU,
             activeforeground=FG2_MENU,
             relief="raised")
-        mv_del.add_command(label='Del All', command=self.delete_text_all)
-        mv_del.add_command(label='Del Entity', command=self.delete_txt1)
-        mv_del.add_command(label='Del XML', command=self.delete_txt2)
-        mv_del.add_command(label='Del Log', command=self.delete_txt3)
-
+        mv_del.add_command(label='Entity', command=self.delete_txt1)
+        mv_del.add_command(label='XML', command=self.delete_txt2)
+        mv_del.add_command(label='Log', command=self.delete_txt3)
+        mv_del.add_separator()
+        mv_del.add_command(label='Remove log file', command=self.remove_log)
         # orizontale
         menu_bar.add_cascade(label='File', menu=mv_file)
         menu_bar.add_command(
@@ -373,23 +371,29 @@ class TeimEdit(object):
         menu_bar.add_command(
             background=BG_SEP, activeforeground=FG_SEP, label=' ')
 
-        menu_bar.add_cascade(label='Del', menu=mv_del)
+        menu_bar.add_cascade(label='Cancella', menu=mv_del)
+        menu_bar.add_command(
+            background=BG_SEP, activeforeground=FG_SEP, label='         ')
+
+        menu_bar.add_command(label="SAVE", command=self.save_text)
+        menu_bar.add_command(background=BG_SEP,
+                             activeforeground=FG_SEP, label=' ')
+
+        menu_bar.add_command(label='RELOAD', command=self.reload_text)
         menu_bar.add_command(
             background=BG_SEP, activeforeground=FG_SEP, label=' ')
 
-        menu_bar.add_command(label="SAVE", command=self.save_txt)
+        menu_bar.add_command(label='Log', command=self.open_log)
         menu_bar.add_command(
             background=BG_SEP, activeforeground=FG_SEP, label=' ')
 
-        menu_bar.add_command(label='RELOAD', command=self.reload_txt)
-        menu_bar.add_command(
-            background=BG_SEP, activeforeground=FG_SEP, label=' ')
+        menu_bar.add_command(label='Info', command=self.show_info)
 
         self.show_win1("")
         self.show_win2("")
         s = self.get_path_lst_log()
         self.write_log(s)
-        self.read_txt_file()
+        self.read_text_file()
         tk.mainloop()
 
     def open_win1(self):
@@ -423,12 +427,11 @@ class TeimEdit(object):
     def open_win3(self):
         if self.win3 is not None:
             return
-        win = tk.Tk()
-        win.title('LOG')
-        win.rowconfigure(0, weight=1)
-        win.columnconfigure(0, weight=1)
-        win.geometry('%dx%d+%d+%d' % (w3_w, w3_h, w3_x, w3_y))
-        self.win3 = win
+        self.win3 = tk.Tk()
+        self.win3.title('LOG')
+        self.win3.rowconfigure(0, weight=1)
+        self.win3.columnconfigure(0, weight=1)
+        self.win3.geometry('%dx%d+%d+%d' % (w3_w, w3_h, w3_x, w3_y))
         self.win3.protocol("WM_DELETE_WINDOW", self.quit3)
         self.txt3 = tk.Text(self.win3)
         self.txt3.grid(sticky='nsew')
@@ -472,8 +475,6 @@ class TeimEdit(object):
         self.chmod(self.path_entity_txt)
         s = self.read_file(self.path_entity_txt)
         self.show_win1(s)
-        s = self.get_path_lst_log()
-        self.write_log(s)
 
     def elab_teimlw(self):
         if not self.file_exists(self.path_entity_txt):
@@ -524,8 +525,6 @@ class TeimEdit(object):
         do_main_checktxt(self.path_tmp,
                          self.path_check_txt)
         self.chmod(self.path_check_txt)
-        s = self.read_file(self.path_check_txt)
-        self.write_log(s)
 
     def elab_checkover(self):
         s = self.txt0.get('1.0', 'end')
@@ -534,8 +533,6 @@ class TeimEdit(object):
                           self.path_over_tag,
                           self.path_check_over)
         self.chmod(self.path_check_over)
-        s = self.read_file(self.path_check_over)
-        self.write_log(s)
 
     def quit1(self):
         self.win1.destroy()
@@ -568,7 +565,7 @@ class TeimEdit(object):
         self.txt3.insert('1.0', s)
 
     def delete_text_all(self):
-        #self.txt0.delete('1.0', END)
+        # self.txt0.delete('1.0', END)
         self.delete_txt1()
         self.delete_txt2()
         self.delete_txt3()
@@ -586,6 +583,14 @@ class TeimEdit(object):
         if self.txt3 is not None:
             self.txt3.delete('1.0', END)
 
+    def remove_log(self):
+        files = os.listdir(self.log_dir)
+        for f in files:
+            path=os.path.join(self.log_dir,f)
+            absp=os.path.abspath(path)
+            print(absp)
+            os.remove(absp)
+
     def quit(self):
         self.win0.quit()
         if self.win1 is not None:
@@ -595,14 +600,15 @@ class TeimEdit(object):
         if self.win3 is not None:
             self.win3.quit()
 
-    def reload_txt(self):
-        s = self.get_path_lst_log()
-        self.write_log(s)
-        self.read_txt_file()
+    def reload_text(self):
+        self.read_text_file()
 
-    def open_txt(self):
-        path = fd.askopenfilename(title=' file',
-                                  filetypes=[("", "*.txt")])
+    def open_text(self):
+        path = fdialog.askopenfilename(
+            title=' file',
+            initialdir=self.text_dir,
+            filetypes=[("text", "*.txt"),
+                       ("xml", "*.xml")])
         if len(path) < 1:
             return
         text_src = os.path.basename(path)
@@ -612,9 +618,9 @@ class TeimEdit(object):
         self.set_path_files(text_src)
         s = self.get_path_lst_log()
         self.write_log(s)
-        self.read_txt_file()
+        self.read_text_file()
 
-    def read_txt_file(self):
+    def read_text_file(self):
         if self.file_exists(self.path_text):
             s = self.read_file(self.path_text)
         else:
@@ -623,8 +629,34 @@ class TeimEdit(object):
         self.txt0.insert('1.0', s)
         self.show_title()
 
-    def save_txt_as(self):
-        path = fd.asksaveasfilename(title='Dove Salvare')
+    def open_log(self):
+        path = fdialog.askopenfilename(
+            title='log',
+            initialdir=self.log_dir,
+            filetypes=[("log", "*.log"),
+                       ("text", "*.txt"),
+                       ("xml", "*.xml")])
+        if len(path) > 0:
+            self.read_log_file(path)
+
+    def read_log_file(self, path):
+        if self.file_exists(path):
+            s = self.read_file(path)
+        else:
+            s = "Not Found."
+        self.win3 = None
+        self.open_win3()
+        self.txt3.delete('1.0', END)
+        self.txt3.insert('1.0', s)
+
+    def show_info(self):
+        self.win3 = None
+        self.open_win3()
+        s = self.get_path_lst_log()
+        self.write_log(s)
+
+    def save_text_as(self):
+        path = fdialog.asksaveasfilename(title='Dove Salvare')
         if len(path) < 1:
             return
         s = self.txt0.get('1.0', 'end')
@@ -633,9 +665,8 @@ class TeimEdit(object):
         self.set_path_files(name)
         self.write_file(self.path_text, s)
         s = self.get_path_lst_log()
-        self.write_log(s)
 
-    def save_txt(self):
+    def save_text(self):
         s = self.txt0.get('1.0', 'end')
         self.write_file(self.path_text, s)
 

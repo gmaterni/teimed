@@ -60,6 +60,7 @@ class TeimPrjTextMake(object):
         self.prj_exec(remove_witness_prj, work, witness)
         #############
         execute_make_prj = {
+            "log":"1",
             "exe_dir": {
                 "dir": "work/witness",
                 "pattern": "*.txt",

@@ -30,7 +30,6 @@ punteggiatura:
 
 Caratteri utilizzati nei processi e non utilizzabili:
 $
-|
 
 Lettura log
 
