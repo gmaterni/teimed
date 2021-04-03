@@ -2,6 +2,7 @@
 # coding: utf-8
 
 from pdb import set_trace
+import argparse
 from teimxml import do_main as do_main_xml
 from teimsetid import do_main as do_main_setid
 from teimover import do_main as do_main_over
@@ -18,12 +19,18 @@ import sys
 import json
 from lxml import etree
 import stat
+import pprint
 
-__date__ = "30-03-2021"
-__version__ = "0.11.0"
+__date__ = "03-04-2021"
+__version__ = "0.12.1"
 __author__ = "Marta Materni"
 
 logediterr = Log("w")
+
+
+def pp(data):
+    return pprint.pformat(data, indent=0, width=80)
+
 
 help = """
 base_dir/text_dir/teim.txt
@@ -38,7 +45,7 @@ base_dir/text_dir/log_dir/teim_2.xml
 base_dir/text_dir/teim.xml
 
 """
-TEIMED_CFG = "teimedit.json"
+TEIMED_CFG = "teim.json"
 CFG = {
     "base_dir": "",
 
@@ -92,6 +99,9 @@ FG2_MENU = "#ffff00"
 BG_SEP = "#111111"
 FG_SEP = "#FFFFFF"
 
+BG_LBL = "#111111"
+FG_LBL = "#FFff00"
+
 BG_TEXT = "#333333"
 FG_TEXT = "#ffffff"
 CURS_TEXT = "#00ff00"
@@ -107,14 +117,23 @@ FONT_MENU = ('Arial', 16, 'normal')
 
 class TeimEdit(object):
 
-    def __init__(self, config_name):
+    def __init__(self,
+                 config_name="",
+                 new=None,
+                 text_dir=None,
+                 text_src=None,
+                 text_sign=None):
         logediterr.open("log/teimedit.log", 1)
         self.base_dir = ""
-        self.text_dir = ""
+
+        self.config_name = config_name
+        self.new = new
+        self.text_dir = text_dir
+        self.text_src = text_src
+        self.text_sign = text_sign
+
         self.cfg_dir = ""
         self.log_dir = ""
-        self.ext_src = None
-        self.text_sign = None
         #
         self.path_teimed_tag = ""
         self.path_over_tag = None
@@ -137,23 +156,43 @@ class TeimEdit(object):
         self.txt2 = None
         self.win3 = None
         self.txt3 = None
-        if config_name is None:
-            self.config_name = TEIMED_CFG
-        else:
-            self.config_name = config_name
         self.config = None
         self.init_config()
 
-    def init_config(self):
-        """ se il config noin esiste:
-        setta self.config=CFG
-        e salva il file config con il nome self.config_name
-        """
+    def check_config_name(self):
+        p = self.config_name.find('.json')
+        if p < 0:
+            print("")
+            print("Error!")
+            print("file config NOT json")
+            sys.exit()
+
+    def customize_config(self):
+        if self.text_dir is not None:
+            self.config['text_dir'] = self.text_dir
+        if self.text_src is not None:
+            self.config['text_src'] = self.text_src
+        if self.text_sign is not None:
+            self.config['text_sign'] = self.text_sign
+
+    def chek_config_exists(self):
         if not os.path.exists(self.config_name):
+            print("")
+            print(f"{self.config_name} Not Found.")
+            sys.exit()
+
+    def init_config(self):
+        if not self.new is None:
             self.config = CFG
+            self.config_name = self.new
+            self.check_config_name()
+            self.customize_config()
             self.write_config()
-        self.chmod(self.config_name)
+            self.chmod(self.config_name)
+        self.check_config_name()
+        self.chek_config_exists()
         self.read_config()
+        self.customize_config()
         self.set_config()
 
     def read_config(self):
@@ -162,7 +201,6 @@ class TeimEdit(object):
                 txt = f.read()
             self.config = json.loads(txt)
         except Exception as e:
-            print(f"ERROR rtead_config {self.config_name}")
             print(e)
             sys.exit(1)
 
@@ -389,6 +427,10 @@ class TeimEdit(object):
 
         menu_bar.add_command(label='Info', command=self.show_info)
 
+        text = self.config['text_src']
+        menu_bar.add_command(
+            background=BG_LBL, foreground=FG_LBL, label=f'              {text}')
+
         self.show_win1("")
         self.show_win2("")
         s = self.get_path_lst_log()
@@ -443,24 +485,41 @@ class TeimEdit(object):
         self.win0.title(title)
 
     def get_path_lst_log(self):
+        abs_cfg = os.path.abspath(self.cfg_dir)
+        abs_text = os.path.abspath(self.text_dir)
+        wrk_dir = os.getcwd()
+
         logs = [
             "  ",
-            f" text : {self.path_text}",
-            f" sigla.: {self.text_sign}",
-            f" note : {self.path_text_note}",
-            f" tei_tags : {self.path_teimed_tag}",
+            "---------------------------",
+            f"CONFIG: {self.config_name}",
+            "---------------------------",
+            "Directory",
+            "---------------------------",
+            f" work dir : {wrk_dir}",
+            f" cfg  dir : {abs_cfg}",
+            f" text dir : {abs_text}",
+            "---------------------------",
+            "Path",
+            "---------------------------",
+            f" text      : {self.path_text}",
+            f" sigla.    : {self.text_sign}",
+            f" note      : {self.path_text_note}",
+            f" tei_tags  : {self.path_teimed_tag}",
             f" over_tags : {self.path_over_tag}",
-            "---------"
-            " ",
-            f"check txt {self.path_check_txt}",
-            f"check over {self.path_check_over}",
-            "---------"
-            " ",
-            f"+ entity: {self.path_entity_txt}",
-            f"+ id: {self.path_id_xml}",
-            f"+ ovver: {self.path_fromto_xml}",
-            f"+ note: {self.path_xml}",
-            "---------"
+            "---------------------------",
+            "Check",
+            "---------------------------",
+            f"txt: {self.path_check_txt}",
+            f"over: {self.path_check_over}",
+            "---------------------------",
+            "Log",
+            "---------------------------",
+            f"entity: {self.path_entity_txt}",
+            f"id: {self.path_id_xml}",
+            f"over: {self.path_fromto_xml}",
+            f"note: {self.path_xml}",
+            "---------------------------",
             " ",
         ]
         s = os.linesep.join(logs)
@@ -586,8 +645,8 @@ class TeimEdit(object):
     def remove_log(self):
         files = os.listdir(self.log_dir)
         for f in files:
-            path=os.path.join(self.log_dir,f)
-            absp=os.path.abspath(path)
+            path = os.path.join(self.log_dir, f)
+            absp = os.path.abspath(path)
             print(absp)
             os.remove(absp)
 
@@ -624,7 +683,14 @@ class TeimEdit(object):
         if self.file_exists(self.path_text):
             s = self.read_file(self.path_text)
         else:
-            s = "Not Found."
+            self.write_file(self.path_text,"Empty")
+            self.chmod(self.path_text)
+            r = [
+                "",
+                f"File  {self.text_src} Not Found.",
+                "",
+                f"Crated {self.text_src} empyt."]
+            s = os.linesep.join(r)
         self.txt0.delete('1.0', END)
         self.txt0.insert('1.0', s)
         self.show_title()
@@ -671,16 +737,47 @@ class TeimEdit(object):
         self.write_file(self.path_text, s)
 
 
-def do_main(config_name=None):
-    tme = TeimEdit(config_name)
+def do_main(json=None, new=None, dir=None, txt=None, sign=None):
+    tme = TeimEdit(json, new, dir, txt, sign)
     tme.open_win0()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    parser = argparse.ArgumentParser()
+    if len(sys.argv) == 1:
         print(f"author: {__author__}")
         print(f"release: {__version__} { __date__}")
-        path_config = None
-    else:
-        path_config = sys.argv[1]
-    do_main(path_config)
+        parser.print_help()
+        h = """
+        """
+        # sys.exit()
+
+    parser.add_argument('-r',
+                        dest="json",
+                        required=False,
+                        default=TEIMED_CFG,
+                        metavar="",
+                        help=f"[-r read <file>.json] default:{TEIMED_CFG}")
+    parser.add_argument('-c',
+                        dest="new",
+                        required=False,
+                        default=None,
+                        metavar="",
+                        help="[-c create <file>.json]")
+    parser.add_argument('-t',
+                        dest="txt",
+                        required=False,
+                        metavar="",
+                        help="[-t <file>.txt]")
+    parser.add_argument('-d',
+                        dest="dir",
+                        required=False,
+                        metavar="",
+                        help="[-d <directory>]")
+    parser.add_argument('-s',
+                        dest="sign",
+                        required=False,
+                        metavar="",
+                        help="[-s <sign>]")
+    args = parser.parse_args()
+    do_main(args.json, args.new, args.dir, args.txt, args.sign)
