@@ -8,8 +8,8 @@ import re
 import stat
 import pprint
 
-__date__ = "25-02-2021"
-__version__ = "0.9.5"
+__date__ = "11-04-2021"
+__version__ = "0.9.6"
 __author__ = "Marta Materni"
 
 

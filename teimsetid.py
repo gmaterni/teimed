@@ -12,8 +12,8 @@ import stat
 from pdb import set_trace
 # import pprint
 
-__date__ = "26-02-2021"
-__version__ = "0.9.6"
+__date__ = "11-04-2021"
+__version__ = "0.9.7"
 __author__ = "Marta Materni"
 
 """
@@ -56,7 +56,7 @@ class AddId(object):
         self.path_out = path_out
 
         self.logerr = Log('w')
-        path_err = path_out.replace(".xml", "_ERR.log")
+        path_err = path_out.replace(".xml", ".ERR.log")
         self.logerr.open(path_err, 1)
 
         self.logdeb = Log('w')

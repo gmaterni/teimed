@@ -88,7 +88,8 @@ class AddNote(object):
             self.logerr.log("ERROR teimnote.py add_to_xml()")
             #s=str(e)
             #self.logerr.log(f"{s}")
-            sys.exit(1)
+            #sys.exit(1)
+            return
 
 def do_main(src_path, out_path, note_path):
     add_note = AddNote(src_path, out_path, note_path)

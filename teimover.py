@@ -25,8 +25,8 @@ import re
 import stat
 from teimlib.readovertags import read_over_tags
 
-__date__ = "19-02-2021"
-__version__ = "0.10.5"
+__date__ = "11-04-2021"
+__version__ = "0.10.6"
 __author__ = "Marta Materni"
 
 
@@ -66,7 +66,7 @@ class Addspan(object):
         # self.over_cl_set=[]
         # self.over_tag_set=[]
         path_span = out_path.replace('.xml', '.log')
-        path_err = out_path.replace('.xml', '_ERR.log')
+        path_err = out_path.replace('.xml', '.ERR.log')
         self.logspan = Log('w')
         self.logerr = Log('w')
         self.logspan.open(path_span, 0)
@@ -471,13 +471,15 @@ class Addspan(object):
         except Exception as e:
             self.logerr.log(os.linesep+"ERROR teimover.py add_span_to_root()")
             self.logerr.log(str(e))
-            sys.exit(1)
+            #ssys.exit(1)
+            return
         try:
             self.over_tag_rows = read_over_tags(csv_path)
         except Exception as e:
             self.logerr.log("ERROR teimover.py read_overTags()")
             self.logerr.log(str(e))
-            sys.exit(1)
+            #sys.exit(1)
+            return
         for i in range(0, len(self.over_tag_rows)):
             self.set_row_js(i)
             self.span_data = {}
