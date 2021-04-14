@@ -4,9 +4,9 @@
 import os
 import argparse
 import sys
-from ualog import Log
-from teimlib.xml_const import *
-from teimlib.readovertags import read_over_tags
+from teimed.ualog import Log
+from teimed.xml_const import *
+from teimed.readovertags import read_over_tags
 import re
 import stat
 from pdb import set_trace

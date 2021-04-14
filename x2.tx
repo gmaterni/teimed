@@ -1,0 +1,11 @@
+{
+  "base_dir": "",
+  "text_dir": "teim",
+  "text_src": "x2.tx",
+  "text_sign": "K",
+  "text_note": "note.csv",
+  "log_dir": "log",
+  "cfg_dir": "cfg",
+  "teimed_tag": "teimed.csv",
+  "overflow_tag": "overflow.csv"
+}

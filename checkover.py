@@ -5,12 +5,12 @@ from pdb import set_trace
 import argparse
 import re
 import sys
-from ualog import Log
+from teimed.ualog import Log
 import pprint
-from teimlib.readovertags import read_over_tags
+from teimed.readovertags import read_over_tags
 
-__date__ = "19-0-2021"
-__version__ = "0.1.1"
+__date__ = "14-042021"
+__version__ = "0.1.2"
 __author__ = "Marta Materni"
 
 """

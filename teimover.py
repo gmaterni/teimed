@@ -19,11 +19,11 @@ from lxml import etree
 import os
 import argparse
 import sys
-from ualog import Log
+from teimed.ualog import Log
 import pprint
 import re
 import stat
-from teimlib.readovertags import read_over_tags
+from teimed.readovertags import read_over_tags
 
 __date__ = "11-04-2021"
 __version__ = "0.10.6"

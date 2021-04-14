@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
-
-BG_BAR="#00ff00"
-BG2_BAR="#FF0000"
+from teimed.teimstyle import *
 
 class TextPad(tk.Text):
     
@@ -23,8 +21,6 @@ class TextPad(tk.Text):
         
         self.vbar['command'] = self.yview
         self.hbar['command'] = self.xview
-        # Copy geometry methods of self.frame without overriding Text
-        # methods -- hack!
         text_meths = vars(tk.Text).keys()
         methods = vars(tk.Pack).keys() | vars(tk.Grid).keys() | vars(tk.Place).keys()
         methods = methods.difference(text_meths)
@@ -32,32 +28,17 @@ class TextPad(tk.Text):
             if m[0] != '_' and m != 'config' and m != 'configure':
                 setattr(self, m, getattr(self.frame, m))
         self.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-
+        self.configure(bg=BG_TXT,fg=FG_TXT,font=FONT_TXT)
+        #self.config(undo=True)
+        self.config(insertbackground=BG_CURS, insertofftime=300, insertwidth=3)
+        self.vbar.config(background=BG_BAR, activebackground=BG2_BAR, )
+        self.hbar.config(background=BG_BAR, activebackground=BG2_BAR, )
+        self.config(cursor=CURSOR)   
+        
     def __str__(self):
         return str(self.frame)
 
-def do_main(txt):
-    root=tk.Tk()
-    root.geometry('%dx%d+%d+%d' % (600,700, 100,100))
-    tp = TextPad(root)   
-    tp.configure(bg='#333333',fg='#ffffff')
-    
-    tp.vbar.config(background=BG_BAR, activebackground=BG2_BAR, )
-    tp.hbar.config(background=BG_BAR, activebackground=BG2_BAR, )
-
-    tp.insert(tk.END, s)
-    tp.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-    tp.config(cursor='arrow')   
-    tp.config(insertbackground="#ff0000")
-    tp.config(insertborderwidth=1)
-    tp.config(insertofftime=300)
-    tp.config(insertwidth=3)
-    tp.focus_set()
-    
-    #stext.mainloop()
-    root.mainloop()
-
-if __name__ == "__main__":
-    s=open("./README.txt","r").read()
-    do_main(s)
-
+    def insert_text(self,txt):
+        self.delete("1.0",tk.END)
+        self.insert("1.0", txt)
+        #self.edit_reset()

@@ -20,7 +20,10 @@ FG_WIN = "#00FF00"
 
 BG_TXT = "#333333"
 FG_TXT = "#ffffff"
+
 BG_CURS = "#ff0000"
+CURSOR='arrow'
+
 BG_INS="#ff0000"
 BG_SEL="#00ff00"
 
@@ -32,6 +35,7 @@ FG_LNUM="#ffffff"
 
 FONT_GENERAL = ('Arial', 16, 'normal')
 FONT_EDIT = ('Arial', 16, 'normal')
+FONT_TXT = ('Arial', 16, 'normal')
 FONT_LNUM = ('Arial', 16, 'normal')
 FONT_LOG = ('Monospace', 16, 'normal')
 FONT_MENU = ('Arial', 16, 'normal')

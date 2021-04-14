@@ -3,9 +3,9 @@
 
 from pdb import set_trace
 
-from teimlib.teimstyle import *
-from teimlib.textlinenumbers import TextLineNumbers
-from teimlib.textpad import TextPad
+from teimed.teimstyle import *
+from teimed.textlinenumbers import TextLineNumbers
+from teimed.textpad import TextPad
 
 import argparse
 from teimxml import do_main as do_main_xml
@@ -18,15 +18,15 @@ import os
 import tkinter as tk
 #from tkinter.font import Font
 import tkinter.filedialog as fdialog
-from ualog import Log
+from teimed.ualog import Log
 import json
 from lxml import etree
 import stat
-import sys 
+import sys
 import pprint
 
-__date__ = "13-04-2021"
-__version__ = "0.145.0"
+__date__ = "15-04-2021"
+__version__ = "0.145.2"
 __author__ = "Marta Materni"
 
 
@@ -84,10 +84,12 @@ w3_x = w2_x+dx
 w3_y = w2_y+dy
 
 
-def pp(data,w=60):
-    return pprint.pformat(data,width=w)
+def pp(data, w=60):
+    return pprint.pformat(data, width=w)
+
 
 logediterr = Log("w")
+
 
 class TeimEdit(object):
 
@@ -123,7 +125,7 @@ class TeimEdit(object):
         self.path_tmp = None
         #
         self.win0 = None
-        self.text_edit=None
+        self.text_edit = None
         self.win1 = None
         self.txt1 = None
         self.win2 = None
@@ -148,7 +150,7 @@ class TeimEdit(object):
             self.config_json['text_src'] = self.text_src
         if self.text_sign != "":
             self.config_json['text_sign'] = self.text_sign
-            
+
     def chek_config_exists(self):
         if not os.path.exists(self.json_name):
             print("")
@@ -156,7 +158,7 @@ class TeimEdit(object):
             sys.exit()
 
     def init_config(self):
-        if self.new_json_name!='':
+        if self.new_json_name != '':
             self.config_json = CFG
             self.json_name = self.new_json_name
             self.check_config_name()
@@ -172,7 +174,7 @@ class TeimEdit(object):
     def read_config(self):
         print(self.json_name)
         try:
-            s=open(self.json_name, "r").read()
+            s = open(self.json_name, "r").read()
             self.config_json = json.loads(s)
         except Exception as e:
             print(f"ERROR in {self.json_name}")
@@ -208,7 +210,7 @@ class TeimEdit(object):
         return os.path.exists(path)
 
     def chmod(self, path):
-        if os.path.exists(path)is False:
+        if os.path.exists(path) is False:
             self.write_log(f"File {path} Not Exists")
             return
         try:
@@ -237,7 +239,7 @@ class TeimEdit(object):
         self.chmod(path)
 
     def read_file(self, path):
-        s=open(path, 'rt').read()
+        s = open(path, 'rt').read()
         return s
 
     def set_config(self):
@@ -298,7 +300,6 @@ class TeimEdit(object):
         name = self.text_src.replace(".txt", "CHECK_OVER.txt")
         self.path_check_over = self.get_log_path(name)
 
-    
     def open_win0(self):
         self.win0 = tk.Tk()
         self.win0.title("TeiMed Edit")
@@ -307,20 +308,11 @@ class TeimEdit(object):
         self.win0.geometry('%dx%d+%d+%d' % (w0_w, w0_h, w0_x, w0_y))
         self.win0.config(background=BG_WIN)
         #
-        self.text_edit=TextLineNumbers(self.win0)          
-        self.text_edit.configure(bg=BG_TXT,fg=FG_TXT,font=FONT_EDIT)
-        self.text_edit.lnumbers.config(background=BG_LNUM)
-        self.text_edit.config(cursor='arrow')   
-        self.text_edit.config(insertbackground=BG_CURS)
-        ##self.text_pad.config(insertborderwidth=1)
-        self.text_edit.config(insertofftime=300)
-        self.text_edit.config(insertwidth=3)
-        
+        self.text_edit = TextLineNumbers(self.win0)
         self.text_edit.focus_set()
-
-        self.win0.protocol("WM_DELETE_WINDOW",lambda  : False)
+        self.win0.protocol("WM_DELETE_WINDOW", lambda: False)
         #
-        menu_bar = tk.Menu(self.win0,tearoff=0)
+        menu_bar = tk.Menu(self.win0, tearoff=0)
         menu_bar.config(
             font=FONT_MENU,
             bg=FG_MENU,
@@ -331,7 +323,7 @@ class TeimEdit(object):
             relief="raised")
         self.win0.config(menu=menu_bar)
         #
-        mv_file = tk.Menu(menu_bar,tearoff=0)
+        mv_file = tk.Menu(menu_bar, tearoff=0)
         mv_file.config(
             font=FONT_MENU,
             bg=FG_MENU,
@@ -339,32 +331,37 @@ class TeimEdit(object):
             activebackground=BG2_MENU,
             activeforeground=FG2_MENU,
             relief="raised")
-        mv_file.add_command(label='Reload',command=self.reload_text,underline=0)
+        mv_file.add_command(
+            label='Reload', command=self.reload_text, underline=0)
+        mv_file.add_command(label='Import text',
+                            command=self.import_text, underline=0)
         mv_file.add_separator()
         mv_file.add_command(label='Open  Ctrl+o', command=self.open_text)
         mv_file.add_command(label='Save  Ctrl+s', command=self.save_text)
-        mv_file.add_command(label='Save As.. Ctl-Shift-S', command=self.save_text_as)
+        mv_file.add_command(label='Save As.. Ctl-Shift-S',
+                            command=self.save_text_as)
         mv_file.add_separator()
-        mv_file.add_command(label='Exit', command=self.quit,underline=0)
-        self.text_edit.bind("<Control-s>", self.save_text)
+        mv_file.add_command(label='Exit', command=self.quit, underline=0)
+
         self.text_edit.bind("<Control-o>", self.open_text)
+        self.text_edit.bind("<Control-s>", self.save_text)
         self.text_edit.bind("<Control-Shift-S>", self.save_text_as)
         #
-        mv_edit = tk.Menu(menu_bar,tearoff=0)
+        mv_edit = tk.Menu(menu_bar, tearoff=0)
         mv_edit.config(font=FONT_MENU,
-                        bg=FG_MENU,
-                        fg=MENU_FG,
-                        activebackground=BG2_MENU,
-                        activeforeground=FG2_MENU,
-                        relief=tk.RAISED)
-        mv_edit.add_command(label="Undo     Ctrl-Z", command=self.text_edit.on_undo )
+                       bg=FG_MENU,
+                       fg=MENU_FG,
+                       activebackground=BG2_MENU,
+                       activeforeground=FG2_MENU,
+                       relief=tk.RAISED)
+        mv_edit.add_command(label="Undo     Ctrl-Z")
         #mv_edit.add_command(label="Redo     Ctrl-Y", command=self.text_pad.edit_redo)
-        mv_edit.add_separator() 
-        mv_edit.add_command(label="Cut      Ctrl-X", command=self.text_edit.on_cut) 
-        mv_edit.add_command(label="Copy     Ctrl-C", command=self.text_edit.on_copy)
-        mv_edit.add_command(label="Paste    Ctrl-V", command=self.text_edit.on_paste)
+        mv_edit.add_separator()
+        mv_edit.add_command(label="Cut      Ctrl-X")
+        mv_edit.add_command(label="Copy     Ctrl-C")
+        mv_edit.add_command(label="Paste    Ctrl-V")
         #
-        mv_check = tk.Menu(menu_bar,tearoff=0)
+        mv_check = tk.Menu(menu_bar, tearoff=0)
         mv_check.config(font=FONT_MENU,
                         bg=FG_MENU,
                         fg=MENU_FG,
@@ -372,21 +369,22 @@ class TeimEdit(object):
                         activeforeground=FG2_MENU,
                         relief=tk.RAISED)
         mv_check.add_command(label='Check Entity', command=self.elab_checktxt)
-        mv_check.add_command(label='Check Overflow', command=self.elab_checkover)
+        mv_check.add_command(label='Check Overflow',
+                             command=self.elab_checkover)
         #
-        mv_elab = tk.Menu(menu_bar,tearoff=0)
+        mv_elab = tk.Menu(menu_bar, tearoff=0)
         mv_elab.config(font=FONT_MENU,
-                        bg=FG_MENU,
-                        fg=MENU_FG,
-                        activebackground=BG2_MENU,
-                        activeforeground=FG2_MENU,
-                        relief=tk.RAISED)
+                       bg=FG_MENU,
+                       fg=MENU_FG,
+                       activebackground=BG2_MENU,
+                       activeforeground=FG2_MENU,
+                       relief=tk.RAISED)
         mv_elab.add_command(label='Elab. Entity', command=self.elab_teimxml)
         mv_elab.add_command(label='Elab. Set id', command=self.elab_teimlw)
         mv_elab.add_command(label='Elab. Overflow', command=self.elab_teimover)
         mv_elab.add_command(label='Elab. Note', command=self.elab_teimnote)
         #
-        mv_log = tk.Menu(menu_bar,tearoff=0)
+        mv_log = tk.Menu(menu_bar, tearoff=0)
         mv_log.config(font=FONT_MENU,
                       bg=FG_MENU,
                       fg=MENU_FG,
@@ -394,7 +392,8 @@ class TeimEdit(object):
                       activeforeground=FG2_MENU,
                       relief=tk.RAISED)
         mv_log.add_command(label='Check Txt Err.', command=self.show_check_txt)
-        mv_log.add_command(label='Check Over Err.', command=self.show_check_over)
+        mv_log.add_command(label='Check Over Err.',
+                           command=self.show_check_over)
         mv_log.add_separator()
         mv_log.add_command(label='Entity Log.', command=self.show_entity_log)
         mv_log.add_command(label='Entity Err.', command=self.show_entity_err)
@@ -407,7 +406,7 @@ class TeimEdit(object):
         mv_log.add_separator()
         mv_log.add_command(label='Read Log.', command=self.open_log)
         #
-        mv_del = tk.Menu(menu_bar,tearoff=0)
+        mv_del = tk.Menu(menu_bar, tearoff=0)
         mv_del.config(font=FONT_MENU,
                       bg=FG_MENU,
                       fg=MENU_FG,
@@ -416,18 +415,19 @@ class TeimEdit(object):
                       relief=tk.RAISED)
         mv_del.add_command(label='Entity', command=self.delete_txt1)
         mv_del.add_command(label='XML', command=self.delete_txt2)
-        mv_del.add_command(label='Log', command=self.delete_txt3)
+        mv_del.add_command(label='Log.', command=self.delete_txt3)
+        mv_del.add_command(label='All', command=self.delete_txt_all)
         mv_del.add_separator()
         mv_del.add_command(label='Remove log file', command=self.remove_log)
         # orizontale
-        menu_bar.add_cascade(label='File', menu=mv_file,underline=0)
-        menu_bar.add_cascade(label='Edit', menu=mv_edit,underline=0)
-        menu_bar.add_cascade(label='Check', menu=mv_check,underline=0)
-        menu_bar.add_cascade(label='Elab.', menu=mv_elab,underline=1)
-        menu_bar.add_cascade(label='Log. ', menu=mv_log,underline=0)
-        menu_bar.add_cascade(label='Del.', menu=mv_del,underline=0)
+        menu_bar.add_cascade(label='File', menu=mv_file, underline=0)
+        menu_bar.add_cascade(label='Edit', menu=mv_edit, underline=0)
+        menu_bar.add_cascade(label='Check', menu=mv_check, underline=0)
+        menu_bar.add_cascade(label='Elab.', menu=mv_elab, underline=1)
+        menu_bar.add_cascade(label='Log. ', menu=mv_log, underline=0)
+        menu_bar.add_cascade(label='Del.', menu=mv_del, underline=0)
         menu_bar.add_separator(background='#ff0000')
-        menu_bar.add_command(label='Info', command=self.show_info,underline=0)
+        menu_bar.add_command(label='Info', command=self.show_info, underline=0)
         menu_bar.add_command(label='  Window 1-2-3-4 ', command=self.top_order)
         menu_bar.add_command(label='  1  ', command=self.top_w0)
         menu_bar.add_command(label='  2  ', command=self.top_w1)
@@ -447,33 +447,33 @@ class TeimEdit(object):
 
     def top_w0(self):
         self.top_not()
-        self.win0.attributes("-topmost",True)
+        self.win0.attributes("-topmost", True)
 
     def top_w1(self):
         self.top_not()
-        self.win1.attributes("-topmost",True)
+        self.win1.attributes("-topmost", True)
 
     def top_w2(self):
         self.top_not()
-        self.win2.attributes("-topmost",True)
+        self.win2.attributes("-topmost", True)
 
     def top_w3(self):
         self.top_not()
-        self.win3.attributes("-topmost",True)
+        self.win3.attributes("-topmost", True)
 
     def top_not(self):
-        self.win0.attributes("-topmost",False)
-        self.win1.attributes("-topmost",False)
-        self.win2.attributes("-topmost",False)
-        self.win3.attributes("-topmost",False)
+        self.win0.attributes("-topmost", False)
+        self.win1.attributes("-topmost", False)
+        self.win2.attributes("-topmost", False)
+        self.win3.attributes("-topmost", False)
 
     def top_order(self):
         self.top_not()
         return
-        self.win0.attributes("-topmost",1)
-        self.win1.attributes("-topmost",2)
-        self.win2.attributes("-topmost",3)
-        self.win3.attributes("-topmost",4)
+        self.win0.attributes("-topmost", 1)
+        self.win1.attributes("-topmost", 2)
+        self.win2.attributes("-topmost", 3)
+        self.win3.attributes("-topmost", 4)
 
     ##########################
     # mv_file
@@ -481,13 +481,25 @@ class TeimEdit(object):
     def reload_text(self):
         self.read_text_file()
 
+    def import_text(self):
+        self.top_order()
+        wrk_dir = os.getcwd()
+        path_read = fdialog.askopenfilename(
+            title=' file',
+            initialdir=wrk_dir,
+            filetypes=[("text", "*.txt")])
+        if len(path_read) < 1:
+            return
+        s = open(path_read, "r").read()
+        self.text_edit.insert_text(s)
+        self.save_text_as()
+
     def open_text(self, *args):
         self.top_order()
         path = fdialog.askopenfilename(
             title=' file',
             initialdir=self.text_dir,
-            filetypes=[("text", "*.txt"),
-                       ("xml", "*.xml")])
+            filetypes=[("text", "*.txt")])
         if len(path) < 1:
             return
         text_src = os.path.basename(path)
@@ -495,16 +507,16 @@ class TeimEdit(object):
             if not self.file_exists(path):
                 self.update_config(text_src)
         self.set_path_files(text_src)
-        s = self.get_path_lst_log()
         self.read_text_file()
 
     def save_text(self, *args):
         s = self.get_text()
         self.write_file(self.path_text, s)
 
-    def save_text_as(self,*args):
+    def save_text_as(self, *args):
         self.top_order()
-        path = fdialog.asksaveasfilename(title='Dove Salvare')
+        path = fdialog.asksaveasfilename(title='Salva as Name',
+                                         initialdir=self.text_dir  )
         if len(path) < 1:
             return
         s = self.get_text()
@@ -512,6 +524,10 @@ class TeimEdit(object):
         self.update_config(name)
         self.set_path_files(name)
         self.write_file(self.path_text, s)
+        # show_title
+        text_src = os.path.basename(self.path_text)
+        title = f"TEXT: {text_src} "
+        self.win0.title(title)
 
     def quit(self):
         self.win0.quit()
@@ -525,7 +541,7 @@ class TeimEdit(object):
     ##########################
     # mv_edit su editore
     ##########################
-    
+
     #################
     # mv_check
     ################
@@ -550,7 +566,7 @@ class TeimEdit(object):
 
     #############
     # mv_elab
-    #############    
+    #############
     def elab_teimxml(self):
         s = self.get_text()
         self.write_file(self.path_text, s)
@@ -565,12 +581,12 @@ class TeimEdit(object):
         print(self.path_text)
         print(self.path_teimed_tag)
         print(self.path_entity_txt)
-        ls=["", 
-        "      Elab entity",
-        f"{self.path_text}",
-        f"{self.path_teimed_tag}",
-        f"{self.path_entity_txt}"]
-        self.write_log(os.linesep.join(ls),True)
+        ls = ["",
+              "      Elab entity",
+              f"{self.path_text}",
+              f"{self.path_teimed_tag}",
+              f"{self.path_entity_txt}"]
+        self.write_log(os.linesep.join(ls), True)
 
     def elab_teimlw(self):
         if not self.file_exists(self.path_entity_txt):
@@ -587,12 +603,12 @@ class TeimEdit(object):
         print(self.path_entity_txt)
         print(self.path_id_xml)
         print(self.text_sign)
-        ls=["", 
-        "      Elab Set id",
-        f"{self.path_entity_txt}",
-        f"{self.path_id_xml}",
-        f"{self.text_sign}"]
-        self.write_log(os.linesep.join(ls),True)
+        ls = ["",
+              "      Elab Set id",
+              f"{self.path_entity_txt}",
+              f"{self.path_id_xml}",
+              f"{self.text_sign}"]
+        self.write_log(os.linesep.join(ls), True)
 
     def elab_teimover(self):
         if not self.file_exists(self.path_id_xml):
@@ -609,12 +625,12 @@ class TeimEdit(object):
         print(self.path_id_xml)
         print(self.path_fromto_xml)
         print(self.path_over_tag)
-        ls=["", 
-        "      Eelab over",
-        f"{self.path_id_xml}",
-        f"{self.path_fromto_xml}",
-        f"{self.path_over_tag}"]
-        self.write_log(os.linesep.join(ls),True)
+        ls = ["",
+              "      Eelab over",
+              f"{self.path_id_xml}",
+              f"{self.path_fromto_xml}",
+              f"{self.path_over_tag}"]
+        self.write_log(os.linesep.join(ls), True)
 
     def elab_teimnote(self):
         if not self.file_exists(self.path_fromto_xml):
@@ -631,12 +647,12 @@ class TeimEdit(object):
         print(self.path_fromto_xml)
         print(self.path_xml)
         print(self.path_text_note)
-        ls=["", 
-        "      Elab Note",
-        f"{self.path_fromto_xml}",
-        f"{self.path_xml}",
-        f"{self.path_text_note}"]
-        self.write_log(os.linesep.join(ls),True)
+        ls = ["",
+              "      Elab Note",
+              f"{self.path_fromto_xml}",
+              f"{self.path_xml}",
+              f"{self.path_text_note}"]
+        self.write_log(os.linesep.join(ls), True)
 
         # s = self.read_file(self.path_xml)
         self.format_xml()
@@ -671,13 +687,13 @@ class TeimEdit(object):
     ##############
     # mv_del
     ##############
-    """
-    def delete_text_all(self):
+
+    def delete_txt_all(self):
         # self.txt0.delete('1.0', tk.END)
         self.delete_txt1()
         self.delete_txt2()
         self.delete_txt3()
-    """
+
     def delete_txt1(self):
         if self.txt1 is not None:
             self.txt1.delete('1.0', tk.END)
@@ -728,9 +744,9 @@ class TeimEdit(object):
         path = self.get_log_path(name)
         self.read_log_file(path)
 
-    #teim/log/teim_WID.log
-    #teim/log/teim_WID.ERR.log        
-    #teim/log/teim_WID.xml
+    # teim/log/teim_WID.log
+    # teim/log/teim_WID.ERR.log
+    # teim/log/teim_WID.xml
     def show_setwid_log(self):
         name = self.text_src.replace(".txt", "_WID.log")
         path = self.get_log_path(name)
@@ -802,7 +818,7 @@ class TeimEdit(object):
         title = f"TEXT: {text_src} "
         self.win0.title(title)
 
-    def read_log_file(self,path):
+    def read_log_file(self, path):
         if self.file_exists(path):
             s = self.read_file(path)
         else:
@@ -810,7 +826,7 @@ class TeimEdit(object):
         self.top_w3()
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)
-    
+
     def get_path_lst_log(self):
         abs_cfg = os.path.abspath(self.cfg_dir)
         abs_text = os.path.abspath(str(self.text_dir))
@@ -856,7 +872,7 @@ class TeimEdit(object):
             x = self.txt3.get('1.0', 'end')
             s = x+os.linesep+s
         else:
-            s=os.linesep+os.linesep+s
+            s = os.linesep+os.linesep+s
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)
 
@@ -867,45 +883,37 @@ class TeimEdit(object):
             return
         self.win1 = tk.Tk()
         self.win1.title('ENTITY')
-        self.win1.protocol("WM_DELETE_WINDOW",lambda  : False)
+        self.win1.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win1.rowconfigure(0, weight=1)
         self.win1.columnconfigure(0, weight=1)
         self.win1.geometry('%dx%d+%d+%d' % (w1_w, w1_h, w1_x, w1_y))
-        #self.txt1 = tk.Text(self.win1,wrap=tk.NONE)
         self.txt1 = TextPad(self.win1)
         self.txt1.grid(sticky='nsew')
-        self.txt1.configure(font=FONT_EDIT, bg=BG_TXT, fg=FG_TXT)
-        self.txt1.vbar.config(background=BG_BAR,activebackground=BG2_BAR)
 
     def open_win2(self):
         if self.win2 is not None:
             return
         self.win2 = tk.Tk()
         self.win2.title('XML')
-        self.win1.protocol("WM_DELETE_WINDOW",lambda  : False)
+        self.win2.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win2.rowconfigure(0, weight=1)
         self.win2.columnconfigure(0, weight=1)
         self.win2.geometry('%dx%d+%d+%d' % (w2_w, w2_h, w2_x, w2_y))
-        #self.txt2 = tk.Text(self.win2,wrap=tk.NONE)
         self.txt2 = TextPad(self.win2)
         self.txt2.grid(sticky='nsew')
-        self.txt2.configure(font=FONT_EDIT, bg=BG_TXT, fg=FG_TXT)
-        self.txt2.vbar.config(background=BG_BAR,activebackground=BG2_BAR)
 
     def open_win3(self):
         if self.win3 is not None:
             return
         self.win3 = tk.Tk()
-        self.win3.protocol("WM_DELETE_WINDOW", lambda:False)
+        self.win3.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win3.title('LOG')
         self.win3.rowconfigure(0, weight=1)
         self.win3.columnconfigure(0, weight=1)
         self.win3.geometry('%dx%d+%d+%d' % (w3_w, w3_h, w3_x, w3_y))
-        #self.txt3 = tk.Text(self.win3,wrap=tk.NONE)
         self.txt3 = TextPad(self.win3)
         self.txt3.grid(sticky='nsew')
         self.txt3.configure(font=FONT_LOG, bg=BG_LOG, fg=FG_LOG)
-        self.txt3.vbar.config(background=BG_BAR,activebackground=BG2_BAR)
 
     def quit1(self):
         self.win1.destroy()
@@ -934,9 +942,11 @@ class TeimEdit(object):
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)
 
+
 def do_main(json_name="", new_json_name="", dir_name="", txt_name="", sign=""):
     tme = TeimEdit(json_name, new_json_name, dir_name, txt_name, sign)
     tme.open_win0()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

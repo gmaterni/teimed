@@ -7,8 +7,8 @@ import argparse
 import sys
 import re
 import shutil
-from ualog import Log
-from teimlib.xml_const import *
+from teimed.ualog import Log
+from teimed.xml_const import *
 import stat
 
 __date__ = "20-02-2021"

@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
 from setuptools import find_packages
-import teimlib.__init__
+import teimed.__init__
 
 setup(
     name='teimed',
-    version=teimlib.__init__.__version__,
+    version=teimed.__init__.__version__,
     py_modules=['teiminfo',
-                'ualog',
                 'prjmgr'
                 'teimprjxmlmake',
                 'teimprjtextmake',

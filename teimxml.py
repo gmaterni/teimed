@@ -3,7 +3,7 @@
 import argparse
 import os
 import sys
-from ualog import Log
+from teimed.ualog import Log
 import re
 import stat
 import pprint

@@ -7,7 +7,7 @@ import os
 import pprint
 import sys
 import pathlib as pl
-from ualog import Log
+from teimed.ualog import Log
 import stat
 
 def pp(data):
