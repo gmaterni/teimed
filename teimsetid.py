@@ -4,9 +4,9 @@
 import os
 import argparse
 import sys
-from teimed.ualog import Log
-from teimed.xml_const import *
-from teimed.readovertags import read_over_tags
+from teimedlib.ualog import Log
+from teimedlib.xml_const import *
+from teimedlib.readovertags import read_over_tags
 import re
 import stat
 from pdb import set_trace
@@ -26,7 +26,7 @@ def pp_data(data):
 SP = " "
 SPW = "|"    # carattere temp di SP  dentro tag
 CUND = "_"   # carattere _ UNDERLINE
-CUNDT = "@@" # carattere temporaneo di CU per parole composte
+CUNDT = "@@"  # carattere temporaneo di CU per parole composte
 CT1 = "$$"   # carattere temporaneo
 CT2 = "§§ "  # carattere temporaneo
 CNT = "$"    # carattere temp per note
@@ -44,11 +44,12 @@ OW = "<w"
 OPC = "<pc"
 OPTR = "<ptr"
 
-PERSNAME="<persName"
-GEOGNAME="<geogName"
-PLACENAME="<placeName"
-CHOICE="<choice"
-TAGS_TEI=[PERSNAME,GEOGNAME,PLACENAME,CHOICE]
+PERSNAME = "<persName"
+GEOGNAME = "<geogName"
+PLACENAME = "<placeName"
+CHOICE = "<choice"
+TAGS_TEI = [PERSNAME, GEOGNAME, PLACENAME, CHOICE]
+
 
 class AddId(object):
     def __init__(self, path_src, path_out, sigla_scrpt, ids_start):
@@ -114,11 +115,11 @@ class AddId(object):
         <pb
         <cb
         <lg
-        """        
+        """
         s = line.strip()
         n1 = s.count("<")
         n2 = s.count(">")
-        if n1!=1 or n2!=1:
+        if n1 != 1 or n2 != 1:
             return False
         ok = (s[0] == "<" and s[-1] == ">")
         return ok
@@ -172,25 +173,25 @@ class AddId(object):
         for i in range(0, pn):
             pc_id = i + 1
             sid = '%s xml:id="%sl%spc%s" ' % (
-                CT1, 
-                self.sigla, 
-                self.l_id, 
+                CT1,
+                self.sigla,
+                self.l_id,
                 pc_id)
             line = line.replace(OPC, sid, 1)
         line = line.replace(CT1, OPC, -1)
         return line
-    
-    def set_tag_tei_id(self, line,tag):
+
+    def set_tag_tei_id(self, line, tag):
         nt = line.count(tag)
         if nt == 0:
             return line
         for i in range(0, nt):
             tag_id = i + 1
             sid = '%s xml:id="%sl%s%s%s" ' % (
-                CT1, 
-                self.sigla, 
+                CT1,
+                self.sigla,
                 self.l_id,
-                tag.replace('<',''), 
+                tag.replace('<', ''),
                 tag_id)
             line = line.replace(tag, sid, 1)
         line = line.replace(CT1, tag, -1)
@@ -295,7 +296,7 @@ class AddId(object):
         line = line.replace("{ ", "{", -1)
         line = line.replace("[_ ", "[_", -1)
         line = line.replace("[ ", "[", -1)
-        
+
         # elimina spazi multipli
         line = re.sub(r"\s{2,}", SP, line)
         lst = []
@@ -314,7 +315,7 @@ class AddId(object):
             if is_in_tag:
                 c = SPW if c == SP else c
             else:
-                # trasfroma _ in $$ fuori i tag 
+                # trasfroma _ in $$ fuori i tag
                 c = CUNDT if (c == CUND) else c
             lst.append(c)
         s = "".join(lst).strip()
@@ -367,7 +368,7 @@ class AddId(object):
         line = self.set_words_id(line)
         line = self.set_pcs_id(line)
         for tag in TAGS_TEI:
-            line=self.set_tag_tei_id(line,tag)
+            line = self.set_tag_tei_id(line, tag)
         line = self.set_ptr_id(line)
         line = self.set_line_id(line)
         # line = line.replace("  ", SP, -1)
@@ -430,35 +431,31 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit()
     try:
-        parser.add_argument(
-            "-i",
-            dest="src",
-            required=True,
-            metavar="",
-            help="-i <file input>"
-        )
-        parser.add_argument(
-            "-o",
-            dest="out",
-            required=True,
-            metavar="",
-            help="-o <file output>"
-        )
-        parser.add_argument(
-            "-s",
-            dest="sms",
-            required=True,
-            metavar="",
-            help="-s <sigla mano scritto> (prefisso id)",
-        )
-        parser.add_argument(
-            "-n",
-            dest="ids",
-            required=False,
-            default="",
-            metavar="",
-            help="-n <'pb:1,cb:1,lg:1,l:1,ptr:1'>  (start id elementi)",
-        )
+        parser.add_argument("-i",
+                            dest="src",
+                            required=True,
+                            metavar="",
+                            help="-i <file input>"
+                            )
+        parser.add_argument("-o",
+                            dest="out",
+                            required=True,
+                            metavar="",
+                            help="-o <file output>"
+                            )
+        parser.add_argument("-s",
+                            dest="sms",
+                            required=True,
+                            metavar="",
+                            help="-s <sigla mano scritto> (prefisso id)",
+                            )
+        parser.add_argument("-n",
+                            dest="ids",
+                            required=False,
+                            default="",
+                            metavar="",
+                            help="-n <'pb:1,cb:1,lg:1,l:1,ptr:1'>  (start id elementi)",
+                            )
         args = parser.parse_args()
     except Exception as e:
         print("ERROR args in teimsetid ")

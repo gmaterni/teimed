@@ -182,11 +182,11 @@ esegue progetto
 
 es.
 file:
-teimed_flori.json
+teimedlib_flori.json
 contenuto
 {
     "exe": [
-        "teimxml.py -i flori.txt -t fl_teimed_tags.csv -o flori1.txt",
+        "teimxml.py -i flori.txt -t fl_teimedlib_tags.csv -o flori1.txt",
         "teimlineword.py -i flori1.txt -o flori2.xml -s k -n 'pb:1,cb:1,lg:1,l:1'",
         "teimxmllint.py -i flori2.xml -o flori3.xml ",
         "teimspan.py -i flori3.xml -o flori4.xml",
@@ -197,7 +197,7 @@ contenuto
 }
 
 ========================================================
-teimedit.py [-h] [-i] [-t] [-c]
+teimedlibit.py [-h] [-i] [-t] [-c]
 
 optional arguments:
   -h, --help  show this help message and exit

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
-from teimed.teimstyle import *
+from teimedlib.teimstyle import *
 
 class TextPad(tk.Text):
     
@@ -30,10 +30,10 @@ class TextPad(tk.Text):
         self.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         self.configure(bg=BG_TXT,fg=FG_TXT,font=FONT_TXT)
         #self.config(undo=True)
-        self.config(insertbackground=BG_CURS, insertofftime=300, insertwidth=3)
+        self.config(insertbackground=BG_CURSOR, insertofftime=300, insertwidth=3)
         self.vbar.config(background=BG_BAR, activebackground=BG2_BAR, )
         self.hbar.config(background=BG_BAR, activebackground=BG2_BAR, )
-        self.config(cursor=CURSOR)   
+        self.config(cursor=CURSOR_TEXT)   
         
     def __str__(self):
         return str(self.frame)

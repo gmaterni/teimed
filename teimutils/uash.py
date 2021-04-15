@@ -4,7 +4,7 @@ import os
 import sys
 import stat
 
-BIN = "teimed_flori/bin"
+BIN = "teimedlib_flori/bin"
 
 def path_bin():
     pwd=os.getcwd()

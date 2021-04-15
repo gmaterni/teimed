@@ -5,7 +5,7 @@ import sys
 import stat
 import pathlib as pl
 from pdb import set_trace
-from teimed import template_xml_prj
+from teimedlib import template_xml_prj
 import json
 
 __date__ = "32-03-2021"

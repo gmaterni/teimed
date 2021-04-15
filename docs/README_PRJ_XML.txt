@@ -54,20 +54,20 @@ flory_xml/par1/par1.txt
 -----------------------------------
 prjmgr.py prj/par1_txt.json,
     esegue:
-teimxml.py -i par1/par1.txt -t cfg/teimed.csv -o par1/log/par1_teim.tx
+teimxml.py -i par1/par1.txt -t cfg/teimedlib.csv -o par1/log/par1_teim.tx
 
 INPUT
 flori_xml/par1/par1.txt
 
 OUTPUT
 flori_xml/par1/log/par1_teim.txt
-    applica la prima trasfromazione teimed = XML
+    applica la prima trasfromazione teimedlib = XML
 -------------------------------------
 prjmgr.py prj/par1_xml.json
     esegue:
 
 teimsetid.py -i par1/log/par1_teim.txt -o par1/log/par1_id.xml, -s G -n 'pb:1,cb:1,lg:1,l:1'
-    seconda trasformazione teimed => XML
+    seconda trasformazione teimedlib => XML
     sono settati gli ID
 
 teimover.py -i par1/log/par1_id.xml -o par1/log/par1_id_over.xml, -c cfg/overflow.csv
@@ -106,7 +106,7 @@ flori_xml/xml/par1.xml
 Controlli sul sorgente txt
 
 prjmgr.py prj/par1_chectext.json
-    controlla le entity teimed
+    controlla le entity teimedlib
 esegue:
 checktxt.py -i par1/par1.txt -o par1/log/par1_checktxt.log
 
@@ -135,7 +135,7 @@ sone esegue le seguenti elaborazioni:
 ----------------------------------
 prjmgr.py par1_prj/eps01_txt.json
 esegue
-teimxml.py -i par1/eps01.txt -t cfg/teimed.csv -o par1/log/eps01_teim.tx
+teimxml.py -i par1/eps01.txt -t cfg/teimedlib.csv -o par1/log/eps01_teim.tx
 ----------------------------------
 prjmgr.py par1_prj/eps01_setid.json
 esegue:

@@ -3,13 +3,13 @@
 import argparse
 import os
 import sys
-from teimed.ualog import Log
+from teimedlib.ualog import Log
 import re
 import stat
 import pprint
 
-__date__ = "11-04-2021"
-__version__ = "0.9.6"
+__date__ = "15-04-2021"
+__version__ = "0.9.7"
 __author__ = "Marta Materni"
 
 
@@ -363,10 +363,10 @@ if __name__ == "__main__":
         sys.exit()
     parser.add_argument('-t',
                         dest="tag",
-                        required=False,
-                        default="tags.csv ",
+                        required=True,
+                        default=" ",
                         metavar="",
-                        help="[-t <file tags>] default:tags.csv")
+                        help="[-t <file tags>]")
     parser.add_argument('-i',
                         dest="src",
                         required=True,

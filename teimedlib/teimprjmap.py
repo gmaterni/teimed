@@ -4,7 +4,7 @@ from pdb import set_trace
 
 import sys
 import os
-from teimed.ualog import Log
+from teimedlib.ualog import Log
 import pathlib as pth
 import pprint
 

@@ -5,7 +5,7 @@ import argparse
 import os
 import sys
 from pdb import set_trace
-from teimed.ualog import Log
+from teimedlib.ualog import Log
 import pprint
 import re
 

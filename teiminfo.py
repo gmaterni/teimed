@@ -20,7 +20,7 @@ teimspan.py
 aggiunge span from to
 
 #console_scripts
-teimedinfo
+teimedlibinfo
 visualizza queste informazioni
 
 """

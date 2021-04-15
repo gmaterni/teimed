@@ -6,6 +6,6 @@
   "text_note": "note.csv",
   "log_dir": "log",
   "cfg_dir": "cfg",
-  "teimed_tag": "teimed.csv",
+  "teimedlib_tag": "teimedlib.csv",
   "overflow_tag": "overflow.csv"
 }

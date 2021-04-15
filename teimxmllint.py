@@ -4,7 +4,7 @@ import sys
 import os
 import argparse
 from lxml import etree
-from teimed.ualog import Log
+from teimedlib.ualog import Log
 import stat
 __date__ = "19-02-2021"
 __version__ = "0.3.3"

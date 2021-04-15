@@ -7,8 +7,8 @@ import argparse
 import sys
 import re
 import shutil
-from teimed.ualog import Log
-from teimed.xml_const import *
+from teimedlib.ualog import Log
+from teimedlib.xml_const import *
 import stat
 
 __date__ = "20-02-2021"
@@ -67,7 +67,7 @@ class AddNote(object):
                 note_id = note[NOTE_ID]
                 note_text = note[NOTE_TEXT]
                 text = note_text.strip().replace(os.linesep, " ")
-                s = f'<teimed_note xml:id="{note_id}">{text}</teimed_note>'
+                s = f'<teimedlib_note xml:id="{note_id}">{text}</teimedlib_note>'
                 ls.append(s)
             note = os.linesep.join(ls)
             #

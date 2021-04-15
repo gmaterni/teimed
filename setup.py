@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
 from setuptools import find_packages
-import teimed.__init__
+import teimedlib.__init__
 
 setup(
     name='teimed',
-    version=teimed.__init__.__version__,
+    version=teimedlib.__init__.__version__,
     py_modules=['teiminfo',
                 'prjmgr'
                 'teimprjxmlmake',
@@ -14,7 +14,7 @@ setup(
                 'teimprjsave'
                 ],
     packages=find_packages(),
-    # packages=['teimed'],
+    # packages=['teimedlib'],
     scripts=[
         "checkover.py",
         "checktxt.py",
@@ -22,7 +22,7 @@ setup(
         "teimprjtextmake.py",
         "prjmgr.py",
         "teimprjsave.py",
-        "teimedit.py",
+        "teimedlibit.py",
         "teimnote.py",
         "teimover.py",
         "teimsetid.py",

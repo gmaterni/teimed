@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
-from teimed.teimstyle import *
+from teimedlib.teimstyle import *
 
 
 class TextLineNumbers(tk.Text):
@@ -37,10 +37,10 @@ class TextLineNumbers(tk.Text):
         self.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         self.configure(bg=BG_TXT, fg=FG_TXT, font=FONT_EDIT)
         self.config(undo=True)
-        self.config(insertbackground=BG_CURS,
+        self.config(insertbackground=BG_CURSOR,
                     insertofftime=300,
                     insertwidth=3,
-                    cursor=CURSOR)
+                    cursor=CURSOR_EDIT)
         self.vbar.config(background=BG_BAR, activebackground=BG2_BAR, )
         self.hbar.config(background=BG_BAR, activebackground=BG2_BAR, )
         self.lnumbers.config(background=BG_LNUM)

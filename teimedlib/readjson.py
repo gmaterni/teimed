@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #import os
 import sys
-from teimed.ualog import Log
+from teimedlib.ualog import Log
 import traceback 
 import json
 

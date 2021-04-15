@@ -5,9 +5,9 @@ from pdb import set_trace
 import argparse
 import re
 import sys
-from teimed.ualog import Log
+from teimedlib.ualog import Log
 import pprint
-from teimed.readovertags import read_over_tags
+from teimedlib.readovertags import read_over_tags
 
 __date__ = "14-042021"
 __version__ = "0.1.2"

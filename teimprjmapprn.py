@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from pdb import set_trace
 import sys
-from teimed.teimprjmap import TeimPrjMap
+from teimedlib.teimprjmap import TeimPrjMap
 
 __date__ = "05-03-2021"
 __version__ = "0.1.0"

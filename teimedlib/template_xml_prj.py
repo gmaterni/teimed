@@ -70,7 +70,7 @@ prj = {
             [
                 "teimxml.py ",
                 "-i witness/witness.txt",
-                "-t cfg/teimed.csv",
+                "-t cfg/teimedlib.csv",
                 "-o witness/log/witness_teim.txt"
             ]
         ]
@@ -223,7 +223,7 @@ witness_prj = {
             [
                 "teimxml.py ",
                 "-i witness/text.txt",
-                "-t cfg/teimed.csv",
+                "-t cfg/teimedlib.csv",
                 "-o witness/log/text_teim.txt"
             ]
         ]

@@ -4,7 +4,7 @@ import sys
 import os
 import argparse
 from lxml import etree
-from teimed.ualog import Log
+from teimedlib.ualog import Log
 from teimxmllint import do_main as do_main_xmllint
 
 __date__ = "02-04-2021"
