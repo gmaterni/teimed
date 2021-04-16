@@ -4,9 +4,9 @@
 from pdb import set_trace
 
 from teimedlib.ualog import Log
-from teimedlib.textlinenumbers import TextLineNumbers
-from teimedlib.textpad import TextPad
-from teimedlib.teimstyle import *
+from teimeditlib.textlinenumbers import TextLineNumbers
+from teimeditlib.textpad import TextPad
+from teimeditlib.constants import *
 
 import argparse
 from teimxml import do_main as do_main_xml
@@ -121,7 +121,7 @@ class TeimEdit(object):
                  text_dir="",
                  text_name="",
                  text_sign=""):
-        logediterr.open("log/teimedlibit.log", 1)
+        logediterr.open("log/teimedit.log", 1)
         self.json_name = json_name
         self.new_json_name = new_json_name
         self.prj_name =prj_name

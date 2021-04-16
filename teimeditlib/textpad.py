@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
-from teimedlib.teimstyle import *
+from teimeditlib.constants import *
 
 class TextPad(tk.Text):
     

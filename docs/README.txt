@@ -1,4 +1,4 @@
-INTRODUZIONE
+wINTRODUZIONE
 
 INSTALLAZIONE
 
@@ -197,7 +197,7 @@ contenuto
 }
 
 ========================================================
-teimedlibit.py [-h] [-i] [-t] [-c]
+teimedit.py [-h] [-i] [-t] [-c]
 
 optional arguments:
   -h, --help  show this help message and exit

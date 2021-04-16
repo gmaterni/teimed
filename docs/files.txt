@@ -1,7 +1,7 @@
 /usr/local/bin/checkover.py
 /usr/local/bin/checktxt.py
 /usr/local/bin/prjmgr.py
-/usr/local/bin/teimedlibit.py
+/usr/local/bin/teimedit.py
 /usr/local/bin/teiminfo
 /usr/local/bin/teimsetid.py
 /usr/local/bin/teimnote.py

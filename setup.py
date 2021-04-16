@@ -22,7 +22,7 @@ setup(
         "teimprjtextmake.py",
         "prjmgr.py",
         "teimprjsave.py",
-        "teimedlibit.py",
+        "teimedit.py",
         "teimnote.py",
         "teimover.py",
         "teimsetid.py",

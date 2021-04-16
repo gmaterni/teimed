@@ -70,8 +70,8 @@ esempi di file json
 }
 
 editore che integra teimxml.py teimsetid.py teimxmllint.py
-teimedlibit
-usage: teimedlibit [-h] [-i] [-t]
+teimedit
+usage: teimedit [-h] [-i] [-t]
 optional arguments:
   -h, --help  show this help message and exit
   -i          [-i <file input>] default: TEIM0.txt
