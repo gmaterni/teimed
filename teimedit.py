@@ -1,32 +1,35 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from pdb import set_trace
 
 from teimedlib.ualog import Log
 from teimeditlib.textlinenumbers import TextLineNumbers
 from teimeditlib.textpad import TextPad
-from teimeditlib.constants import *
+from teimeditlib.textglobals import *
 
-import argparse
 from teimxml import do_main as do_main_xml
 from teimsetid import do_main as do_main_setid
 from teimover import do_main as do_main_over
 from teimnote import do_main as do_main_note
 from checktxt import do_main as do_main_checktxt
 from checkover import do_main as do_main_checkover
-import os
+
 import tkinter as tk
 #from tkinter.font import Font
 import tkinter.filedialog as fdialog
+import tkinter.messagebox as mbox
+
+import argparse
 import json
 from lxml import etree
 import stat
 import sys
+import os
 import pprint
+from pdb import set_trace
 
-__date__ = "15-04-2021"
-__version__ = "0.15.2"
+__date__ = "17-04-2021"
+__version__ = "0.15.3"
 __author__ = "Marta Materni"
 
 def HELP_OPS():
@@ -335,7 +338,7 @@ class TeimEdit(object):
 
     def open_win0(self):
         self.win0 = tk.Tk()
-        self.win0.title("teimedlib Edit")
+        self.win0.title("TeimEdit")
         #self.win0.rowconfigure(0, weight=1)
         #self.win0.columnconfigure(0, weight=1)
         self.win0.geometry('%dx%d+%d+%d' % (w0_w, w0_h, w0_x, w0_y))
@@ -364,8 +367,7 @@ class TeimEdit(object):
             activebackground=BG2_MENU,
             activeforeground=FG2_MENU,
             relief="raised")
-        mv_file.add_command(
-            label='Reload', command=self.reload_text, underline=0)
+        mv_file.add_command(label='Reload', command=self.reload_text, underline=0)
         mv_file.add_command(label='Import text',
                             command=self.import_text, underline=0)
         mv_file.add_separator()
@@ -376,11 +378,18 @@ class TeimEdit(object):
         mv_file.add_command(label='Save As.and Update json.',
                             command=self.create_text_as)
         mv_file.add_separator()
-        mv_file.add_command(label='Exit', command=self.quit, underline=0)
-
+        mv_file.add_command(label='Quit', command=self.app_quit, 
+                            underline=0,
+                            background=BG_MENU_LBL, 
+                            foreground=FG_MENU_LBL,
+                            activebackground=BG2_MENU_LBL,
+                            activeforeground=FG2_MENU_LBL)
+        mv_file.add_separator()
         self.text_edit.bind("<Control-o>", self.open_text)
         self.text_edit.bind("<Control-s>", self.save_text)
         self.text_edit.bind("<Control-Shift-S>", self.save_text_as)
+
+        self.text_edit.bind("<Control-q>", sys.exit)
         #
         mv_edit = tk.Menu(menu_bar, tearoff=0)
         mv_edit.config(font=FONT_MENU,
@@ -390,7 +399,7 @@ class TeimEdit(object):
                        activeforeground=FG2_MENU,
                        relief=tk.RAISED)
         mv_edit.add_command(label="Undo     Ctrl-Z")
-        #mv_edit.add_command(label="Redo     Ctrl-Y", command=self.text_pad.edit_redo)
+        mv_edit.add_command(label="Redo     Ctrl-Shift-Z", command=self.text_edit.on_redo)
         mv_edit.add_separator()
         mv_edit.add_command(label="Cut      Ctrl-X")
         mv_edit.add_command(label="Copy     Ctrl-C")
@@ -583,8 +592,10 @@ class TeimEdit(object):
         if name!='':
             self.update_config(name)
 
-
-    def quit(self):
+    def app_quit(self):
+        yn=mbox.askyesno("","Quit ?",parent=self.win0)
+        if not yn:
+            return
         self.win0.quit()
         if self.win1 is not None:
             self.win1.quit()

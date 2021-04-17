@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
-from teimeditlib.constants import *
+from teimeditlib.textglobals import *
 
 
 class TextLineNumbers(tk.Text):
@@ -75,7 +75,7 @@ class TextLineNumbers(tk.Text):
         self.bind("<Button-4>", redraw_delay)
         self.bind("<Button-5>", redraw_delay)
         self.bind("<Control-KeyPress-z>", self.on_undo)
-        self.bind("<Control-KeyPress-y>", self. on_redo)
+        self.bind("<Control-Shift-Z>", self. on_redo)
 
     def insert_text(self, txt):
         self.delete("1.0", tk.END)
