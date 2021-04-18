@@ -330,10 +330,10 @@ class Med2Xml(object):
             fout.close()
             os.chmod(self.path_out, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
         except Exception as e:
-            self.logerr.log("ERROR  teimxml.py parse_text()")
+            self.logerr.log("ERROR teimxml.py parse_text()")
             s = str(e)
             self.logerr.log(e)
-            sys.exit(1)
+            sys.exit(e)
 
     def check_txt(self):
         with open(self.path_src, "rt") as f:

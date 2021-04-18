@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
 from setuptools import find_packages
-import teimedlib.__init__
 
 setup(
     name='teimed',
-    version=teimedlib.__init__.__version__,
+    version="0.10.0",
     py_modules=['teiminfo',
                 'prjmgr'
                 'teimprjxmlmake',

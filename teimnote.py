@@ -86,10 +86,9 @@ class AddNote(object):
             os.chmod(self.path_out, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
         except Exception as e:
             self.logerr.log("ERROR teimnote.py add_to_xml()")
-            #s=str(e)
-            #self.logerr.log(f"{s}")
-            #sys.exit(1)
-            return
+            s=str(e)
+            self.logerr.log(f"{s}")
+            sys.exit(1)
 
 def do_main(src_path, out_path, note_path):
     add_note = AddNote(src_path, out_path, note_path)

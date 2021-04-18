@@ -593,6 +593,7 @@ class TeimEdit(object):
             self.update_config(name)
 
     def app_quit(self):
+        self.top_not()
         yn=mbox.askyesno("","Quit ?",parent=self.win0)
         if not yn:
             return
@@ -636,19 +637,20 @@ class TeimEdit(object):
     def elab_teimxml(self):
         s = self.get_text()
         self.write_file(self.path_text, s)
-        do_main_xml(self.path_text,
-                    self.path_entity_csv,
-                    self.path_entity_txt)
+        try:
+            do_main_xml(self.path_text,
+                        self.path_entity_csv,
+                        self.path_entity_txt)
+        except SystemExit as e:              
+            logediterr.log(str(e))
+            s=f"ERROR. Elab entity{str(e)} {os.linesep}"
+            self.write_log(s,True)
+            self.top_w3()
+            return
         self.chmod(self.path_entity_txt)
         s = self.read_file(self.path_entity_txt)
         self.show_win1(s)
-        print("===========")
-        print("     elab_entity")
-        print(self.path_text)
-        print(self.path_entity_csv)
-        print(self.path_entity_txt)
-        ls = ["",
-              "      Elab entity",
+        ls = ["    Elab. entity",
               f"{self.path_text}",
               f"{self.path_entity_csv}",
               f"{self.path_entity_txt}"]
@@ -660,17 +662,18 @@ class TeimEdit(object):
             self.top_w3()
             return
         # path_txt_1 => path_xml_1
-        do_main_setid(self.path_entity_txt,
-                      self.path_setid_xml,
-                      self.text_sign)
+        try:
+            do_main_setid(self.path_entity_txt,
+                        self.path_setid_xml,
+                        self.text_sign)
+        except SystemExit as e:              
+            logediterr.log(str(e))
+            s=f"ERROR. Elab set id{str(e)} {os.linesep}"
+            self.write_log(s,True)
+            self.top_w3()
+            return
         self.chmod(self.path_setid_xml)
-        print("")
-        print("     elab set id")
-        print(self.path_entity_txt)
-        print(self.path_setid_xml)
-        print(self.text_sign)
-        ls = ["",
-              "      Elab Set id",
+        ls = ["    Elab. Set id",
               f"{self.path_entity_txt}",
               f"{self.path_setid_xml}",
               f"{self.text_sign}"]
@@ -682,17 +685,18 @@ class TeimEdit(object):
             self.top_w3()
             return
         # path_xml_1 => path_xml_2
-        do_main_over(self.path_setid_xml,
-                     self.path_fromto_xml,
-                     self.path_over_csv)
+        try:
+            do_main_over(self.path_setid_xml,
+                        self.path_fromto_xml,
+                        self.path_over_csv)
+        except SystemExit as e:              
+            logediterr.log(str(e))
+            s=f"ERROR. Elab overflow {str(e)} {os.linesep}"
+            self.write_log(s,True)
+            self.top_w3()
+            return
         self.chmod(self.path_fromto_xml)
-        print("")
-        print("     elab over")
-        print(self.path_setid_xml)
-        print(self.path_fromto_xml)
-        print(self.path_over_csv)
-        ls = ["",
-              "      Eelab over",
+        ls = ["    Eelab. overflow",
               f"{self.path_setid_xml}",
               f"{self.path_fromto_xml}",
               f"{self.path_over_csv}"]
@@ -704,17 +708,18 @@ class TeimEdit(object):
             self.top_w3()
             return
         # path_xml_2 => path_xml
-        do_main_note(self.path_fromto_xml,
-                     self.path_xml,
-                     self.path_note_csv)
+        try:
+            do_main_note(self.path_fromto_xml,
+                        self.path_xml,
+                        self.path_note_csv)
+        except SystemExit as e:              
+            logediterr.log(str(e))
+            s=f"ERROR. Elab. note {str(e)} {os.linesep}"
+            self.write_log(s,True)
+            self.top_w3()
+            return 
         self.chmod(self.path_xml)
-        print("")
-        print("     elab note")
-        print(self.path_fromto_xml)
-        print(self.path_xml)
-        print(self.path_note_csv)
-        ls = ["",
-              "      Elab Note",
+        ls = ["    Elab. Note",
               f"{self.path_fromto_xml}",
               f"{self.path_xml}",
               f"{self.path_note_csv}"]
@@ -736,23 +741,23 @@ class TeimEdit(object):
                                  encoding='unicode',
                                  with_tail=True,
                                  pretty_print=True)
+            """
+                            standalone=None,
+                            doctype=None,
+                            exclusive=False,
+                            inclusive_ns_prefixes=None,
+                            strip_text=False)
+            """
             self.show_win2(src)
             self.write_file(self.path_xml_format, src)
-            print("")
-            print("format_xml")
-            print(self.path_xml)
-            print(self.path_xml_format)
         except etree.Error as e:
-            s = str(e)
-            print(s)
-            msg = "ERROR XML"+os.linesep+s
-            self.write_log(msg)
+            s = f"ERROR.  XML {os.linesep}{str(e)}"
+            self.write_log(s)
             self.top_w3()
 
     ##############
     # mv_del
     ##############
-
     def delete_txt_all(self):
         # self.txt0.delete('1.0', tk.END)
         self.delete_txt1()
@@ -907,7 +912,6 @@ class TeimEdit(object):
         self.show_win3(s)
         self.top_w3()
 
-
     ############
 
     def get_text(self):
@@ -938,13 +942,12 @@ class TeimEdit(object):
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)
 
-
     def write_log(self, s, append=False):
         if append:
             x = self.txt3.get('1.0', 'end')
-            s = x+os.linesep+s
+            s = f"{x}{s}{os.linesep}"
         else:
-            s = os.linesep+os.linesep+s
+            s = f"{s}{os.linesep}"
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)
 
