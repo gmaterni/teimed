@@ -25,8 +25,8 @@ import re
 import stat
 from teimedlib.readovertags import read_over_tags
 
-__date__ = "11-04-2021"
-__version__ = "0.10.6"
+__date__ = "20-04-2021"
+__version__ = "0.10.7"
 __author__ = "Marta Materni"
 
 
@@ -110,14 +110,17 @@ class Addspan(object):
         return d - 1
 
     def node_tag(self, nd):
-        tag = nd.tag
-        tag = tag if type(nd.tag) is str else "XXX"
-        p = tag.rfind('}')
-        if p > 1:
-            self.logerr.log(os.linesep+"ERROR teimover node_tag()")
-            self.logerr.log(tag)
-            sys.exit(1)
-        return tag.strip()
+        try:
+            tag = nd.tag
+            tag = tag if type(nd.tag) is str else "XXX"
+            pid = tag.find('}')
+            if pid > 0:
+                tag = tag[pid + 1:]
+            return tag.strip()
+        except Exception as e:
+            self.logerr.log("ERROR in xml")
+            self.logerr.log(str(e))
+            return "XXX"
 
     def node_id(self, nd):
         s = ''
