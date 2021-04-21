@@ -15,6 +15,7 @@ setup(
     packages=find_packages(),
     # packages=['teimedlib'],
     scripts=[
+        "teixml2txt.py",
         "checkover.py",
         "checktxt.py",
         "teimprjxmlmake.py",
