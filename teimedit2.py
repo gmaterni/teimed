@@ -6,7 +6,6 @@ from teimedlib.ualog import Log
 from teimeditlib.textlinenumbers import TextLineNumbers
 from teimeditlib.textpad import TextPad
 from teimeditlib.textglobals import *
-
 from teimxml import do_main as do_main_xml
 from teimsetid import do_main as do_main_setid
 from teimover import do_main as do_main_over
@@ -767,7 +766,6 @@ class TeimEdit(object):
     def delete_txt1(self):
         if self.txt1 is not None:
             self.txt1.delete('1.0', tk.END)
-        #self.delete_txt2()
 
     def delete_txt2(self):
         if self.txt2 is not None:
