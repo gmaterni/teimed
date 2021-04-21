@@ -6,13 +6,13 @@ from teimedlib.ualog import Log
 from teimeditlib.textlinenumbers import TextLineNumbers
 from teimeditlib.textpad import TextPad
 from teimeditlib.textglobals import *
-
 from teimxml import do_main as do_main_xml
 from teimsetid import do_main as do_main_setid
 from teimover import do_main as do_main_over
 from teimnote import do_main as do_main_note
 from checktxt import do_main as do_main_checktxt
 from checkover import do_main as do_main_checkover
+from teixml2txt import do_main as do_main_xml2txt
 
 import tkinter as tk
 #from tkinter.font import Font
@@ -84,7 +84,7 @@ ENTITY_CSV='entity_csv'
 OVERFLOW_CSV='overflow_csv'
 
 dx = 100
-dy = 50
+dy = 100
 w_w = 1000
 w_h = 630
 
@@ -144,6 +144,7 @@ class TeimEdit(object):
         self.path_fromto_xml = None
         self.path_check_txt = None
         self.path_check_over = None
+        self.path_text_txts = None
         self.path_tmp = None
         self.show_json_on_create=False
         #
@@ -336,6 +337,9 @@ class TeimEdit(object):
         name = self.text_name.replace(".txt", "CHECK_OVER.txt")
         self.path_check_over = self.get_log_path(name)
 
+        name = self.text_name.replace(".txt", "_text.txt")
+        self.path_text_txt = self.get_text_path(name)
+
     def open_win0(self):
         self.win0 = tk.Tk()
         self.win0.title("TeimEdit")
@@ -388,7 +392,7 @@ class TeimEdit(object):
         self.text_edit.bind("<Control-o>", self.open_text)
         self.text_edit.bind("<Control-s>", self.save_text)
         self.text_edit.bind("<Control-Shift-S>", self.save_text_as)
-
+        # TODO
         self.text_edit.bind("<Control-q>", sys.exit)
         #
         mv_edit = tk.Menu(menu_bar, tearoff=0)
@@ -399,7 +403,8 @@ class TeimEdit(object):
                        activeforeground=FG2_MENU,
                        relief=tk.RAISED)
         mv_edit.add_command(label="Undo     Ctrl-Z")
-        mv_edit.add_command(label="Redo     Ctrl-Shift-Z", command=self.text_edit.on_redo)
+        mv_edit.add_command(label="Redo     Ctrl-Shift-Z", 
+                            command=self.text_edit.on_redo)
         mv_edit.add_separator()
         mv_edit.add_command(label="Cut      Ctrl-X")
         mv_edit.add_command(label="Copy     Ctrl-C")
@@ -427,6 +432,8 @@ class TeimEdit(object):
         mv_elab.add_command(label='Elab. Set id', command=self.elab_teimlw)
         mv_elab.add_command(label='Elab. Overflow', command=self.elab_teimover)
         mv_elab.add_command(label='Elab. Note', command=self.elab_teimnote)
+        mv_elab.add_separator()
+        mv_elab.add_command(label='XML => text', command=self.elab_xml2txt)
         #
         mv_log = tk.Menu(menu_bar, tearoff=0)
         mv_log.config(font=FONT_MENU,
@@ -447,6 +454,9 @@ class TeimEdit(object):
         mv_log.add_separator()
         mv_log.add_command(label='Over Log.', command=self.show_over_log)
         mv_log.add_command(label='Over Err.', command=self.show_over_err)
+        mv_log.add_separator()
+        mv_log.add_command(label='*_text_.txt', command=self.show_text_txt)
+        mv_log.add_command(label='XML => text ERR', command=self.show_text_txt_err)
         mv_log.add_separator()
         mv_log.add_command(label='Read Log.', command=self.open_log)
         #
@@ -556,7 +566,8 @@ class TeimEdit(object):
         path = fdialog.askopenfilename(
             title=' file',
             initialdir=self.text_dir,
-            filetypes=[("text", "*.txt")])
+            filetypes=[("text", "*.txt"),
+                        ("*.*", "*.*")])
         if len(path) < 1:
             return
         text_name = os.path.basename(path)
@@ -724,9 +735,29 @@ class TeimEdit(object):
               f"{self.path_xml}",
               f"{self.path_note_csv}"]
         self.write_log(os.linesep.join(ls), True)
-
         # s = self.read_file(self.path_xml)
         self.format_xml()
+
+    def elab_xml2txt(self):
+        if not self.file_exists(self.path_xml):
+            self.write_log("Elaborare XML  o vi è stato un errore")
+            self.top_w3()
+            return
+        # path_xml => path_text_txt
+        try:
+            do_main_xml2txt(self.path_xml,
+                            self.path_text_txt)
+        except SystemExit as e:              
+            logediterr.log(str(e))
+            s=f"ERROR. Elab. note {str(e)} {os.linesep}"
+            self.write_log(s,True)
+            self.top_w3()
+            return 
+        self.chmod(self.path_xml)
+        ls = ["    XML => text",
+              f"{self.path_xml}",
+              f"{self.path_text_txt}"]
+        self.write_log(os.linesep.join(ls), True)
 
     def format_xml(self):
         s = self.read_file(self.path_xml)
@@ -767,7 +798,6 @@ class TeimEdit(object):
     def delete_txt1(self):
         if self.txt1 is not None:
             self.txt1.delete('1.0', tk.END)
-        #self.delete_txt2()
 
     def delete_txt2(self):
         if self.txt2 is not None:
@@ -839,6 +869,19 @@ class TeimEdit(object):
         name = self.text_name.replace(".txt", "_OVER.ERR.log")
         path = self.get_log_path(name)
         self.read_log_file(path)
+
+    # teim/log/teim_text.txt
+    # teim/log/teim_text.ERR.log
+    def show_text_txt(self):
+        name = self.text_name.replace(".txt", "_text.txt")
+        path = self.get_text_path(name)
+        self.read_log_file(path)
+
+    def show_text_txt_err(self):
+        name = self.text_name.replace(".txt", "_text.ERR.log")
+        path = self.get_log_path(name)
+        self.read_log_file(path)
+
 
     def open_log(self):
         self.top_order()

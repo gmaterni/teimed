@@ -14,7 +14,7 @@ from teimedlib.ualog import Log
 from pdb import set_trace
 
 __date__ = "21-04-2021"
-__version__ = "0.2.3"
+__version__ = "0.2.4"
 __author__ = "Marta Materni"
 
 
@@ -229,7 +229,7 @@ class Xml2Txt:
             sys.exit(1)
         return self.txt_path
 
-def do_mauin(xml, txt, wa = 'w'):
+def do_main(xml, txt, wa = 'w'):
     Xml2Txt().write_txt(xml, txt, wa)
 
 if __name__ == "__main__":
@@ -255,4 +255,4 @@ if __name__ == "__main__":
                         metavar = "",
                         help = "-o <file_out.txt>")
     args=parser.parse_args()
-    do_mauin(args.xml, args.txt, args.wa)
+    do_main(args.xml, args.txt, args.wa)
