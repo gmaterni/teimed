@@ -208,7 +208,6 @@ class CheckRound(object):
         self.check_entity()
         self.check_round()
 
-
 def do_main(path_src, path_out):
     check = CheckRound(path_src,  path_out)
     check.check_txt()

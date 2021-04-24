@@ -67,7 +67,7 @@ class AddNote(object):
                 note_id = note[NOTE_ID]
                 note_text = note[NOTE_TEXT]
                 text = note_text.strip().replace(os.linesep, " ")
-                s = f'<teimedlib_note xml:id="{note_id}">{text}</teimedlib_note>'
+                s = f'<teimed_note xml:id="{note_id}">{text}</teimed_note>'
                 ls.append(s)
             note = os.linesep.join(ls)
             #

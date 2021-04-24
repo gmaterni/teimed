@@ -13,7 +13,7 @@ setup(
                 'teimprjsave'
                 ],
     packages=find_packages(),
-    # packages=['teimedlib'],
+    # packages=['teimed'],
     scripts=[
         "teixml2txt.py",
         "checkover.py",

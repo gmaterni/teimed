@@ -41,11 +41,17 @@ CURSOR_TEXT='arrow'
 CURSOR_EDIT='xterm red'
 CURSOR_MENU='arrow'
 
+BG_BLIST  = "#333333"
+FG_BLIST  = "#00ff00"
+BG2_BLIST = "#00ff00"
+FG2_BLIST = "#000000"
+
 FONT_GENERAL = ('Arial', 16, 'normal')
 FONT_EDIT = ('Arial', 16, 'normal')
 FONT_TXT = ('Arial', 16, 'normal')
 FONT_LNUM = ('Arial', 16, 'normal')
 FONT_LOG = ('Monospace', 14, 'normal')
 FONT_MENU = ('Arial', 16, 'bold')
+FONT_LIST = ('Arial', 14, 'normal')
 # FONT_MENU = Font(family="Arial", size=12)
 

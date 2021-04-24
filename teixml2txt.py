@@ -19,10 +19,11 @@ __author__ = "Marta Materni"
 
 
 def make_dir_of_file(path):
-    dirname=os.path.dirname(path)
-    if dirname.strip() =='':
+    dirname = os.path.dirname(path)
+    if dirname.strip() == '':
         return
     make_dir(dirname)
+
 
 def make_dir(dirname):
     try:
@@ -33,27 +34,34 @@ def make_dir(dirname):
         else:
             return False
     except Exception as e:
-        s=str(e)
-        msg=f"ERROR make_dir{os.linesep}{s}"
+        s = str(e)
+        msg = f"ERROR make_dir{os.linesep}{s}"
         raise Exception(msg)
+
 
 def chmod(path):
     os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
 
 
-def pp(data,w=40):
+def pp(data, w=40):
     s = pprint.pformat(data, indent=2, width=40)
     return s
 
+
 class Xml2Txt:
 
-    def __init__(self):
-        self.log=Log("w")
-        self.log.open("log/teixml2txt.log", 0)
+    def __init__(self,
+                 xml_path='',
+                 txt_path='',
+                 write_append='w'):
+        self.xml_path = xml_path
+        self.txt_path = txt_path
+        self.write_append = write_append
+
         self.logerr = Log("a")
-        self.logerr.open("log/teixml2txt.ERR.log", 1)
-        self.xml_path = ''
-        self.txt_path = None
+        nm = txt_path.replace(".txt", ".ERR.log")
+        self.logerr.open(f"log/{nm}", 1)
+
         self.txt_builder = None
         self.trace = False
 
@@ -144,7 +152,7 @@ class Xml2Txt:
         if id != '':
             id_num = self.node_id_num(id)
             items['id_num'] = id_num
-        js={
+        js = {
             'id': id,
             'liv': self.node_liv(nd),
             'tag': self.node_tag(nd),
@@ -166,93 +174,86 @@ class Xml2Txt:
             nd : nod xml
         Returns:
             json: json=x_data + c_data + t_data
-        """        
+        """
         x_data = self.get_node_data(nd)
         txt_data = {
-            'id': x_data.get('id',0),
-            'is_parent':x_data.get('is_parent',False),
-            'items': x_data.get('items',{}),
-            'liv': x_data.get('liv',0),
-            'tag': x_data.get('tag',''),
-            'text': x_data.get('text',''),
-            'tail': x_data.get('tail',''),
-            'val': x_data.get('val',''),
-            't_i':0,
-            't_type':'',
-            't_up':False,
-            't_start':'',          
-            't_end':'',
-            't_sp':'',
-            't_ln':False,
-            't_flag':False
-            }
+            'id': x_data.get('id', 0),
+            'is_parent': x_data.get('is_parent', False),
+            'items': x_data.get('items', {}),
+            'liv': x_data.get('liv', 0),
+            'tag': x_data.get('tag', ''),
+            'text': x_data.get('text', ''),
+            'tail': x_data.get('tail', ''),
+            'val': x_data.get('val', ''),
+            't_i': 0,
+            't_type': '',
+            't_up': False,
+            't_start': '',
+            't_end': '',
+            't_sp': '',
+            't_ln': False,
+            't_flag': False
+        }
         return txt_data
-    
-    def write_txt(self,
-                  xml_path='',
-                  txt_path='',
-                  write_append = 'w'):
+
+    def write_txt(self):
         try:
-            self.xml_path=xml_path
-            self.txt_path=txt_path
-            if write_append not in ['w', 'a']:
-                raise Exception(
-                    f"ERROR in output write/append. {write_append}")
-            try:
-                parser = etree.XMLParser(ns_clean=True)
-                xml_root=etree.parse(self.xml_path,parser)
-            except Exception as e:
-                self.logerr.log("ERROR teixml2txt.py write_txt() parse_xml")
-                self.logerr.log(e)
-                sys.exit(str(e))
-            self.txt_builder=TxtBuilder()
+            parser = etree.XMLParser(ns_clean=True)
+            xml_root = etree.parse(self.xml_path, parser)
+        except Exception as e:
+            self.logerr.log("ERROR teixml2txt.py write_txt() parse_xml")
+            self.logerr.log(e)
+            sys.exit(str(e))
+        try:
+            self.txt_builder = TxtBuilder()
             ########################
             for nd in xml_root.iter():
-                txt_data=self.build_txt_data(nd)
+                txt_data = self.build_txt_data(nd)
                 self.txt_builder.add(txt_data)
             ########################
-            self.txt_builder.elab()           
-            txt=self.txt_builder.txt
+            self.txt_builder.elab()
+            txt = self.txt_builder.txt
             make_dir_of_file(self.txt_path)
-            with open(self.txt_path, write_append) as f:
+            with open(self.txt_path, self.write_append) as f:
                 f.write(txt)
             chmod(self.txt_path)
-
         except Exception as e:
             self.logerr.log("ERROR teixml2txt.py write_html()")
             self.logerr.log(e)
-            ou=StringIO()
-            traceback.print_exc(file = ou)
-            st=ou.getvalue()
+            ou = StringIO()
+            traceback.print_exc(file=ou)
+            st = ou.getvalue()
             ou.close()
             self.logerr.log(st)
             sys.exit(1)
         return self.txt_path
 
-def do_main(xml, txt, wa = 'w'):
-    Xml2Txt().write_txt(xml, txt, wa)
+
+def do_main(xml, txt, wa='w'):
+    Xml2Txt(xml, txt, wa).write_txt()
+
 
 if __name__ == "__main__":
-    parser=argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
     if len(sys.argv) == 1:
         print("release: %s  %s" % (__version__, __date__))
         parser.print_help()
         sys.exit(1)
     parser.add_argument('-wa',
-                        dest = "wa",
-                        required = False,
-                        metavar = "",
-                        default = "w",
-                        help = "[-wa w/a (w)rite a)ppend) default w")
+                        dest="wa",
+                        required=False,
+                        metavar="",
+                        default="w",
+                        help="[-wa w/a (w)rite a)ppend) default w")
     parser.add_argument('-i',
-                        dest = "xml",
-                        required = True,
-                        metavar = "",
-                        help = "-i <file_in.xml>")
+                        dest="xml",
+                        required=True,
+                        metavar="",
+                        help="-i <file_in.xml>")
     parser.add_argument('-o',
-                        dest = "txt",
-                        required = True,
-                        metavar = "",
-                        help = "-o <file_out.txt>")
-    args=parser.parse_args()
+                        dest="txt",
+                        required=True,
+                        metavar="",
+                        help="-o <file_out.txt>")
+    args = parser.parse_args()
     do_main(args.xml, args.txt, args.wa)

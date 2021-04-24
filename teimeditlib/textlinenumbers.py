@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
-from teimeditlib.textglobals import *
+from teimeditlib.constants import *
 
 
 class TextLineNumbers(tk.Text):
