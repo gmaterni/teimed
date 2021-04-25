@@ -10,6 +10,7 @@ def open_listbox(root,lst,on_select,dx=100,dy=100):
     wnd=tk.Tk()
     wnd.protocol("WM_DELETE_WINDOW", lambda: False)
     wnd.attributes("-topmost", True)
+    wnd.grab_set()
     wnd.geometry(f"+{x}+{y}")
     wnd.title("")
     wnd.rowconfigure(0, weight=1)
@@ -35,8 +36,10 @@ def open_listbox(root,lst,on_select,dx=100,dy=100):
         lb.insert(tk.END, i)
     lb.focus_force()
     lb.select_set(0,0)
+
     def select_(n):
         on_select(n)
         wnd.destroy()
+
     lb.bind("<Return>", lambda e:select_(lb.curselection()[0]))
     lb.bind("<Double-Button-1>",lambda e: select_(lb.curselection()[0]))

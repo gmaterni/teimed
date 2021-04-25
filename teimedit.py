@@ -2,86 +2,64 @@
 # coding: utf-8
 
 
-from teimedlib.ualog import Log
-from teimeditlib.textlinenumbers import TextLineNumbers
-from teimeditlib.textpad import TextPad
-from teimeditlib.constants import *
-from teimxml import do_main as do_main_xml
-from teimsetid import do_main as do_main_setid
-from teimover import do_main as do_main_over
-from teimnote import do_main as do_main_note
-from checktxt import do_main as do_main_checktxt
-from checkover import do_main as do_main_checkover
-from teixml2txt import do_main as do_main_xml2txt
-
+import argparse
+import os
+import pathlib as pth
+import pprint
+import sys
 import tkinter as tk
 #from tkinter.font import Font
 import tkinter.filedialog as fdialog
 import tkinter.messagebox as mbox
-
-import argparse
-import json
-from lxml import etree
-import stat
-import sys
-import os
-import pprint
 from pdb import set_trace
 
-__date__ = "17-04-2021"
-__version__ = "0.15.3"
+from lxml import etree
+
+from checkover import do_main as do_main_checkover
+from checktxt import do_main as do_main_checktxt
+from teimeditlib.constants import *
+from teimeditlib.listbox import open_listbox
+from teimeditlib.textlinenumbers import TextLineNumbers
+from teimeditlib.textpad import TextPad
+from teimedlib.ualog import Log
+from teimnote import do_main as do_main_note
+from teimover import do_main as do_main_over
+from teimsetid import do_main as do_main_setid
+from teimxml import do_main as do_main_xml
+from teixml2txt import do_main as do_main_xml2txt
+
+__date__ = "25-04-2021"
+__version__ = "0.20.0"
 __author__ = "Marta Materni"
+
 
 def HELP_OPS():
     s = """
-Crreazione Nuovo Progetto Default:
-teimedit.py -p florimont       
-=> florimont/teim.json
-    florimont/cfg
-    florimont/teim/log
-    florimont/teim/teim.txt
 
-Crreazione Progetto :
-teimedit.py -p florimont -c paris.json -d paris -t eps01.txt -s J
-=>  florimont/par1s.json
-    florimont/cfg
-    florimont/paris/log
-    florimont/paris/eps01.txt
+teimedit.py -c cfg -d txt -t eps01.txt -s K J
 
-N.B, lanciare teimedit. nella dir del progetto
-Aggiunta testo con creazione del file json:
-teimedit.py -c tor.json -d tor -t eps01.txt -
-=>  florimont/tor.json
-    florimont/tor/log
-    florimont/tor/eps01.txt
+-c cfg : contine i file per l'elaborazione
+cfg/teimed.csv
+cgf/overflow.csv
 
-Lettura testo definito nel file json;
-teimedit.py -r tor.json
+-d txt : dir per la ricerca del file di testo
+         é facoltativa.
+         Se è nulla vene posta eguale alla dir corrente
 
-Lettura di un testp NON definito nel file json
-teimedit.py -r tor.json -t eps02.txt
+-t eps01.txt : nome del file di testo da elaborare
+               Accetta anche wilcard del tipo p*.txt
+               Se vengono sleezionati più file viene 
+               proposta una lista di selezione.
+               La ricerca avviene a partire dalla dir txt
+               o dalla dir corrente
+
+-s K        ; sigla del manoscritto
         """
     return s
 
-CFG = {
-    "text_dir": "teim",
-    "text_name": "teim.txt",
-    "text_sign": "K",
-    "note_csv": "note.csv",
-    "log_dir": "log",
-    "cfg_dir": "cfg",
-    "entity_csv": "teimed.csv",
-    "overflow_csv": "overflow.csv"
-}
-
-TEXT_DIR='text_dir'
-TEXT_NAME='text_name'
-TEXT_SIGN='text_sign'
-NOTE_CSV='note_csv'
-LOG_DIR='log_dir'
-CFG_DIR='cfg_dir'
-ENTITY_CSV='entity_csv'
-OVERFLOW_CSV='overflow_csv'
+NOTE_CSV = 'note_csv'
+TEIMED_CSV = 'teimed.csv'
+OVERFLOW_CSV = 'overflow.csv'
 
 dx = 100
 dy = 100
@@ -105,48 +83,60 @@ w2_y = w1_y+dy
 
 w3_w = w_w
 w3_h = w_h
-w3_x = w2_x+dx
+w3_x = w2_x+dx+100
 w3_y = w2_y+dy
+
 
 def pp(data, w=60):
     return pprint.pformat(data, width=w)
 
-
 logediterr = Log("w")
-
 
 class TeimEdit(object):
 
     def __init__(self,
-                 json_name="",
-                 new_json_name="",
-                 prj_name="",
-                 text_dir="",
-                 text_name="",
-                 text_sign=""):
+                 cfg_dir=None,
+                 search_dir=None,
+                 path_text=None,
+                 text_sign="",):
         logediterr.open("log/teimedit.log", 1)
-        self.json_name = json_name
-        self.new_json_name = new_json_name
-        self.prj_name =prj_name
-        self.text_dir = text_dir
-        self.text_name = text_name
+        self.cfg_dir = cfg_dir
+        self.search_dir = search_dir
+        self.path_text = path_text
         self.text_sign = text_sign
-        self.cfg_dir = ""
-        self.log_dir = ""
-        self.path_entity_csv = ""
+
+        self.text_dir = None
+        self.log_dir = None
+
+        self.pwd = pth.Path().cwd()
+        self.path_entity_csv = None
         self.path_over_csv = None
         self.path_note_csv = None
-        self.path_text = ""
+
         self.path_xml = None
         self.path_xml_format = None
+
         self.path_entity_txt = None
+        self.path_entity_log = None
+        self.path_entity_err = None
+
         self.path_setid_xml = None
-        self.path_fromto_xml = None
+        self.path_setid_log = None
+        self.path_setid_err = None
+
+        self.path_over_xml = None
+        self.path_over_log = None
+        self.path_over_err = None
+
+        self.path_xml_err = None
+
         self.path_check_txt = None
         self.path_check_over = None
-        self.path_text_txts = None
+
+        self.path_text_txt = None
+        self.path_text_err = None
+
         self.path_tmp = None
-        self.show_json_on_create=False
         #
         self.win0 = None
         self.text_edit = None
@@ -156,189 +146,161 @@ class TeimEdit(object):
         self.txt2 = None
         self.win3 = None
         self.txt3 = None
-        self.config_json = None
-        self.init_config()
 
-    def check_config_name(self):
-        p = self.json_name.find('.json')
-        if p < 0:
-            print("")
-            print("Error!")
-            print("file config NOT json")
-            sys.exit()
-
-    def customize_config(self):
-        if self.text_dir != "":
-            self.config_json[TEXT_DIR] = self.text_dir
-        if self.text_name != "":
-            self.config_json[TEXT_NAME] = self.text_name
-        if self.text_sign != "":
-            self.config_json[TEXT_SIGN] = self.text_sign
-
-    def chek_config_exists(self):
-        if not os.path.exists(self.json_name):
-            print("")
-            print(f"{self.json_name} Not Found.")
-            sys.exit()
-
-    def init_config(self):
-        if self.prj_name!="":
-            self.show_json_on_create=True
-            self.make_dir(self.prj_name)
-            self.chmod(self.prj_name)
-            os.chdir(self.prj_name)
-            if self.new_json_name == '':
-                if self.text_dir !='':
-                    self.new_json_name=f"{self.text_dir}.json"
-                else:
-                    self.new_json_name=f"{CFG[TEXT_DIR]}.json"
-        if self.new_json_name != '':
-            self.show_json_on_create=True
-            self.config_json = CFG
-            self.json_name = self.new_json_name
-            self.check_config_name()
-            self.customize_config()
-            self.write_config()
-            self.chmod(self.json_name)
-        self.check_config_name()
-        self.chek_config_exists()
-        self.read_config()
-        self.customize_config()
-        self.set_config()
-
-    def read_config(self):
-        print(self.json_name)
+    def find_path_text(self, path):
         try:
-            s = open(self.json_name, "r").read()
-            self.config_json = json.loads(s)
+            if self.search_dir is None:
+                # self.dir_search=self.pwd
+                self.search_dir = pth.Path("./")
+            else:
+                self.search_dir = pth.Path(self.search_dir)
+            t_name = f"{path}"
+            path_lst = []
+            name_lst = []
+            for x in self.search_dir.rglob(t_name):
+                path_lst.append(x)
+                # p=x.relative_to(self.pwd)
+                name_lst.append(self.path2str(x))
+            le = len(path_lst)
+            if le == 0:
+                mbox.showinfo("", f"{t_name}  Not Foud")
+            elif le == 1:
+                self.path_text = path_lst[0]
+                self.set_path_files(self.path_text)
+                self.read_text_file()
+            else:
+                def on_select(n):
+                    self.path_text = path_lst[n]
+                    self.set_path_files(self.path_text)
+                    self.read_text_file()
+
+                open_listbox(self.win0, name_lst, on_select)
+            return
         except Exception as e:
-            print(f"ERROR in {self.json_name}")
             print(str(e))
-            sys.exit(1)
+            sys.exit()
 
-    def write_config(self):
-        js = self.config_json
-        s = json.dumps(js, indent=2)
-        with open(self.json_name, "w+") as f:
-            f.write(s)
-        self.chmod(self.json_name)
-
-    def update_config(self, text_name):
-        self.json_name = text_name.replace(".txt", ".json")
-        self.config_json[TEXT_NAME] = text_name
-        self.write_config()
-
-    def make_dirs(self):
-        #self.make_dir(self.prj_name)
-        self.make_dir(self.text_dir)
-        self.make_dir(self.cfg_dir)
-        self.make_dir(self.log_dir)
-
-    def make_dir(self, dirname):
-        if len(dirname.strip()) == 0:
-            return
-        if not os.path.isdir(dirname):
-            os.mkdir(dirname)
-        self.chmod(dirname)
-
-    def file_exists(self, path):
-        return os.path.exists(path)
-
-    def chmod(self, path):
-        if os.path.exists(path) is False:
-            self.write_log(f"File {path} Not Exists")
-            return
+    def set_path_files(self, path_text):
         try:
-            os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
-        except Exception as e:
-            logediterr.log(f"ERROR. File Not Found.")
-            logediterr.log(str(e))
-            self.write_log(f"File {path} Not Exists")
-            self.top_w3()
+            if isinstance(path_text, str):
+                self.path_text = pth.Path(path_text)
+            self.text_dir = self.path_text.parent
 
-    def get_text_path(self, name):
-        text_path = os.path.join(self.text_dir, name)
-        return text_path
+            if self.cfg_dir is None:
+                self.cfg_dir = pth.Path().joinpath(self.pwd, "cfg")
+            else:
+                if isinstance(self.cfg_dir, str):
+                    self.cfg_dir = pth.Path(self.cfg_dir)
 
-    def get_cfg_path(self, name):
-        cfg_path = os.path.join(self.cfg_dir, name)
-        return cfg_path
+            self.log_dir = pth.Path().joinpath(self.text_dir, "log")
+            self.make_dir(self.log_dir)
 
-    def get_log_path(self, name):
-        log_path = os.path.join(self.log_dir, name)
-        return log_path
+            self.path_entity_csv = pth.Path().joinpath(self.cfg_dir, TEIMED_CSV)
+            self.path_over_csv = pth.Path().joinpath(self.cfg_dir, OVERFLOW_CSV)
+            self.path_note_csv = pth.Path().joinpath(self.text_dir, NOTE_CSV)
 
-    def write_file(self, path, s):
-        with open(path, 'w') as f:
-            f.write(s)
-        self.chmod(path)
-        
-    def read_file(self, path):
-        s = open(path, 'rt').read()
-        return s
+            tnm = self.path_text.name
 
-    def set_config(self):
-        js = self.config_json
-        try:
-            #self.prj_name = js[PRJ_NAME]
-            text_dir = js[TEXT_DIR]
-            cfg_dir = js[CFG_DIR]
-            log_dir = js[LOG_DIR]
-            text_sign = js[TEXT_SIGN]
-            text_name = js[TEXT_NAME]
-            text_note = js[NOTE_CSV]
-            teim_entity_tag = js[ENTITY_CSV]
-            overflow_tag = js[OVERFLOW_CSV]
-            #
-            self.text_name = text_name
-            #self.text_dir = os.path.join(self.prj_name, text_dir)
-            #self.cfg_dir = os.path.join(self.prj_name, cfg_dir)
-            self.text_dir = text_dir
-            self.cfg_dir =cfg_dir
-            self.log_dir = os.path.join(self.text_dir, log_dir)
-            self.make_dirs()
-            #
-            self.path_entity_csv = self.get_cfg_path(teim_entity_tag)
-            self.path_over_csv = self.get_cfg_path(overflow_tag)
-            #
-            self.path_note_csv = self.get_text_path(text_note)
-            self.text_sign = text_sign
-            self.set_path_files(text_name)
+            # teim/teim.xml
+            self.path_xml = self.path_text.with_name(
+                tnm.replace(".txt", ".xml"))
+
+            # teim/teim_F.xml
+            self.path_xml_format = self.path_text.with_name(
+                tnm.replace(".txt", "_F.xml"))
+
+            # per la gestione dei log
+            path_log = pth.Path().joinpath(self.log_dir, tnm)
+
+            # teim/log/teim_MED.txt
+            # teim/log/teim_MED.log
+            # teim/log/teim_MED.ERR.log
+            self.path_entity_txt = path_log.with_name(
+                tnm.replace(".txt", "_MED.txt"))
+            self.path_entity_log = path_log.with_name(
+                tnm.replace(".txt", "_MED.log"))
+            self.path_entity_err = path_log.with_name(
+                tnm.replace(".txt", "_MED.ERR.log"))
+
+            # teim/log/teim_WID.xml
+            # teim/log/teim_WID.log
+            # teim/log/teim_WID.ERR.log
+            self.path_setid_xml = path_log.with_name(
+                tnm.replace(".txt", "_WID.xml"))
+            self.path_setid_log = path_log.with_name(
+                tnm.replace(".txt", "_WID.log"))
+            self.path_setid_err = path_log.with_name(
+                tnm.replace(".txt", "_WID.ERR.log"))
+
+            # teim/log/teim_OVER.xml
+            # teim/log/teim_OVER.log
+            # teim/log/teim_OVER.ERR.log
+            self.path_over_xml = path_log.with_name(
+                tnm.replace(".txt", "_OVER.xml"))
+            self.path_over_log = path_log.with_name(
+                tnm.replace(".txt", "_OVER.log"))
+            self.path_over_err = path_log.with_name(
+                tnm.replace(".txt", "_OVER.ERR.log"))
+
+            # teim/teim.ERR.log
+            self.path_xml_err = self.path_xml.with_name(
+                tnm.replace(".txt", "_ERR.log"))
+
+
+            # teim/log/teimCHECK_TXT.txt
+            self.path_check_txt = path_log.with_name(
+                tnm.replace(".txt", "_CHECK_TXT.txt"))
+
+            # teim/log/teimCHECK_OVER.txt
+            self.path_check_over = path_log.with_name(
+                tnm.replace(".txt", "_CHECK_OVER.txt"))
+
+            # teim/teim_text.txt
+            # teim/log/teim_text.ERR.log
+            self.path_text_txt = self.path_text.with_name(
+                tnm.replace(".txt", "_text.txt"))
+            self.path_text_err = path_log.with_name(
+                tnm.replace(".txt", "_text.ERR.log"))
+
+            self.path_tmp = pth.Path().joinpath(self.log_dir, 'tmp')
+
         except Exception as e:
             s = str(e)
-            logediterr.log(f"ERROR in {self.json_name}")
+            logediterr.log(f"ERROR set_path_fies")
             logediterr.log(s)
-            print(pp(self.config_json))
             sys.exit(1)
 
-    def set_path_files(self, text_name):
-        self.path_text = self.get_text_path(text_name)
+    def path2str(self, path):
+        s = f"{path}"
+        return s
 
-        name = text_name.replace(".txt", ".xml")
-        self.path_xml = self.get_text_path(name)
+    def make_dir(self, path_dir):
+        if len(f"{path_dir}".strip()) == 0:
+            return
+        if not path_dir.exists():
+            # def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+            path_dir.mkdir(mode=0o777)
 
-        name = text_name.replace(".txt", "_F.xml")
-        self.path_xml_format = self.get_text_path(name)
+    def chmod(self, path):
+        if not path.exists():
+            self.show_log_top(f"File {path} Not Exists")
+            return
+        try:
+            #os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
+            path.chmod(mode=0o777)
+        except Exception as e:
+            logediterr.log(f"ERROR File Not Found.")
+            logediterr.log(str(e))
+            self.show_log_top(f"File {path} Not Found.")
 
-        name = text_name.replace(".txt", "_MED.txt")
-        self.path_entity_txt = self.get_log_path(name)
+    def write_file(self, path, text):
+        path.write_text(text)
+        self.chmod(path)
 
-        name = text_name.replace(".txt", "_WID.xml")
-        self.path_setid_xml = self.get_log_path(name)
-
-        name = text_name.replace(".txt", "_OVER.xml")
-        self.path_fromto_xml = self.get_log_path(name)
-
-        self.path_tmp = self.get_log_path('tmp')
-        #
-        name = self.text_name.replace(".txt", "CHECK_TXT.txt")
-        self.path_check_txt = self.get_log_path(name)
-
-        name = self.text_name.replace(".txt", "CHECK_OVER.txt")
-        self.path_check_over = self.get_log_path(name)
-
-        name = self.text_name.replace(".txt", "_text.txt")
-        self.path_text_txt = self.get_text_path(name)
+    def read_file(self, path):
+        with path.open('r', encoding='utf-8') as f:
+            s = f.read()
+        return s
 
     def open_win0(self):
         self.win0 = tk.Tk()
@@ -346,12 +308,12 @@ class TeimEdit(object):
         #self.win0.rowconfigure(0, weight=1)
         #self.win0.columnconfigure(0, weight=1)
         self.win0.geometry('%dx%d+%d+%d' % (w0_w, w0_h, w0_x, w0_y))
-        self.win0.config(background=BG_WIN,pady=2)
-        #
+        self.win0.config(background=BG_WIN, pady=2)
+        
         self.text_edit = TextLineNumbers(self.win0)
         self.text_edit.focus_set()
         self.win0.protocol("WM_DELETE_WINDOW", lambda: False)
-        #
+        
         menu_bar = tk.Menu(self.win0, tearoff=0)
         menu_bar.config(
             font=FONT_MENU,
@@ -362,7 +324,7 @@ class TeimEdit(object):
             bd=2,
             relief=tk.SOLID)
         self.win0.config(menu=menu_bar)
-        #
+        
         mv_file = tk.Menu(menu_bar, tearoff=0)
         mv_file.config(
             font=FONT_MENU,
@@ -371,20 +333,20 @@ class TeimEdit(object):
             activebackground=BG2_MENU,
             activeforeground=FG2_MENU,
             relief="raised")
-        mv_file.add_command(label='Reload', command=self.reload_text, underline=0)
+        mv_file.add_command(
+            label='Reload', command=self.reload_text, underline=0)
         mv_file.add_command(label='Import text',
                             command=self.import_text, underline=0)
         mv_file.add_separator()
-        mv_file.add_command(label='Open  Ctrl+o', command=self.open_text)
-        mv_file.add_command(label='Save  Ctrl+s', command=self.save_text)
+        mv_file.add_command(label='Open  Ctrl+O', command=self.open_text)
+        mv_file.add_separator()
+        mv_file.add_command(label='Save  Ctrl+S', command=self.save_text)
         mv_file.add_command(label='Save As.. Ctl-Shift-S',
                             command=self.save_text_as)
-        mv_file.add_command(label='Save As.and Update json.',
-                            command=self.create_text_as)
         mv_file.add_separator()
-        mv_file.add_command(label='Quit', command=self.app_quit, 
+        mv_file.add_command(label='Quit', command=self.app_quit,
                             underline=0,
-                            background=BG_MENU_LBL, 
+                            background=BG_MENU_LBL,
                             foreground=FG_MENU_LBL,
                             activebackground=BG2_MENU_LBL,
                             activeforeground=FG2_MENU_LBL)
@@ -394,7 +356,7 @@ class TeimEdit(object):
         self.text_edit.bind("<Control-Shift-S>", self.save_text_as)
         # TODO
         self.text_edit.bind("<Control-q>", sys.exit)
-        #
+        
         mv_edit = tk.Menu(menu_bar, tearoff=0)
         mv_edit.config(font=FONT_MENU,
                        bg=BG_MENU,
@@ -403,13 +365,13 @@ class TeimEdit(object):
                        activeforeground=FG2_MENU,
                        relief=tk.RAISED)
         mv_edit.add_command(label="Undo     Ctrl-Z")
-        mv_edit.add_command(label="Redo     Ctrl-Shift-Z", 
+        mv_edit.add_command(label="Redo     Ctrl-Shift-Z",
                             command=self.text_edit.on_redo)
         mv_edit.add_separator()
         mv_edit.add_command(label="Cut      Ctrl-X")
         mv_edit.add_command(label="Copy     Ctrl-C")
         mv_edit.add_command(label="Paste    Ctrl-V")
-        #
+        
         mv_check = tk.Menu(menu_bar, tearoff=0)
         mv_check.config(font=FONT_MENU,
                         bg=BG_MENU,
@@ -418,9 +380,8 @@ class TeimEdit(object):
                         activeforeground=FG2_MENU,
                         relief=tk.RAISED)
         mv_check.add_command(label='Check Entity', command=self.elab_checktxt)
-        mv_check.add_command(label='Check Overflow',
-                             command=self.elab_checkover)
-        #
+        mv_check.add_command(label='Check Overflow', command=self.elab_checkover)
+        
         mv_elab = tk.Menu(menu_bar, tearoff=0)
         mv_elab.config(font=FONT_MENU,
                        bg=BG_MENU,
@@ -429,12 +390,14 @@ class TeimEdit(object):
                        activeforeground=FG2_MENU,
                        relief=tk.RAISED)
         mv_elab.add_command(label='Elab. Entity', command=self.elab_teimxml)
-        mv_elab.add_command(label='Elab. Set id', command=self.elab_teimlw)
+        mv_elab.add_command(label='Elab. Set id', command=self.elab_teimsetid)
         mv_elab.add_command(label='Elab. Overflow', command=self.elab_teimover)
         mv_elab.add_command(label='Elab. Note', command=self.elab_teimnote)
         mv_elab.add_separator()
         mv_elab.add_command(label='XML => text', command=self.elab_xml2txt)
-        #
+        mv_elab.add_separator()
+        mv_elab.add_command(label='Reload XML', command=self.reload_xml)
+        
         mv_log = tk.Menu(menu_bar, tearoff=0)
         mv_log.config(font=FONT_MENU,
                       bg=BG_MENU,
@@ -443,8 +406,7 @@ class TeimEdit(object):
                       activeforeground=FG2_MENU,
                       relief=tk.RAISED)
         mv_log.add_command(label='Check Txt Err.', command=self.show_check_txt)
-        mv_log.add_command(label='Check Over Err.',
-                           command=self.show_check_over)
+        mv_log.add_command(label='Check Over Err.', command=self.show_check_over)
         mv_log.add_separator()
         mv_log.add_command(label='Entity Log.', command=self.show_entity_log)
         mv_log.add_command(label='Entity Err.', command=self.show_entity_err)
@@ -456,10 +418,11 @@ class TeimEdit(object):
         mv_log.add_command(label='Over Err.', command=self.show_over_err)
         mv_log.add_separator()
         mv_log.add_command(label='*_text_.txt', command=self.show_text_txt)
-        mv_log.add_command(label='XML => text ERR', command=self.show_text_txt_err)
+        mv_log.add_command(label='XML => text ERR',
+                           command=self.show_text_txt_err)
         mv_log.add_separator()
         mv_log.add_command(label='Read Log.', command=self.open_log)
-        #
+        
         mv_del = tk.Menu(menu_bar, tearoff=0)
         mv_del.config(font=FONT_MENU,
                       bg=BG_MENU,
@@ -473,16 +436,15 @@ class TeimEdit(object):
         mv_del.add_command(label='All', command=self.delete_txt_all)
         mv_del.add_separator()
         mv_del.add_command(label='Remove log file', command=self.remove_log)
-        #
+        
         mv_help = tk.Menu(menu_bar, tearoff=0)
         mv_help.config(font=FONT_MENU,
-                      bg=BG_MENU,
-                      fg=FG_MENU,
-                      activebackground=BG2_MENU,
-                      activeforeground=FG2_MENU,
-                      relief=tk.RAISED)
+                       bg=BG_MENU,
+                       fg=FG_MENU,
+                       activebackground=BG2_MENU,
+                       activeforeground=FG2_MENU,
+                       relief=tk.RAISED)
         mv_help.add_command(label='Progect', command=self.show_info)
-        mv_help.add_command(label='File.json', command=self.show_json)
         mv_help.add_command(label='options', command=self.show_options)
         # orizontale
         menu_bar.add_cascade(label='File', menu=mv_file, underline=0)
@@ -496,20 +458,20 @@ class TeimEdit(object):
         menu_bar.add_command(label=' 2 ', command=self.top_w1)
         menu_bar.add_command(label=' 3 ', command=self.top_w2)
         menu_bar.add_command(label=' 4 ', command=self.top_w3)
-        menu_bar.add_command(label="                ",activebackground=BG_MENU),
+        menu_bar.add_command(label="                ",
+                             activebackground=BG_MENU),
         menu_bar.add_cascade(label='Help', menu=mv_help)
-        #############
-        #text = self.config['text_name']
         self.show_win1("")
         self.show_win2("")
         self.show_win3("")
-        self.read_text_file()
-        if self.show_json_on_create:
-            self.show_json()
-            self.top_w3()
-            self.show_json_on_create=False
-
-        ##############
+        ############
+        # invoca
+        # set_file_path
+        # read_text_file
+        self.find_path_text(self.path_text)
+        # self.set_path_files(self.path_text)
+        # self.read_text_file()
+        ############
         tk.mainloop()
         ##############
 
@@ -526,6 +488,7 @@ class TeimEdit(object):
         self.win2.attributes("-topmost", True)
 
     def top_w3(self):
+        #self.win3.lift()
         self.top_not()
         self.win3.attributes("-topmost", True)
 
@@ -537,11 +500,12 @@ class TeimEdit(object):
 
     def top_order(self):
         self.top_not()
+        self.win0.lift()
         return
-        self.win0.attributes("-topmost", 1)
-        self.win1.attributes("-topmost", 2)
-        self.win2.attributes("-topmost", 3)
-        self.win3.attributes("-topmost", 4)
+        # self.win0.attributes("-topmost", 1)
+        # self.win1.attributes("-topmost", 2)
+        # self.win2.attributes("-topmost", 3)
+        # self.win3.attributes("-topmost", 4)
 
     ##########################
     # mv_file
@@ -567,14 +531,12 @@ class TeimEdit(object):
             title=' file',
             initialdir=self.text_dir,
             filetypes=[("text", "*.txt"),
-                        ("*.*", "*.*")])
+                       ("*.*", "*.*")])
         if len(path) < 1:
             return
-        text_name = os.path.basename(path)
-        if text_name != self.text_name:
-            if not self.file_exists(path):
-                self.update_config(text_name)
-        self.set_path_files(text_name)
+        if not pth.Path(path).exists:
+            return
+        self.set_path_files(path)
         self.read_text_file()
 
     def save_text(self, *args):
@@ -584,28 +546,18 @@ class TeimEdit(object):
     def save_text_as(self, *args):
         self.top_order()
         path = fdialog.asksaveasfilename(title='Salva as Name',
-                                         initialdir=self.text_dir  )
+                                         initialdir=self.text_dir)
         if len(path) < 1:
             return ""
-        s = self.get_text()
-        name = os.path.basename(path)
-        self.update_config(name)
-        self.set_path_files(name)
-        self.write_file(self.path_text, s)
-        # show_title
-        text_name = os.path.basename(self.path_text)
-        title = f"TEXT: {text_name} "
+        text = self.get_text()
+        self.set_path_files(path)
+        self.write_file(self.path_text, text)
+        title = f"TEXT: {path} "
         self.win0.title(title)
-        return name
-
-    def create_text_as(self, *args):
-        name=self.save_text_as(args)
-        if name!='':
-            self.update_config(name)
 
     def app_quit(self):
         self.top_not()
-        yn=mbox.askyesno("","Quit ?",parent=self.win0)
+        yn = mbox.askyesno("", "Quit ?", parent=self.win0)
         if not yn:
             return
         self.win0.quit()
@@ -626,8 +578,10 @@ class TeimEdit(object):
     def elab_checktxt(self):
         s = self.get_text()
         self.write_file(self.path_tmp, s)
-        do_main_checktxt(self.path_tmp,
-                         self.path_check_txt)
+
+        # def do_main(path_src, path_out):
+        do_main_checktxt(self.path2str(self.path_tmp),
+                         self.path2str(self.path_check_txt))
         self.chmod(self.path_check_txt)
         s = self.read_file(self.path_check_txt)
         self.show_win3(s)
@@ -635,9 +589,11 @@ class TeimEdit(object):
     def elab_checkover(self):
         s = self.get_text()
         self.write_file(self.path_tmp, s)
-        do_main_checkover(self.path_tmp,
-                          self.path_over_csv,
-                          self.path_check_over)
+
+        # def do_main(path_src, path_csv, path_out):
+        do_main_checkover(self.path2str(self.path_tmp),
+                          self.path2str(self.path_over_csv),
+                          self.path2str(self.path_check_over))
         self.chmod(self.path_check_over)
         s = self.read_file(self.path_check_over)
         self.show_win3(s)
@@ -649,14 +605,13 @@ class TeimEdit(object):
         s = self.get_text()
         self.write_file(self.path_text, s)
         try:
-            do_main_xml(self.path_text,
-                        self.path_entity_csv,
-                        self.path_entity_txt)
-        except SystemExit as e:              
+            do_main_xml(self.path2str(self.path_text),
+                        self.path2str(self.path_entity_csv),
+                        self.path2str(self.path_entity_txt))
+        except SystemExit as e:
             logediterr.log(str(e))
-            s=f"ERROR. Elab entity{str(e)} {os.linesep}"
-            self.write_log(s,True)
-            self.top_w3()
+            s = f"ERROR Elab entity{str(e)} {os.linesep}"
+            self.show_log_top(s, True)
             return
         self.chmod(self.path_entity_txt)
         s = self.read_file(self.path_entity_txt)
@@ -665,99 +620,93 @@ class TeimEdit(object):
               f"{self.path_text}",
               f"{self.path_entity_csv}",
               f"{self.path_entity_txt}"]
-        self.write_log(os.linesep.join(ls), True)
+        self.show_log(os.linesep.join(ls), True)
 
-    def elab_teimlw(self):
-        if not self.file_exists(self.path_entity_txt):
-            self.write_log("Elaborare Entity")
-            self.top_w3()
+    def elab_teimsetid(self):
+        if not self.path_entity_txt.exists():
+            self.show_log_top("Call Elab. Entity")
             return
         # path_txt_1 => path_xml_1
         try:
-            do_main_setid(self.path_entity_txt,
-                        self.path_setid_xml,
-                        self.text_sign)
-        except SystemExit as e:              
+           # def do_main(path_src, path_out, sigla_scrp, ids_start=""):
+            do_main_setid(self.path2str(self.path_entity_txt),
+                          self.path2str(self.path_setid_xml),
+                          self.text_sign)
+        except SystemExit as e:
             logediterr.log(str(e))
-            s=f"ERROR. Elab set id{str(e)} {os.linesep}"
-            self.write_log(s,True)
-            self.top_w3()
+            s = f"Errro in set id{str(e)} {os.linesep}"
+            self.show_log_top(s, True)
             return
         self.chmod(self.path_setid_xml)
         ls = ["    Elab. Set id",
               f"{self.path_entity_txt}",
               f"{self.path_setid_xml}",
               f"{self.text_sign}"]
-        self.write_log(os.linesep.join(ls), True)
+        self.show_log(os.linesep.join(ls), True)
 
     def elab_teimover(self):
-        if not self.file_exists(self.path_setid_xml):
-            self.write_log("Elaborare Set id o vi è stato un errore")
-            self.top_w3()
+        if not self.path_setid_xml.exists():
+            self.show_log_top("Cal Elab. Set id ")
             return
         # path_xml_1 => path_xml_2
         try:
-            do_main_over(self.path_setid_xml,
-                        self.path_fromto_xml,
-                        self.path_over_csv)
-        except SystemExit as e:              
+            # def do_main(src_path, out_path, csv_path):
+            do_main_over(self.path2str(self.path_setid_xml),
+                         self.path2str(self.path_over_xml),
+                         self.path2str(self.path_over_csv))
+        except SystemExit as e:
             logediterr.log(str(e))
-            s=f"ERROR. Elab overflow {str(e)} {os.linesep}"
-            self.write_log(s,True)
-            self.top_w3()
+            s = f"Elaborare overflow {str(e)} {os.linesep}"
+            self.show_log_top(s, True)
             return
-        self.chmod(self.path_fromto_xml)
+        self.chmod(self.path_over_xml)
         ls = ["    Eelab. overflow",
               f"{self.path_setid_xml}",
-              f"{self.path_fromto_xml}",
+              f"{self.path_over_xml}",
               f"{self.path_over_csv}"]
-        self.write_log(os.linesep.join(ls), True)
+        self.show_log(os.linesep.join(ls), True)
 
     def elab_teimnote(self):
-        if not self.file_exists(self.path_fromto_xml):
-            self.write_log("Elaborare Over id o vi è stato un errore")
-            self.top_w3()
+        if not self.path_over_xml.exists():
+            self.show_log_top("Call Elab. Over")
             return
         # path_xml_2 => path_xml
         try:
-            do_main_note(self.path_fromto_xml,
-                        self.path_xml,
-                        self.path_note_csv)
-        except SystemExit as e:              
+            # def do_main(src_path, out_path, note_path):
+            do_main_note(self.path2str(self.path_over_xml),
+                         self.path2str(self.path_xml),
+                         self.path2str(self.path_note_csv))
+        except SystemExit as e:
             logediterr.log(str(e))
-            s=f"ERROR. Elab. note {str(e)} {os.linesep}"
-            self.write_log(s,True)
-            self.top_w3()
-            return 
+            s = f"Elab. note {str(e)} {os.linesep}"
+            self.show_log_top(s, True)
+            return
         self.chmod(self.path_xml)
         ls = ["    Elab. Note",
-              f"{self.path_fromto_xml}",
+              f"{self.path_over_xml}",
               f"{self.path_xml}",
               f"{self.path_note_csv}"]
-        self.write_log(os.linesep.join(ls), True)
-        # s = self.read_file(self.path_xml)
+        self.show_log(os.linesep.join(ls), True)
         self.format_xml()
 
     def elab_xml2txt(self):
-        if not self.file_exists(self.path_xml):
-            self.write_log("Elaborare XML  o vi è stato un errore")
-            self.top_w3()
+        if not self.path_xml.exists():
+            self.show_log_top("Call Elab. XML")
             return
         # path_xml => path_text_txt
         try:
-            do_main_xml2txt(self.path_xml,
-                            self.path_text_txt)
-        except SystemExit as e:              
+            do_main_xml2txt(self.path2str(self.path_xml),
+                            self.path2str(self.path_text_txt))
+        except SystemExit as e:
             logediterr.log(str(e))
-            s=f"ERROR. Elab. note {str(e)} {os.linesep}"
-            self.write_log(s,True)
-            self.top_w3()
-            return 
+            s = f"ERROR Elab. note {str(e)} {os.linesep}"
+            self.show_log_top(s, True)
+            return
         self.chmod(self.path_xml)
         ls = ["    XML => text",
               f"{self.path_xml}",
               f"{self.path_text_txt}"]
-        self.write_log(os.linesep.join(ls), True)
+        self.show_log(os.linesep.join(ls), True)
 
     def format_xml(self):
         s = self.read_file(self.path_xml)
@@ -765,7 +714,8 @@ class TeimEdit(object):
         self.write_file(self.path_tmp, xml)
         try:
             parser = etree.XMLParser(remove_blank_text=True)
-            root = etree.parse(self.path_tmp, parser)
+            path = self.path2str(self.path_tmp)
+            root = etree.parse(path, parser)
             src = etree.tostring(root,
                                  method='xml',
                                  xml_declaration=None,
@@ -782,15 +732,21 @@ class TeimEdit(object):
             self.show_win2(src)
             self.write_file(self.path_xml_format, src)
         except etree.Error as e:
-            s = f"ERROR.  XML {os.linesep}{str(e)}"
-            self.write_log(s)
-            self.top_w3()
+            s = f"ERROR  XML {os.linesep}{str(e)}"
+            self.show_log_top(s)
 
+    def reload_xml(self):
+        txt=self.read_file(self.path_entity_txt)
+        self.show_win1(txt)
+        xml=self.read_file(self.path_xml_format)
+        self.show_win2(xml)
+        self.top_order()
+        self.win2.lift()  
+    
     ##############
     # mv_del
     ##############
     def delete_txt_all(self):
-        # self.txt0.delete('1.0', tk.END)
         self.delete_txt1()
         self.delete_txt2()
         self.delete_txt3()
@@ -808,10 +764,8 @@ class TeimEdit(object):
             self.txt3.delete('1.0', tk.END)
 
     def remove_log(self):
-        files = os.listdir(self.log_dir)
-        for f in files:
-            path = os.path.join(self.log_dir, f)
-            absp = os.path.abspath(path)
+        for f in self.log_dir.iterdir():
+            absp = f.absolute()
             print(absp)
             os.remove(absp)
 
@@ -821,67 +775,44 @@ class TeimEdit(object):
 
     # teim/log/teimCHECK_TXT.txt
     def show_check_txt(self):
-        name = self.text_name.replace(".txt", "CHECK_TXT.txt")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_check_txt)
 
     # teim/log/teimCHECK_OVER.txt
     def show_check_over(self):
-        name = self.text_name.replace(".txt", "CHECK_OVER.txt")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_check_over)
 
-    # teim/log/teim_MED.txt
     # teim/log/teim_MED.log
-    # teim/log/teim_MED.ERR.log
     def show_entity_log(self):
-        name = self.text_name.replace(".txt", "_MED.log")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_entity_log)
 
+    # teim/log/teim_MED.ERR.log
     def show_entity_err(self):
-        name = self.text_name.replace(".txt", "_MED.ERR.log")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_entity_err)
 
     # teim/log/teim_WID.log
-    # teim/log/teim_WID.ERR.log
-    # teim/log/teim_WID.xml
     def show_setwid_log(self):
-        name = self.text_name.replace(".txt", "_WID.log")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_setid_log)
 
+    # teim/log/teim_WID.ERR.log
     def show_setwid_err(self):
-        name = self.text_name.replace(".txt", "_WID.ERR.log")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_setid_err)
 
-    # teim/log/teim_OVER.xml
+    # TODO      teim/log/teim_OVER.xml
     # teim/log/teim_OVER.log
-    # teim/log/teim_OVER.ERR.log
     def show_over_log(self):
-        name = self.text_name.replace(".txt", "_OVER.log")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_over_log)
 
+    # teim/log/teim_OVER.ERR.log
     def show_over_err(self):
-        name = self.text_name.replace(".txt", "_OVER.ERR.log")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_over_err)
 
     # teim/log/teim_text.txt
-    # teim/log/teim_text.ERR.log
     def show_text_txt(self):
-        name = self.text_name.replace(".txt", "_text.txt")
-        path = self.get_text_path(name)
-        self.read_log_file(path)
+        self.read_log_file(self.path_text_txt)
 
+    # TODO teim/log/teim_text.ERR.log
     def show_text_txt_err(self):
-        name = self.text_name.replace(".txt", "_text.ERR.log")
-        path = self.get_log_path(name)
-        self.read_log_file(path)
-
+        self.read_log_file(self.path_text_err)
 
     def open_log(self):
         self.top_order()
@@ -894,7 +825,8 @@ class TeimEdit(object):
                        ("xml", "*.xml")])
         if len(path) < 0:
             return
-        if self.file_exists(path):
+        path = pth.Path(path)
+        if path.exists:
             s = self.read_file(path)
         else:
             s = "Not Found."
@@ -908,12 +840,11 @@ class TeimEdit(object):
     def show_info(self):
         #abs_cfg = os.path.abspath(str(self.cfg_dir))
         #abs_text = os.path.abspath(str(self.text_dir))
-        wrk_dir = os.getcwd()
+        wrk_dir = self.pwd
         info = [
             "---------------------------",
-            f"work dir  : {wrk_dir}  ",
-            f"porject   : {self.prj_name}",
-            f"file.json : {self.json_name}",
+            f"work dir    : {wrk_dir}  ",
+            f"serach dir  : {self.search_dir}  ",
             "---------------------------",
             f" tei_tags : {self.path_entity_csv}",
             f" over_tags: {self.path_over_csv}",
@@ -922,62 +853,55 @@ class TeimEdit(object):
             f" sigla    : {self.text_sign}",
             f" note     : {self.path_note_csv}",
             "---------------------------",
-            "Lof",
-            "---------------------------",
             f"chek  txt   : {self.path_check_txt}",
             f"check over  : {self.path_check_over}",
+            "",              
             f"elab  entity: {self.path_entity_txt}",
+            f"log   entity: {self.path_entity_log}",
+            f"ERR   entity: {self.path_entity_err}",
+            "",                          
             f"elab  set id: {self.path_setid_xml}",
-            f"elab  over  : {self.path_fromto_xml}",
+            f"log   set id: {self.path_setid_log}",
+            f"err   set id: {self.path_setid_err}",
+            "",              
+            f"elab  over  : {self.path_over_xml}",
+            f"log   over  : {self.path_over_log}",
+            f"err   over  : {self.path_over_err}",
+            "",              
             f"elab  note  : {self.path_xml}",
+            f"err   note  : {self.path_xml_err}",
+            "",              
+            f"elab  text  : {self.path_text_txt}",
+            f"err   text  : {self.path_text_err}",
             "---------------------------",
             " ",
         ]
         s = os.linesep.join(info)
-        self.show_win3(s)
-        self.top_w3()
-
-    def show_json(self):
-        js=pp(self.config_json,40)
-        info = [
-            js,
-            "---------------------------",
-            f" text      : {self.path_text}",
-            f" sigla     : {self.text_sign}",
-            " ",
-        ]
-        s = os.linesep.join(info)
-        self.show_win3(s)
-        self.top_w3()
+        self.show_log_top(s)
 
     def show_options(self):
-        s=HELP_OPS()
+        s = HELP_OPS()
         self.show_win3(s)
         self.top_w3()
-
-    ############
 
     def get_text(self):
         s = self.text_edit.get('1.0', 'end')
         return s.strip()
 
     def read_text_file(self):
-        if self.file_exists(self.path_text):
+        if self.path_text.exists():
             s = self.read_file(self.path_text)
         else:
             self.write_file(self.path_text, "Empty")
-            self.chmod(self.path_text)
-            r = ["", f"File  {self.text_name} Not Found.",
-                 "", f"Crated {self.text_name} empyt."]
+            r = ["", f"File  {self.path_text} Not Found.",
+                 "", f"Crated {self.path_text} empyt."]
             s = os.linesep.join(r)
         self.text_edit.insert_text(s)
-        # show_title
-        text_name = os.path.basename(self.path_text)
-        title = f"TEXT: {text_name} "
+        title = f"TEXT: {self.path_text} "
         self.win0.title(title)
 
     def read_log_file(self, path):
-        if self.file_exists(path):
+        if path.exists():
             s = self.read_file(path)
         else:
             s = f"{path}   Not Found."
@@ -985,16 +909,18 @@ class TeimEdit(object):
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)
 
-    def write_log(self, s, append=False):
+    def show_log_top(self, msg, append=False):
+        self.show_log(msg,append)
+        self.top_w3()
+
+    def show_log(self, msg, append=False):
         if append:
             x = self.txt3.get('1.0', 'end')
-            s = f"{x}{s}{os.linesep}"
+            msg = f"{x}{msg}{os.linesep}"
         else:
-            s = f"{s}{os.linesep}"
+            msg = f"{os.linesep}{msg}{os.linesep}"
         self.txt3.delete('1.0', tk.END)
-        self.txt3.insert('1.0', s)
-
-   #########################
+        self.txt3.insert('1.0', msg)
 
     def open_win1(self):
         if self.win1 is not None:
@@ -1060,66 +986,54 @@ class TeimEdit(object):
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)
 
-def do_main(json_name="", new_json_name="",prj_name='',  text_dir="", txt_name="", sign=""):
-    tme = TeimEdit(json_name, new_json_name, prj_name,text_dir, txt_name, sign)
+def do_main(cfg_dir, dir_search, path_text, sign):
+    tme = TeimEdit(cfg_dir, dir_search, path_text, sign)
     tme.open_win0()
-
 def prn_help():
     print(HELP_OPS())
-        
+
+# if __name__ == "__main__":
+#     do_main("cfg", None, "txt/par1/txt/prol1.txt", "K")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    le=len(sys.argv)
+    le = len(sys.argv)
     if le == 1:
-        print("")
         print(f"author: {__author__}")
         print(f"release: {__version__} { __date__}")
-        print("")       
         parser.print_help()
         sys.exit()
-    parser.add_argument('-p',
-                        dest="prj",
-                        required=False,
-                        default="",
-                        metavar="project_name",
-                        help="[-p create <project_name>]")
-    parser.add_argument('-r',
-                        dest="json",
-                        required=False,
-                        default="",
-                        metavar="file.json",
-                        help=f"[-r read <file>.json]")
     parser.add_argument('-c',
-                        dest="newname",
+                        dest="cfg",
                         required=False,
-                        default="",
-                        metavar="file.json",
-                        help="[-c create <file>.json]")
+                        default="cfg",
+                        metavar="directory cfg",
+                        help="[-c <cfg>]")
     parser.add_argument('-d',
-                        dest="tdir",
+                        dest="dsearch",
                         required=False,
-                        default="",
-                        metavar="text_dir",
-                        help="[-d <text_dir>]")
+                        default=None,
+                        metavar="direcory text search",
+                        help="[-d <search_dir>]")
     parser.add_argument('-t',
                         dest="txt",
                         required=False,
                         default="",
-                        metavar="text_name",
+                        metavar="text name",
                         help="[-t <file>.txt]")
     parser.add_argument('-s',
                         dest="sign",
                         required=False,
-                        default="",
+                        default="K",
                         metavar="text_sign",
                         help="[-s <sign>]")
     parser.add_argument('-e',
                         action="store_true",
                         required=False,
                         help="[-e  print examples]")
-
     args = parser.parse_args()
-    if args.e :
+    if args.e:
         prn_help()
         sys.exit()
-    do_main(args.json, args.newname, args.prj, args.tdir, args.txt, args.sign)
+    do_main(args.cfg, args.dsearch, args.txt, args.sign)
