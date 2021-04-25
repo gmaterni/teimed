@@ -99,7 +99,8 @@ class TeimEdit(object):
                  search_dir=None,
                  path_text=None,
                  text_sign="",):
-        logediterr.open("log/teimedit.log", 1)
+        self.path_edit_err=pth.Path("log/teimedit.lo")
+        logediterr.open(self.path2str(self.path_edit_err), 1)
         self.cfg_dir = cfg_dir
         self.search_dir = search_dir
         self.path_text = path_text
@@ -128,7 +129,8 @@ class TeimEdit(object):
         self.path_over_log = None
         self.path_over_err = None
 
-        self.path_xml_err = None
+        self.path_note_err = None
+        #self.path_xml_err = None
 
         self.path_check_txt = None
         self.path_check_over = None
@@ -242,10 +244,9 @@ class TeimEdit(object):
             self.path_over_err = path_log.with_name(
                 tnm.replace(".txt", "_OVER.ERR.log"))
 
-            # teim/teim.ERR.log
-            self.path_xml_err = self.path_xml.with_name(
-                tnm.replace(".txt", "_ERR.log"))
-
+            # teim/log/teim_note.ERR.log
+            self.path_note_err = path_log.with_name(
+                tnm.replace(".txt", "_note.ERR.log"))
 
             # teim/log/teimCHECK_TXT.txt
             self.path_check_txt = path_log.with_name(
@@ -298,6 +299,10 @@ class TeimEdit(object):
         self.chmod(path)
 
     def read_file(self, path):
+        if not path.exists():
+            s=self.path2str(path)
+            self.show_log_lift(f"{s} Not Found.")
+            return
         with path.open('r', encoding='utf-8') as f:
             s = f.read()
         return s
@@ -417,9 +422,13 @@ class TeimEdit(object):
         mv_log.add_command(label='Over Log.', command=self.show_over_log)
         mv_log.add_command(label='Over Err.', command=self.show_over_err)
         mv_log.add_separator()
+        mv_log.add_command(label='Note Err.', command=self.show_note_err)
+        mv_log.add_separator()
         mv_log.add_command(label='*_text_.txt', command=self.show_text_txt)
         mv_log.add_command(label='XML => text ERR',
                            command=self.show_text_txt_err)
+        mv_log.add_separator()
+        mv_log.add_command(label='TeimEdit Err.', command=self.show_edit_err)
         mv_log.add_separator()
         mv_log.add_command(label='Read Log.', command=self.open_log)
         
@@ -806,6 +815,10 @@ class TeimEdit(object):
     def show_over_err(self):
         self.read_log_file(self.path_over_err)
 
+    # teim/log/teim_OVER.ERR.log
+    def show_note_err(self):
+        self.read_log_file(self.path_note_err)
+
     # teim/log/teim_text.txt
     def show_text_txt(self):
         self.read_log_file(self.path_text_txt)
@@ -814,25 +827,28 @@ class TeimEdit(object):
     def show_text_txt_err(self):
         self.read_log_file(self.path_text_err)
 
+    # log/teimedit.log
+    def show_edit_err(self):
+        self.read_log_file(self.path_edit_err)
+
     def open_log(self):
         self.top_order()
         path = fdialog.askopenfilename(
+            parent=self.win0,
             title='log',
             initialdir=self.log_dir,
             filetypes=[("all", "*.*"),
                        ("log", "*.log"),
                        ("text", "*.txt"),
                        ("xml", "*.xml")])
-        if len(path) < 0:
+        if len(path) < 1:
             return
         path = pth.Path(path)
         if path.exists:
             s = self.read_file(path)
         else:
             s = "Not Found."
-        self.top_w3()
-        self.txt3.delete('1.0', tk.END)
-        self.txt3.insert('1.0', s)
+        self.show_log_top(s)
 
     #############
     # menu_bar
@@ -869,7 +885,7 @@ class TeimEdit(object):
             f"err   over  : {self.path_over_err}",
             "",              
             f"elab  note  : {self.path_xml}",
-            f"err   note  : {self.path_xml_err}",
+            f"err   note  : {self.path_note_err}",
             "",              
             f"elab  text  : {self.path_text_txt}",
             f"err   text  : {self.path_text_err}",
@@ -881,8 +897,7 @@ class TeimEdit(object):
 
     def show_options(self):
         s = HELP_OPS()
-        self.show_win3(s)
-        self.top_w3()
+        self.show_log_top(s)
 
     def get_text(self):
         s = self.text_edit.get('1.0', 'end')
@@ -905,20 +920,23 @@ class TeimEdit(object):
             s = self.read_file(path)
         else:
             s = f"{path}   Not Found."
-        self.top_w3()
-        self.txt3.delete('1.0', tk.END)
-        self.txt3.insert('1.0', s)
+        self.show_log_top(s)
 
     def show_log_top(self, msg, append=False):
         self.show_log(msg,append)
         self.top_w3()
 
+    def show_log_lift(self, msg, append=False):
+        self.show_log(msg,append)
+        self.win3.lift()
+
     def show_log(self, msg, append=False):
+        msg="" if msg is None else msg
         if append:
             x = self.txt3.get('1.0', 'end')
             msg = f"{x}{msg}{os.linesep}"
         else:
-            msg = f"{os.linesep}{msg}{os.linesep}"
+            msg = f" {os.linesep}{msg}{os.linesep}"
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', msg)
 
@@ -964,6 +982,7 @@ class TeimEdit(object):
         self.win1 = None
 
     def show_win1(self, s):
+        s='' if s is None else s
         self.open_win1()
         self.txt1.delete('1.0', tk.END)
         self.txt1.insert('1.0', s)
@@ -973,6 +992,7 @@ class TeimEdit(object):
         self.win2 = None
 
     def show_win2(self, s):
+        s='' if s is None else s
         self.open_win2()
         self.txt2.delete('1.0', tk.END)
         self.txt2.insert('1.0', s)
@@ -982,6 +1002,7 @@ class TeimEdit(object):
         self.win3 = None
 
     def show_win3(self, s):
+        s='' if s is None else s
         self.open_win3()
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)

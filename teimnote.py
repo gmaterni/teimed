@@ -10,6 +10,7 @@ import shutil
 from teimedlib.ualog import Log
 from teimedlib.xml_const import *
 import stat
+import pathlib as pth
 
 __date__ = "20-02-2021"
 __version__ = "0.9.6"
@@ -23,15 +24,22 @@ NOTE_TEXT = "note_text"
 
 class AddNote(object):
 
-    def __init__(self, src_path, out_path, note_path):
+    def __init__(self,
+                 src_path='',
+                 out_path='',
+                 note_path=''):
         self.src_path = src_path
         self.path_out = out_path
         self.note_path = note_path
         self.delimiter = '|'
-        path_err = out_path.replace('.xml', '_ERR.log')
+
+        # TODO
+        #path_err = out_path.replace('.xml', '_ERR.log')
+        path=pth.Path(out_path)
+        err_name=path.name.replace(".xml","_note.ERR.log")
+        path_err=pth.Path().joinpath(path.parent,"log",err_name)
         self.logerr = Log('w')
         self.logerr.open(path_err, 1)
-
 
     def read_note(self):
         note_list = []
@@ -59,7 +67,8 @@ class AddNote(object):
     def add_to_xml(self):
         try:
             if not os.path.exists(self.note_path):
-                shutil.copyfile(self.src_path,self.path_out)
+                shutil.copyfile(self.src_path, self.path_out)
+                self.logerr.log(f"WARNING {self.note_path} Not Found.")
                 return
             note_list = self.read_note()
             ls = []
@@ -86,9 +95,10 @@ class AddNote(object):
             os.chmod(self.path_out, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
         except Exception as e:
             self.logerr.log("ERROR teimnote.py add_to_xml()")
-            s=str(e)
+            s = str(e)
             self.logerr.log(f"{s}")
             sys.exit(1)
+
 
 def do_main(src_path, out_path, note_path):
     add_note = AddNote(src_path, out_path, note_path)
@@ -120,4 +130,4 @@ if __name__ == "__main__":
     if args.src == args.out:
         print("Name File output errato")
         sys.exit(0)
-    do_main(args.src, args.out,args.note)
+    do_main(args.src, args.out, args.note)
