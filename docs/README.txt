@@ -149,7 +149,7 @@ optional arguments:
 
 legge le note da un file csv e le aggiunge al file xml
 es.
-flori_note.csv
+flori_teimnote.csv
 
 nota|kn1|
 La mia anima è pervasa da una mirabile serenità, simile a queste belle
@@ -190,7 +190,7 @@ contenuto
         "teimlineword.py -i flori1.txt -o flori2.xml -s k -n 'pb:1,cb:1,lg:1,l:1'",
         "teimxmllint.py -i flori2.xml -o flori3.xml ",
         "teimspan.py -i flori3.xml -o flori4.xml",
-        "teimnote.py -i flori4.xml -o flori5.xml -n flori_note.csv",
+        "teimnote.py -i flori4.xml -o flori5.xml -n flori_teimnote.csv",
         "teimxmllint.py -i flori5.xml -o flori6.xml ",
         "teimdict.py -i flori.txt -o flori_dict.csv"
     ]

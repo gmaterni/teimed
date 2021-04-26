@@ -13,7 +13,7 @@ prj = {
             [
                 "checkover.py",
                 "-i witness/witness.txt",
-                "-c cfg/overflow.csv",
+                "-c teimcfg/teimoverflow.csv",
                 "-o witness/log/witness_checkover.log"
             ]
         ]
@@ -70,7 +70,7 @@ prj = {
             [
                 "teimxml.py ",
                 "-i witness/witness.txt",
-                "-t cfg/teimed.csv",
+                "-t teimcfg/teimtags.csv",
                 "-o witness/log/witness_teim.txt"
             ]
         ]
@@ -89,17 +89,17 @@ prj = {
                 "teimover.py",
                 "-i witness/log/witness_id.xml",
                 "-o witness/log/witness_id_over.xml",
-                "-c cfg/overflow.csv"
+                "-c teimcfg/teimoverflow.csv"
             ],
             [
                 "teimnote.py",
                 "-i witness/log/witness_id_over.xml",
                 "-o witness/log/witness_id_over_note.xml",
-                "-n witness/note.csv"
+                "-n witness/teimnote.csv"
             ]
         ],
         "include": {
-            "host": "cfg/tei.xml",
+            "host": "teimcfg/tei.xml",
             "dest": "xml/witness.xml",
             "params": [],
             "files": [
@@ -132,7 +132,7 @@ witness_prj = {
             [
                 "checkover.py",
                 "-i witness/text.txt",
-                "-c cfg/overflow.csv",
+                "-c teimcfg/teimoverflow.csv",
                 "-o witness/log/text_checkover.log"
             ]
         ]
@@ -185,7 +185,7 @@ witness_prj = {
                 "teimnote.py",
                 "-i witness/log/text_id_over.xml",
                 "-o witness/log/text_id_over_note.xml",
-                "-n witness/note.csv"
+                "-n witness/teimnote.csv"
             ]
         ]
     },
@@ -196,7 +196,7 @@ witness_prj = {
                 "teimover.py",
                 "-i witness/log/text_id.xml",
                 "-o witness/log/text_id_over.xml",
-                "-c cfg/overflow.csv"
+                "-c teimcfg/teimoverflow.csv"
             ]
         ]
     },
@@ -223,7 +223,7 @@ witness_prj = {
             [
                 "teimxml.py ",
                 "-i witness/text.txt",
-                "-t cfg/teimed.csv",
+                "-t teimcfg/teimtags.csv",
                 "-o witness/log/text_teim.txt"
             ]
         ]

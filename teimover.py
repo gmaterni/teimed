@@ -532,7 +532,7 @@ if __name__ == "__main__":
                             metavar="",
                             help="-o <file output>")
         parser.add_argument('-c',
-                            dest="cfg",
+                            dest="teimcfg",
                             required=True,
                             metavar="",
                             help="-c <file csv dei tag>")
@@ -541,4 +541,4 @@ if __name__ == "__main__":
         print("ERROR args in teimover.py ")
         print(str(e))
         sys.exit(1)
-    do_main(args.src, args.out, args.cfg)
+    do_main(args.src, args.out, args.teimcfg)

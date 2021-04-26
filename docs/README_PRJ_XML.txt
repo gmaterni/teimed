@@ -54,7 +54,7 @@ flory_xml/par1/par1.txt
 -----------------------------------
 prjmgr.py prj/par1_txt.json,
     esegue:
-teimxml.py -i par1/par1.txt -t cfg/teimedlib.csv -o par1/log/par1_teim.tx
+teimxml.py -i par1/par1.txt -t teimcfg/teimedlib.csv -o par1/log/par1_teim.tx
 
 INPUT
 flori_xml/par1/par1.txt
@@ -70,14 +70,14 @@ teimsetid.py -i par1/log/par1_teim.txt -o par1/log/par1_id.xml, -s G -n 'pb:1,cb
     seconda trasformazione teimedlib => XML
     sono settati gli ID
 
-teimover.py -i par1/log/par1_id.xml -o par1/log/par1_id_over.xml, -c cfg/overflow.csv
+teimover.py -i par1/log/par1_id.xml -o par1/log/par1_id_over.xml, -c teimcfg/teimoverflow.csv
     crea tutti i riferimenti per la gestione degli overflow
 
-teimnote.py -i par1/log/par1_id_over.xml -o par1/log/par1_id_over_note.xml, -n par1/note.csv
+teimnote.py -i par1/log/par1_id_over.xml -o par1/log/par1_id_over_note.xml, -n par1/teimnote.csv
     gestisce le note relative al manoscritto
 
 include: {
-host: cfg/tei.xml,
+host: teimcfg/tei.xml,
 dest: xml/par1.xml,
 params: [],
 files: [XML_MANO|par1/log/par1_id_over_note.xml]
@@ -113,7 +113,7 @@ checktxt.py -i par1/par1.txt -o par1/log/par1_checktxt.log
 prjmgr.py prj/par1_checkover.json
     controlla apertura chiusura overflow
 esegue:
-checkover.py -i par1/par1.txt -c cfg/overflow.csv -o par1/log/par1_checkover.log
+checkover.py -i par1/par1.txt -c teimcfg/teimoverflow.csv -o par1/log/par1_checkover.log
 
 ************************************************
 Gestione dei singoli episodi.
@@ -135,7 +135,7 @@ sone esegue le seguenti elaborazioni:
 ----------------------------------
 prjmgr.py par1_prj/eps01_txt.json
 esegue
-teimxml.py -i par1/eps01.txt -t cfg/teimedlib.csv -o par1/log/eps01_teim.tx
+teimxml.py -i par1/eps01.txt -t teimcfg/teimedlib.csv -o par1/log/eps01_teim.tx
 ----------------------------------
 prjmgr.py par1_prj/eps01_setid.json
 esegue:
@@ -143,11 +143,11 @@ teimsetid.py, -i par1/log/eps01_teim.txt -o par1/log/eps01_id.xml -s G -n 'pb:1,
 -------------------------------------
 prjmgr.py par1_prj/eps01_over.json
 esegue:
-teimover.py -i par1/log/eps01_id.xml -o par1/log/eps01_id_over.xml -c cfg/overflow.csv
+teimover.py -i par1/log/eps01_id.xml -o par1/log/eps01_id_over.xml -c teimcfg/teimoverflow.csv
 --------------------------------------
 prjmgr.py par1_prj/eps01_note.json
 esegue:
-teimnote.py -i par1/log/eps02_id_over.xml -o par1/log/eps02_id_over_note.xml -n par1/note.csv
+teimnote.py -i par1/log/eps02_id_over.xml -o par1/log/eps02_id_over_note.xml -n par1/teimnote.csv
 --------------------------------------
 prjmgr.py par1_prj/eps01_format.json
 esegue:
@@ -161,7 +161,7 @@ checktxt.py -i par1/eps01.txt -o par1/log/eps01_checktxt.log
 
 prjmgr.py par1_prj/eps01_checkover.json
 esegue:
-checkover.py -i par1/eps01.txt -c cfg/overflow.csv -o par1/log/eps01_checkover.log
+checkover.py -i par1/eps01.txt -c teimcfg/teimoverflow.csv -o par1/log/eps01_checkover.log
 
 
 

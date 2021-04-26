@@ -63,7 +63,7 @@ writehtml.py \
 teixml2html.py \
 -i xml/par1/$F.xml \
 -o html/par1/syn/$F.html \
--c prj_cfg/par1_dipl_syn.json \
+-c prj_teimcfg/par1_dipl_syn.json \
 -wa a 
 
 writehtml.py \
@@ -74,7 +74,7 @@ writehtml.py \
 teixml2html.py
 -i xml/par1/$F.xml
 -o html/par1/syn/$F.html
--c prj_cfg/par1_inter_syn.json
+-c prj_teimcfg/par1_inter_syn.json
 -wa a 
 
 writehtml.py
@@ -92,7 +92,7 @@ writehtml.py
 teixml2html.py
 -i xml/tor1/tor1_list.xml
 -o html/tor1/syn/tor1.html
--c prj_cfg/list_dipl_syn.json
+-c prj_teimcfg/list_dipl_syn.json
 -wa a
 
 writehtml.py
@@ -104,7 +104,7 @@ writehtml.py
 teixml2html.py
 -i xml/tor1/tor1_list.xml
 -o html/tor1/syn/tor1.html
--c prj_cfg/list_inter_syn.json
+-c prj_teimcfg/list_inter_syn.json
 -wa a
 
 writehtml.py
@@ -122,7 +122,7 @@ writehtml.py \
 teixml2html.py \
 -i xml/par1/$F.xml \
 -o html/par1/txt/$F.html \
--c prj_cfg/par1_dipl_txt.json \
+-c prj_teimcfg/par1_dipl_txt.json \
 -wa a 
 
 writehtml.py \
@@ -133,7 +133,7 @@ writehtml.py \
 teixml2html.py
 -i xml/par1/$F.xml
 -o html/par1/txt/$F.html
--c prj_cfg/par1_inter_txt.json
+-c prj_teimcfg/par1_inter_txt.json
 -wa a 
 
 writehtml.py
@@ -151,7 +151,7 @@ writehtml.py
 teixml2html.py
 -i xml/tor1/tor1_list.xml
 -o html/tor1/txt/tor1.html
--c prj_cfg/list_dipl_txt.json
+-c prj_teimcfg/list_dipl_txt.json
 -wa a
 
 writehtml.py
@@ -163,7 +163,7 @@ writehtml.py
 teixml2html.py
 -i xml/tor1/tor1_list.xml
 -o html/tor1/txt/tor1.html
--c prj_cfg/list_inter_txt.json
+-c prj_teimcfg/list_inter_txt.json
 -wa a
 
 writehtml.py
@@ -172,7 +172,7 @@ writehtml.py
 -wa a
 ======================================
 files dei arametri per le singole applicazioni in
-flori_html/prj_cfg
+flori_html/prj_teimcfg
 =======================================
 par1_dipl_syn.json
 {
@@ -182,7 +182,7 @@ par1_dipl_syn.json
     "_QA_": "\"",
     "_QC_": "\""
   },
-  "html_tag_file": "cfg/html.csv",
+  "html_tag_file": "teimcfg/html.csv",
   "html_tag_type": "d:syn",
   "dipl_inter": "d",
   "before_id": "d"
@@ -196,7 +196,7 @@ par1_dipl_txt.json
     "_QA_": "\"",
     "_QC_": "\""
   },
-  "html_tag_file": "cfg/html.csv",
+  "html_tag_file": "teimcfg/html.csv",
   "html_tag_type": "d:txt",
   "dipl_inter": "d",
   "before_id": "d"
@@ -209,7 +209,7 @@ par1_inter_syn.json
     "_QA_": "\"",
     "_QC_": "\""
   },
-  "html_tag_file": "cfg/html.csv",
+  "html_tag_file": "teimcfg/html.csv",
   "html_tag_type": "i:syn",
   "dipl_inter": "i",
   "before_id": "i"
@@ -222,7 +222,7 @@ par1_inter_txt.json
     "_QA_": "\"",
     "_QC_": "\""
   },
-  "html_tag_file": "cfg/html.csv",
+  "html_tag_file": "teimcfg/html.csv",
   "html_tag_type": "i:txt",
   "dipl_inter": "i",
   "before_id": "i"
@@ -235,7 +235,7 @@ list_dipl_syn.json
     "<null>": "",
     "</null>": ""
   },
-  "html_tag_file": "cfg/html.csv",
+  "html_tag_file": "teimcfg/html.csv",
   "html_tag_type": "d:syn",
   "dipl_inter": "d",
   "before_id": "d"
@@ -248,7 +248,7 @@ list_dipl_txt.json
     "<null>": "",
     "</null>": ""
   },
-  "html_tag_file": "cfg/html.csv",
+  "html_tag_file": "teimcfg/html.csv",
   "html_tag_type": "d",
   "dipl_inter": "d",
   "before_id": "d"
@@ -261,7 +261,7 @@ list_inter_syn.json
     "<null>": "",
     "</null>": ""
   },
-  "html_tag_file": "cfg/html.csv",
+  "html_tag_file": "teimcfg/html.csv",
   "html_tag_type": "i:syn",
   "dipl_inter": "i",
   "before_id": "i"
@@ -274,7 +274,7 @@ list_inter_txt.json
     "<null>": "",
     "</null>": ""
   },
-  "html_tag_file": "cfg/html.csv",
+  "html_tag_file": "teimcfg/html.csv",
   "html_tag_type": "i",
   "dipl_inter": "i",
   "before_id": "i"

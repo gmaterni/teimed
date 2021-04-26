@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import tkinter as tk
-from teimeditlib.constants import *
+from teimedlib.edit_constants import *
 
 def open_listbox(root,lst,on_select,dx=100,dy=100):
     on_select=on_select
@@ -10,7 +10,7 @@ def open_listbox(root,lst,on_select,dx=100,dy=100):
     wnd=tk.Tk()
     wnd.protocol("WM_DELETE_WINDOW", lambda: False)
     wnd.attributes("-topmost", True)
-    wnd.grab_set()
+    #wnd.grab_set()
     wnd.geometry(f"+{x}+{y}")
     wnd.title("")
     wnd.rowconfigure(0, weight=1)

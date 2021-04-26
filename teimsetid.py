@@ -389,7 +389,7 @@ class AddId(object):
         return line
 
     def addtags(self):
-        # path_over_csv="cfg/overflow.csv"
+        # path_over_csv="teimcfg/teimoverflow.csv"
         # self.over_tags=read_over_tags(path_over_csv)
         fw = open(self.path_out, "w+")
         fw.write(TEI_TOP)

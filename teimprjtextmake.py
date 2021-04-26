@@ -7,7 +7,6 @@ import pprint
 import json
 import os
 
-
 def pp(data):
     return pprint.pformat(data, indent=2, width=40)
 

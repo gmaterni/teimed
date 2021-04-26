@@ -9,8 +9,8 @@ from teimedlib.ualog import Log
 import pprint
 from teimedlib.readovertags import read_over_tags
 
-__date__ = "14-042021"
-__version__ = "0.1.2"
+__date__ = "26-04-2021"
+__version__ = "0.1.3"
 __author__ = "Marta Materni"
 
 """
@@ -317,7 +317,7 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit()
     parser.add_argument('-c',
-                        dest = "cfg",
+                        dest = "teimcfg",
                         required = True,
                         metavar = "",
                         help = "-c <file csv dei tag overflow>")
@@ -335,4 +335,4 @@ if __name__ == "__main__":
     if args.src == args.out:
         print("Name File output errato")
         sys.exit(0)
-    do_main(args.src, args.cfg, args.out)
+    do_main(args.src, args.teimcfg, args.out)

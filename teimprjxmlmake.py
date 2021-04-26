@@ -38,7 +38,7 @@ text.json
 TEIM_WORK = "teim_work"
 PRJ = "prj"
 LOG = "log"
-CFG = "cfg"
+TEIMCG = "teimcfg"
 XML = "xml"
 
 WITNESS = "witness"
@@ -66,9 +66,9 @@ class TeimPrjXmlMake(object):
         self.witness_prj_name = f"{witness_name}_prj"
         self.text_name = text_name
         self.text_log_name = f"{text_name}_log"
-        # dir progetto  work work/prj work/cfg work/log work/xml
+        # dir progetto  work work/prj work/teimcfg work/log work/xml
         self.dir_prj = os.path.join(self.dir_work, PRJ)
-        self.dir_cfg = os.path.join(self.dir_work, CFG)
+        self.dir_teimcfg = os.path.join(self.dir_work, TEIMCG)
         self.dir_xml = os.path.join(self.dir_work, XML)
         self.dir_log = os.path.join(self.dir_work, LOG)
         # dir witness witness/log (contenitore per singoli witness)
@@ -141,7 +141,7 @@ class TeimPrjXmlMake(object):
     def print_dir(self):
         print(f">>> {self.dir_witness_name}")
         print(self.dir_work)
-        print(self.dir_cfg)
+        print(self.dir_teimcfg)
         print(self.dir_prj)
         print(self.dir_xml)
         print(self.dir_log)
@@ -152,7 +152,7 @@ class TeimPrjXmlMake(object):
 
     def make_dirs(self):
         self.make_dir(self.dir_work)
-        self.make_dir(self.dir_cfg)
+        self.make_dir(self.dir_teimcfg)
         self.make_dir(self.dir_prj)
         self.make_dir(self.dir_xml)
         self.make_dir(self.dir_log)
@@ -218,14 +218,14 @@ flori_xml|ven1|eps
 
 Crea le directory SE NON esistno
 
-teimprjxmlmake.py project.csv>
+teimprjxmlmake.py project.csv
 crea :
     flori_xml/
     flori_xml/__prj__
     flori_xml/par1
     flori_xml/par1/eps
     ..
-teimprjxmlmake.py <work> <witnes> ")
+teimprjxmlmake.py <work> <witnes> "
 crea :
     work/
     work/__prj__
