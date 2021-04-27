@@ -1,66 +1,99 @@
 #!/usr/bin/env python3
 # coding: utf-8
-
+import os
 import pathlib as pth
+from teimedlib import edit_constants
+
+
+def cwd():
+    pwd = pth.Path().cwd()
+    return pwd
+
 
 def path2str(path):
     try:
-        if path is None :
-            raise(Exception("path2str(path): path is None"))
-        s=f"{path}"
-        return s
+        if path is None:
+            raise(Exception("path is None"))
+        #s = f"{path}"
+        s=path.as_posix()
+        return s.strip()
     except Exception as e:
-        raise(e)
+        raise(Exception(f"ERROR path2str {os.linesep}{e}"))
 
-def str2path(s):
+def str2path(path_str):
     try:
-        if s is None:
-            raise(Exception("str2path(str): string is None"))
-        path=pth.Path(s)
-        return path
+        path_str="" if path_str is None else path_str
+        if isinstance(path_str, str):
+            path = pth.Path(path_str)
+            return path
+        else:
+            return path_str
     except Exception as e:
-        raise(e)
+        raise(Exception(f"ERROR str2path {os.linesep}{e}"))
+
+def exists(path):
+    return pth.Path(path).exists()
+
+
+def join(path0, path1):
+    return pth.Path().joinpath(path0, path1)
 
 def pathlist2strlist(path_lst):
-    path_lst=[] if path_lst is None else path_lst
-    lst=[path2str(x) for x in path_lst]
+    path_lst = [] if path_lst is None else path_lst
+    lst = [path2str(x) for x in path_lst]
     return lst
 
 def strlist2pathlist(st_lst):
-    st_lst=[] if st_lst is None else st_lst
-    lst=[str2path(x) for x in st_lst]
+    st_lst = [] if st_lst is None else st_lst
+    lst = [str2path(x) for x in st_lst]
     return lst
 
-def rlist_path(path,match):
-    lst=[]
-    for x in path.rglob(match):  
-        lst.append(x)
+def rlist_path(path, match):
+    lst=[x for x in path.rglob(match)]
     return lst
 
-def list_path(path,match):
-    lst=[]
-    for x in path.glob(match):  
-        lst.append(x)
+def list_path(path, match=None):
+    if match is None:
+        lst=[x for x in path.iterdir()]
+    else:
+        lst=[x for x in path.glob(match)]
     return lst
-
 
 # sosttiuisce path.name con path1.name
 # se s0,s1 != '' name viene modificato
-def subst_path_name(path0,path1,s0='',s1=''):
+def subst_path_name(path0, path1, s0='', s1=''):
     try:
-        name=path1.name
-        if s1!='':
-            name=name.replace(s0,s1)
-        path=path0.with_nname(name)
+        name = path1.name
+        if s1 != '':
+            name = name.replace(s0, s1)
+        path = path0.with_nname(name)
         return path
     except Exception as e:
-        raise(e)
+        msg = f"ERROR subs_path_name {os.linesep}{e}"
+        raise(Exception(msg))
 
 # ritorna una path con path.name modificato da replace s0=>s1
-def update_path_name(path,s0,s1):
+def update_path_name(path, s0, s1):
     try:
-        name=path.name.replace(s0,s1)
-        path_trg=path.with_nname(name)
+        name = path.name.replace(s0, s1)
+        path_trg = path.with_name(name)
         return path_trg
     except Exception as e:
-        raise(e)
+        msg = f"ERROR update_path_name {os.linesep}{e}"
+        raise(Exception(msg))
+
+def make_dir(path_dir, mode=0o777):
+    if path2str(path_dir) == '':
+        return
+    if not path_dir.exists():
+        path_dir.mkdir(mode=mode)
+
+def chmod(path, mode=0o777):
+    if not path.exists():
+        raise(Exception(f"{path} Not Exists"))
+    try:
+        #os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
+        path.chmod(mode=mode)
+    except Exception as e:
+        msg = f"ERROR chmod {os.linesep}{e}"
+        raise(Exception(msg))

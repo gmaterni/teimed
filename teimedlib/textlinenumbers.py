@@ -65,7 +65,7 @@ class TextLineNumbers(tk.Text):
                 i = self.index(f"{i}+1line")
 
         def redraw_delay(args=None):
-            self.after(2, redraw)
+            self.after(20, redraw)
             self.edit_separator()
 
         self.vbar.bind("<B1-Motion>", redraw)
