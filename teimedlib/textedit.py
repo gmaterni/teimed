@@ -5,7 +5,7 @@ import tkinter as tk
 from teimedlib.edit_constants import *
 
 
-class TextLineNumbers(tk.Text):
+class TextEdit(tk.Text):
 
     def __init__(self, master=None, **kw):
         self.frame = tk.Frame(master)
@@ -41,8 +41,10 @@ class TextLineNumbers(tk.Text):
                     insertofftime=300,
                     insertwidth=3,
                     cursor=CURSOR_EDIT)
-        self.vbar.config(background=BG_BAR, activebackground=BG2_BAR, )
-        self.hbar.config(background=BG_BAR, activebackground=BG2_BAR, )
+        self.vbar.config(background=BG_BAR,
+                         activebackground=BG2_BAR, )
+        self.hbar.config(background=BG_BAR,
+                         activebackground=BG2_BAR, )
         self.lnumbers.config(background=BG_LNUM)
 
         def __str__(self):

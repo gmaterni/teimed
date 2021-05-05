@@ -5,8 +5,8 @@ from pdb import set_trace
 import os
 import stat
 
-__date__ = "19-02-2021"
-__version__ = "0.4.0"
+__date__ = "38-04-2021"
+__version__ = "0.4.1"
 __author__ = "Marta Materni"
 
 """
@@ -43,10 +43,11 @@ class Log(object):
         self.out_liv = int(liv)
 
     def open_file(self):
-        if not os.path.exists(self.path_log):
-           if not os.path.isdir(self.dirname):
-                os.mkdir(self.dirname)
-                os.chmod(self.dirname, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
+        if self.dirname!="":
+            if not os.path.exists(self.path_log):
+                if not os.path.isdir(self.dirname):
+                        os.mkdir(self.dirname)
+                        os.chmod(self.dirname, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
         f=open(self.path_log,self.aw) 
         #f.write("")
         f.close()

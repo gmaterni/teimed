@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import argparse
-import os
-import sys
 from pdb import set_trace
+
+import argparse
+import sys
 from teimedlib.ualog import Log
 import pprint
 import re
 
-__date__ = "19-02-2021"
-__version__ = "0.2.1"
+__date__ = "28-04-2021"
+__version__ = "0.2.3"
 __author__ = "Marta Materni"
 
 
@@ -21,14 +21,12 @@ def pp(data):
     return s
 
 
-
 ls = [' ' for i in range(0, 1000)]
 BLK = ''.join(ls)
 SEP1 = "...................................................."
 SEP2 = "======================================================="
 OP = '('
 CL = ')'
-
 
 class CheckRound(object):
 
@@ -98,14 +96,14 @@ class CheckRound(object):
         return js
 
     def check_round(self):
-        self.log.log(SEP2)
+        #self.log.log(SEP2)
         self.rnd_rows = []
-        for row_num, text in enumerate(self.rows):
+        for row_num, row in enumerate(self.rows):
             rnd_row = []
             open_close = 0
             closing = 0
             num = 0
-            for i, c in enumerate(text):
+            for i, c in enumerate(row):
                 if c == OP:
                     is_first = (open_close == 0)
                     open_close += 1
@@ -187,7 +185,6 @@ class CheckRound(object):
               "msg": msg}
         return js
 
-
     def log_deb(self):
         for row_num, row in enumerate(self.rows):
             lst = self.rnd_rows[row_num]
@@ -197,7 +194,6 @@ class CheckRound(object):
             for i, r in enumerate(lst):
                 s=pp(r)
                 self.log.log(s)
-
 
     def check_txt(self):
         head = f"{self.path_src}"

@@ -7,7 +7,7 @@ def read_over_tags(csv_path):
     lettura tag per gestione overflow
     Args:
         csv_path ([type]):  
-    TYPE|TAG_FROM|TAG_TO|SIGLA_FROM!SIGLA_TO
+    TYPE|TAG_FROM|TAG_TO|SIGLA_FROM|SIGLA_TO
     directspeech|{|}|ODRD|CDRD
     Returns:
         [type]: rows ordinate ler len(TAG_FROM)

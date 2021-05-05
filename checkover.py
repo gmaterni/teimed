@@ -9,8 +9,8 @@ from teimedlib.ualog import Log
 import pprint
 from teimedlib.readovertags import read_over_tags
 
-__date__ = "26-04-2021"
-__version__ = "0.1.3"
+__date__ = "28-04-2021"
+__version__ = "0.1.4"
 __author__ = "Marta Materni"
 
 """
@@ -23,7 +23,7 @@ monologue|{_|_}|OMON|CMON
 agglutination|[|]|OAGLS|CAGLS
 agglutination_uncert|[_|_]|OAGLU|CAGLU
 damage|{0%|%0}|ODAM|CDAM
-damagel_low|{1%|%1}|ODAML|CDAML
+damage_low|{1%|%1}|ODAML|CDAML
 damage_medium|{2%|%2}|ODAMM|CDAMM
 damage_high|{3%|%3}|ODAMH|CDAMH
 """
@@ -81,7 +81,7 @@ class CheckOverflow(object):
         self.text = " ".join(rows)
 
 
-    # index di s a sinistra di x
+    # index di sinistra di x
     # se non esiste ritorna -1
     #             x
     # pippo] [test]   => [test]
@@ -208,7 +208,6 @@ class CheckOverflow(object):
         if brk["is_open"]:
             brk["err"]=1
 
-
     def trunc_rgt(self,txt,x):
         o=txt.find(self.tag_open,x+1)
         o=o if o > -1 else sys.maxsize
@@ -282,6 +281,7 @@ class CheckOverflow(object):
         s=f"{self.path_src}"
         self.log.log(SEP2[0:len(s)])
         self.log.log(s)
+        self.log.log(SEP2[0:len(s)])
         # sself.log.log(SEP2[0:len(s)])
         self.read_text()
         # csv= self.read_tag_csv()
