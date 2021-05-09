@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from pdb import set_trace
 import teimedlib.pathutils as pthu
 import json
 import os
@@ -28,7 +29,9 @@ class UaRc(object):
             self.rc[k]=val
         return val
 
-    def prn(self):
+    def prn(self,msg=''):
+        print("")
+        print(msg)
         for k,v in self.rc.items():
             print(f'{k}:{v}')
 

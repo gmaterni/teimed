@@ -103,25 +103,26 @@ logediterr = Log("w")
 class TeimEdit(object):
 
     def __init__(self,
-                 dir_parent_teimcfg=None,
-                 dir_parent_text=None,
-                 path_text=None,
+                 parent_teimcfg=None,
+                 search_text_dir=None,
+                 text_regex=None,
                  text_sign="",):
         """
         Args:
-            dir_parent_teimcfg (str, optional): dir parent di teimcfg "".
-            dir_parent_text (str, optional): dir parent del/dei file di testo.
-            path_text ([type], optional): wilcard file/i di testo.
+            parent_teimcfg (str, optional): dir parent di teimcfg "".
+            search_text_dir (str, optional): dir parent del/dei file di testo.
+            text_regex (str, optional): wilcard file/i di testo.
             text_sign (str, optional): sigla del manoscritto.
         """
         self.path_edit_err = pthu.str2path("log/teimedit.lo")
         logediterr.open(pthu.path2str(self.path_edit_err), 1)
-        ##############
-        self.dir_parent_teimcfg = pthu.str2path(dir_parent_teimcfg)
-        self.dir_parent_text = pthu.str2path(dir_parent_text)     
-        self.path_text = path_text
+        ############## ARGS
+        self.parent_teimcfg = pthu.str2path(parent_teimcfg)
+        self.search_text_dir = pthu.str2path(search_text_dir)     
+        self.text_regex = text_regex
         self.text_sign = text_sign
         ##############
+        self.path_text = ""
         self.path_teimcfg = ""
         self.text_dir = None
         self.log_dir = None
@@ -179,9 +180,16 @@ class TeimEdit(object):
         self.geometry_win2='%dx%d+%d+%d' % (w2_w, w2_h, w2_x, w3_y)
         self.geometry_win3='%dx%d+%d+%d' % (w3_w, w3_h, w3_x, w3_y)
 
+    
     def find_teimtag(self):
+        """
+        cerca in modalità ricorsiva la dir teimgcfg a partire dal
+        parametro parent_teimcfg se settato, altrimenti dalla
+        dir corrente.
+        Se esiste legge i file teimedcsv ed overflow.csv 
+        """        
         try:
-            dir_lst = find_dir_lst(self.dir_parent_teimcfg, TEIMCFG)
+            dir_lst = find_dir_lst(self.parent_teimcfg, TEIMCFG)
             name_lst = pthu.pathlist2strlist(dir_lst)
             le=len(dir_lst)
             if le == 0:
@@ -192,7 +200,7 @@ class TeimEdit(object):
                 self.path_teimcfg = dir_lst[0]
                 self.set_teimcfg_paths()
                 # path_text è il parametro iniziale
-                self.find_file_text(self.path_text)
+                self.find_file_text(self.text_regex)
                 self.win0.after(20, self.show_info())
             else:
 
@@ -201,7 +209,7 @@ class TeimEdit(object):
                         return
                     self.path_teimcfg = dir_lst[n]
                     self.set_teimcfg_paths()
-                    self.find_file_text(self.path_text)
+                    self.find_file_text(self.text_regex)
                     self.win0.after(20, self.show_info())
 
                 open_listbox(name_lst, on_select,"find teimcfg")
@@ -210,18 +218,16 @@ class TeimEdit(object):
             logediterr.log(f"ERRO find_teimtags_cfg()s  {os.linesep}{e}")
             sys.exit()
 
-    def find_file_text(self, path):
+    def find_file_text(self, text_regex):
         try:
-            match = path
-            #print(f"match: {match}")
-            file_lst = find_file_lst(self.dir_parent_text, match)
+            file_lst = find_file_lst(self.search_text_dir, text_regex)
             name_lst = pthu.pathlist2strlist(file_lst)
             le = len(file_lst)
             if le == 0:
-                mbox.showinfo("", f"{match}  Not Foud")
+                mbox.showinfo("", f"{text_regex}  Not Foud")
             elif le == 1:
-                self.path_text = file_lst[0]
-                self.set_path_files(self.path_text)
+                path_text_str = file_lst[0]
+                self.set_path_files(path_text_str)
                 self.read_text_file()
                 self.win0.after(20, self.show_info)
             else:
@@ -229,8 +235,8 @@ class TeimEdit(object):
                 def load_file(n):
                     if n < 0:
                         return
-                    self.path_text = file_lst[n]
-                    self.set_path_files(self.path_text)
+                    path_text_str = file_lst[n]
+                    self.set_path_files(path_text_str)
                     self.read_text_file()
                     self.show_info()
                     self.win0.lift()
@@ -238,7 +244,7 @@ class TeimEdit(object):
                 open_listbox(name_lst, load_file,"find text")
             return
         except Exception as e:
-            s = f"{path} Not Found.{os.linesep}{e}"
+            s = f"{text_regex} Not Found.{os.linesep}{e}"
             logediterr.log(s)
             sys.exit()
 
@@ -250,9 +256,9 @@ class TeimEdit(object):
             logediterr.log(f"ERROR set_teimcfg_paths. {e}")
             sys.exit(1)
 
-    def set_path_files(self, path_text):
+    def set_path_files(self, path_text_str):
         try:
-            self.path_text = pthu.str2path(self.path_text)
+            self.path_text = pthu.str2path(path_text_str)
             self.text_dir = self.path_text.parent
             self.log_dir = pthu.join(self.text_dir, "log")
             pthu.make_dir(self.log_dir)
@@ -407,16 +413,16 @@ class TeimEdit(object):
 
     def open_text(self, *args):
         self.top_order()
-        path = fdialog.askopenfilename(
+        path_str = fdialog.askopenfilename(
             title='file',
             initialdir=self.text_dir,
             filetypes=[("text", "*.txt"),
                        ("*.*", "*.*")])
-        if len(path) < 1:
+        if len(path_str) < 1:
             return
-        if not pthu(path).exists():
+        if not pthu(path_str).exists():
             return
-        self.set_path_files(path)
+        self.set_path_files(path_str)
         self.read_text_file()
 
     def save_text(self, *args):
@@ -426,14 +432,14 @@ class TeimEdit(object):
     def save_text_as(self, *args):
         self.top_order()
         init_dir = pthu.path2str(self.text_dir)
-        path = fdialog.asksaveasfilename(title='Save as Name',
+        path_str = fdialog.asksaveasfilename(title='Save as Name',
                                          initialdir=init_dir)
-        if path is None or len(path) < 1:
+        if path_str is None or len(path_str) < 1:
             return ""
         text = self.get_text()
-        self.set_path_files(path)
+        self.set_path_files(path_str)
         self.write_file(self.path_text, text)
-        title = f"TEXT: {path} "
+        title = f"TEXT: {path_str} "
         self.win0.title(title)
     
     ##########################
@@ -854,36 +860,37 @@ class TeimEdit(object):
         info = [
             "---------------------------",
             f"work dir       : {wrk_dir}  ",
-            f"parent text    : {self.dir_parent_text}",
-            f"parent teimcfg : {self.dir_parent_teimcfg}",
+            f"parent teimcfg : {self.parent_teimcfg}",
+            f"search text dir: {self.search_text_dir}",
+            f"text RegEx     : {self.text_regex}",
+            f"sigla          : {self.text_sign}",
+            "---------------------------",
             f"teimed tags    : {self.path_entity_csv}",
             f"overflow tags  : {self.path_over_csv}",
+            f"text dir       : {self.text_dir}",
+            f"text name      : {self.path_text}",
+            f"note           : {self.path_teimnote}",
             "---------------------------",
-            f"text dir : {self.text_dir}",
-            f"text     : {self.path_text}",
-            f"sigla    : {self.text_sign}",
-            f"note     : {self.path_teimnote}",
-            "---------------------------",
-            f"chek  txt   : {self.path_check_txt}",
-            f"check over  : {self.path_check_over}",
+            f"chek  txt      : {self.path_check_txt}",
+            f"check over     : {self.path_check_over}",
             "",
-            f"elab  entity: {self.path_entity_txt}",
-            f"log   entity: {self.path_entity_log}",
-            f"ERR   entity: {self.path_entity_err}",
+            f"elab  entity   : {self.path_entity_txt}",
+            f"log   entity   : {self.path_entity_log}",
+            f"ERR   entity   : {self.path_entity_err}",
             "",
-            f"elab  set id: {self.path_setid_xml}",
-            f"log   set id: {self.path_setid_log}",
-            f"err   set id: {self.path_setid_err}",
+            f"elab  set id   : {self.path_setid_xml}",
+            f"log   set id   : {self.path_setid_log}",
+            f"err   set id   : {self.path_setid_err}",
             "",
-            f"elab  over  : {self.path_over_xml}",
-            f"log   over  : {self.path_over_log}",
-            f"err   over  : {self.path_over_err}",
+            f"elab  over     : {self.path_over_xml}",
+            f"log   over     : {self.path_over_log}",
+            f"err   over     : {self.path_over_err}",
             "",
-            f"elab  note  : {self.path_xml}",
-            f"err   note  : {self.path_note_err}",
+            f"elab  note     : {self.path_xml}",
+            f"err   note     : {self.path_note_err}",
             "",
-            f"elab  text  : {self.path_text_txt}",
-            f"err   text  : {self.path_text_err}",
+            f"elab  text     : {self.path_text_txt}",
+            f"err   text     : {self.path_text_err}",
             "---------------------------",
         ]
         s = os.linesep.join(info)
@@ -1190,33 +1197,39 @@ class TeimEdit(object):
         self.txt3.insert('1.0', s)
 
     def update_rc(self):
-        g=self.win0.winfo_geometry()
-        rc.set('win0',g)
-        g=self.win1.winfo_geometry()
-        rc.set('win1',g)      
-        g=self.win2.winfo_geometry()
-        rc.set('win2',g)        
-        g=self.win3.winfo_geometry()
-        rc.set('win3',g)
-        
-        # rc.set("text_dir",pthu.path2str(self.text_dir))
-        # rc.set("path_text",pthu.path2str(self.path_text))
-        # rc.set("text_sign",self.text_sign)
-        # rc.set("dir_parent_teimcfg",pthu.path2str(self.dir_parent_teimcfg))
+        rc.set('win0',self.win0.winfo_geometry())
+        rc.set('win1',self.win1.winfo_geometry())
+        rc.set('win2',self.win2.winfo_geometry())
+        rc.set('win3',self.win3.winfo_geometry())
+        # self.parent_teimcfg = pthu.str2path(parent_teimcfg)
+        # self.search_text_dir = pthu.str2path(search_text_dir)     
+        # self.text_regex = text_regex
+        # self.text_sign = text_sign
+        # ##############
+        # self.path_text = ""
+        rc.set("parent_teimcfg",pthu.path2str(self.parent_teimcfg))
+        rc.set("search_text_dir",pthu.path2str(self.search_text_dir))
+        rc.set("text_sign",self.text_sign)
+        rc.set("text_regex",self.text_regex)
         rc.save()
+        rc.prn("upload_rc")
 
     def load_rc(self):
-        pass
-        # text_dir=rc.get("text_dir",pthu.path2str(self.text_dir))
-        # self.text_dir=pthu.str2path(text_dir)
-        # text_dir=rc.get("text_dir",pthu.path2str(self.text_dir))
-        # self.text_dir=pthu.str2path(text_dir)
-        # path_text=rc.get("path_text",pthu.path2str(self.path_text))
-        # self.path_text=pthu.str2path(path_text)
-        # text_sign=rc.get("text_sign",self.text_sign)
-        # dir_parent_teimcfg=rc.get("dir_parent_teimcfg",pthu.path2str(self.dir_parent_teimcfg))
-        # self.dir_parent_teimcfg=pthu.str2path(dir_parent_teimcfg)
+        rc.load()
+        self.geometry_win0=rc.get('win0',self.geometry_win0)
+        self.geometry_win1=rc.get('win1',self.geometry_win1)
+        self.geometry_win2=rc.get('win2',self.geometry_win2)
+        self.geometry_win3=rc.get('win3',self.geometry_win3)
 
+        x=rc.get("parent_teimcfg",pthu.path2str(self.parent_teimcfg))
+        self.parent_teimcfg=pthu.str2path(x)
+
+        x=rc.get("search_text_dir",pthu.path2str(self.search_text_dir))
+        self.search_text_dir=pthu.str2path(x)
+
+        self.text_regex=rc.get("text_regex",self.text_regex)
+        self.text_sign=rc.get("text_sign",self.text_sign)
+        rc.prn("load_rc")
 
     def app_quit(self, *args):
         # yn = mbox.askyesno("", "Quit ?", parent=self.win0)
@@ -1228,15 +1241,15 @@ class TeimEdit(object):
         self.win1.quit()
         self.win0.quit()
 
-def do_main(dir_parent_teimcfg,
-            dir_parent_text,
+def do_main(parent_teimcfg,
+            search_text_dir,
             path_text,
             sign):
-    rc.load()
-    tme = TeimEdit(dir_parent_teimcfg,
-                   dir_parent_text,
+    tme = TeimEdit(parent_teimcfg,
+                   search_text_dir,
                    path_text,
                    sign)
+    tme.load_rc()
     tme.open_win0()
 
 
