@@ -16,7 +16,7 @@ class TextEdit(tk.Text):
 
         self.lnumbers = tk.Canvas(self.frame)
         self.lnumbers.pack(side=tk.LEFT, fill=tk.Y)
-        self.lnumbers.configure(width=40)
+        self.lnumbers.configure(width=50)
 
         kw.update({'yscrollcommand': self.vbar.set})
         kw.update({'xscrollcommand': self.hbar.set})

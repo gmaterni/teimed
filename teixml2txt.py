@@ -11,19 +11,18 @@ import traceback
 from lxml import etree
 from teimedlib.txtbuilder import TxtBuilder
 from teimedlib.ualog import Log
+from teimedlib.clean_text import clean_text
 from pdb import set_trace
 
-__date__ = "21-04-2021"
-__version__ = "0.2.4"
+__date__ = "05-54-2021"
+__version__ = "0.2.6"
 __author__ = "Marta Materni"
-
 
 def make_dir_of_file(path):
     dirname = os.path.dirname(path)
     if dirname.strip() == '':
         return
     make_dir(dirname)
-
 
 def make_dir(dirname):
     try:
@@ -38,15 +37,12 @@ def make_dir(dirname):
         msg = f"ERROR make_dir{os.linesep}{s}"
         raise Exception(msg)
 
-
 def chmod(path):
     os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
-
 
 def pp(data, w=40):
     s = pprint.pformat(data, indent=2, width=40)
     return s
-
 
 class Xml2Txt:
 
@@ -228,10 +224,8 @@ class Xml2Txt:
             sys.exit(1)
         return self.txt_path
 
-
 def do_main(xml, txt, wa='w'):
     Xml2Txt(xml, txt, wa).write_txt()
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

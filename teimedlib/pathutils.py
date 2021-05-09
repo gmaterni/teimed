@@ -2,23 +2,32 @@
 # coding: utf-8
 import os
 import pathlib as pth
-from teimedlib import edit_constants
-
 
 def cwd():
     pwd = pth.Path().cwd()
     return pwd
 
+def home():
+    home = pth.Path().home()
+    return home
+
+# path (str)file usato per memorizzrae 
+# la configurazione temporanea
+def path_rc(rc):
+    home = pth.Path().home()
+    prc= pth.Path().joinpath(home, rc)
+    src=path2str(prc)
+    return src
 
 def path2str(path):
     try:
         if path is None:
-            raise(Exception("path is None"))
+            raise(Exception("path2str() path is None"))
         #s = f"{path}"
         s=path.as_posix()
         return s.strip()
     except Exception as e:
-        raise(Exception(f"ERROR path2str {os.linesep}{e}"))
+        raise(Exception(f"ERROR path2str() {os.linesep}{e}"))
 
 def str2path(path_str):
     try:
@@ -29,12 +38,17 @@ def str2path(path_str):
         else:
             return path_str
     except Exception as e:
-        raise(Exception(f"ERROR str2path {os.linesep}{e}"))
+        raise(Exception(f"ERROR str2path() {os.linesep}{e}"))
 
 def exists(path):
     return pth.Path(path).exists()
 
-
+def remove(path):
+    if not pth.Path(path).exists():
+        return False
+    pth.Path(path).unlink()
+    return True
+ 
 def join(path0, path1):
     return pth.Path().joinpath(path0, path1)
 
@@ -95,5 +109,5 @@ def chmod(path, mode=0o777):
         #os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
         path.chmod(mode=mode)
     except Exception as e:
-        msg = f"ERROR chmod {os.linesep}{e}"
+        msg = f"ERROR chmod() {os.linesep}{e}"
         raise(Exception(msg))

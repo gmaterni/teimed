@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from pdb import set_trace
-
 import sys
-import os
-from teimedlib.ualog import Log
+# import os
+# from teimedlib.ualog import Log
 import pathlib as pth
 import pprint
 
@@ -39,8 +38,6 @@ class TeimPrjMap(object):
         self._txt_cmds = {}
 
     def pp(self, data, w=80):
-        if data is None:
-            return ""
         return pprint.pformat(data, indent=2, width=w)
 
     @property
@@ -76,7 +73,7 @@ class TeimPrjMap(object):
         return self._txt_cmds
 
     ################################################
-    # controllo run_dir ef eventula chdir su prj_dir
+    # controllo run_dir ef eventuale chdir su prj_dir
     #################################################
 
     def read_prj_name(self, prj_path):
@@ -251,5 +248,5 @@ class TeimPrjMap(object):
         self.set_witness_text_cmds()
         return self
 
-    # work="nome projetto"
-    # TeimPrjMgr().main(work)
+# work="nome projetto"
+# TeimPrjMgr().main(work)
