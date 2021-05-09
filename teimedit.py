@@ -14,14 +14,14 @@ import tkinter.messagebox as mbox
 
 from teimedlib.uarc import UaRc
 from teimedlib.ualog import Log
-import teimedlib.pathutils as pthu
+import teimedlib.pathutils as ptu
 
 from teimedlib.edit_constants import *
 from teimedlib.teim_constants import *
 from teimedlib.listbox import open_listbox
 from teimedlib.textedit import TextEdit
 from teimedlib.textpad import TextPad
-from teimedlib.findfile import find_path_lst,find_dir_lst,find_file_lst
+from teimedlib.findfile import find_dir_lst,find_file_lst
 from teimedlib.clean_text import clean_text
 
 import teimedlib.check_teimed as ckte
@@ -43,22 +43,23 @@ def HELP_RUN_OPS():
 teimedit.py -c florimont -d paris -t eps*.txt -s K -e
 
 -c florimont (facoltativo)
-cerca a partire dalla dir "florimont" "teimcfg"
-se ne trova pià di uno mostra una lista per selezionare
-se ne trova uno lo seleziona e procede
-se non ne trova nessuno esce dall'applicazione
+cerca a partire dalla directory "florimont" la directory "teimcfg"
+se ne trova più di uno, mostra una lista per selezionare
+se ne trova uno, lo seleziona e procede
+se non ne trova nessuno, esce dall'applicazione
 
 -d paris (facoltativo)
-cerca a partire dalla direcorty "paris" tutti i testi 
-che corrisondono al nome o alla wilcard dell'opzione -t
-se ne trova pià di uno mostra una lista per selezionare
-se ne trova un lo seleziona e procede
-se non ne trova nessuno mosta un messaggio ed procede
+cerca a partire dalla directory "paris" tutti i testi 
+che corrispondono al nome o alla wilcard dell'opzione -t
+se ne trova più di uno. mostra una lista per selezionare
+se ne trova uno, lo seleziona e procede
+se non ne trova nessuno, mostra un messaggio e procede
 
 -t eps*.txt 
-nome del file o wilcrad dei files di testo da elaborare
+nome del file o wilcard dei files di testo da elaborare
+se si utilizza solo la wilcard, porla tra apici o virgolette "*".txt o '*'.txt
 i files sono cercati a partire dalla directory dell'opzione -d
-se non é stata seleziona la ricerca parte dalla directory corrente.
+se non è stata selezionata, la ricerca parte dalla directory corrente
 
 -s K
 sigla del manoscritto
@@ -114,20 +115,25 @@ class TeimEdit(object):
             text_regex (str, optional): wilcard file/i di testo.
             text_sign (str, optional): sigla del manoscritto.
         """
-        self.path_edit_err = pthu.str2path("log/teimedit.lo")
-        logediterr.open(pthu.path2str(self.path_edit_err), 1)
-        ############## ARGS
-        self.parent_teimcfg = pthu.str2path(parent_teimcfg)
-        self.search_text_dir = pthu.str2path(search_text_dir)     
-        self.text_regex = text_regex
-        self.text_sign = text_sign
-        ##############
+        self.path_edit_err = ptu.str2path("log/teimedit.lo")
+        logediterr.open(ptu.path2str(self.path_edit_err), 1)
+        ################################## ARGS
+        rc.load()
+        x=rc.upd("parent_teimcfg",parent_teimcfg)
+        self.parent_teimcfg=ptu.str2path(x)
+
+        x=rc.upd("search_text_dir",search_text_dir)
+        self.search_text_dir=ptu.str2path(x)
+
+        self.text_regex=rc.upd("text_regex",text_regex)
+        self.text_sign=rc.upd("text_sign",text_sign)
+        ###################################
         self.path_text = ""
         self.path_teimcfg = ""
         self.text_dir = None
         self.log_dir = None
 
-        self.pwd = pthu.cwd()
+        self.pwd = ptu.cwd()
         self.path_entity_csv = None
         self.path_over_csv = None
         self.path_teimnote = None
@@ -174,13 +180,19 @@ class TeimEdit(object):
         self.txt2 = None
         self.win3 = None
         self.txt3 = None
-
+        ####################################
         self.geometry_win0='%dx%d+%d+%d' % (w0_w, w0_h, w0_x, w1_y)
         self.geometry_win1='%dx%d+%d+%d' % (w1_w, w1_h, w1_x, w2_y)
         self.geometry_win2='%dx%d+%d+%d' % (w2_w, w2_h, w2_x, w3_y)
         self.geometry_win3='%dx%d+%d+%d' % (w3_w, w3_h, w3_x, w3_y)
 
-    
+        self.geometry_win0=rc.get('win0',self.geometry_win0)
+        self.geometry_win1=rc.get('win1',self.geometry_win1)
+        self.geometry_win2=rc.get('win2',self.geometry_win2)
+        self.geometry_win3=rc.get('win3',self.geometry_win3)
+        #####################################
+        rc.prn("load")
+
     def find_teimtag(self):
         """
         cerca in modalità ricorsiva la dir teimgcfg a partire dal
@@ -190,7 +202,7 @@ class TeimEdit(object):
         """        
         try:
             dir_lst = find_dir_lst(self.parent_teimcfg, TEIMCFG)
-            name_lst = pthu.pathlist2strlist(dir_lst)
+            name_lst = ptu.pathlist2strlist(dir_lst)
             le=len(dir_lst)
             if le == 0:
                 self.iconify()
@@ -221,7 +233,7 @@ class TeimEdit(object):
     def find_file_text(self, text_regex):
         try:
             file_lst = find_file_lst(self.search_text_dir, text_regex)
-            name_lst = pthu.pathlist2strlist(file_lst)
+            name_lst = ptu.pathlist2strlist(file_lst)
             le = len(file_lst)
             if le == 0:
                 mbox.showinfo("", f"{text_regex}  Not Foud")
@@ -250,89 +262,89 @@ class TeimEdit(object):
 
     def set_teimcfg_paths(self):
         try:
-            self.path_entity_csv = pthu.join(self.path_teimcfg, TEIMTAGS_CSV)
-            self.path_over_csv = pthu.join(self.path_teimcfg, TEIMOVERFLOW_CSV)
+            self.path_entity_csv = ptu.join(self.path_teimcfg, TEIMTAGS_CSV)
+            self.path_over_csv = ptu.join(self.path_teimcfg, TEIMOVERFLOW_CSV)
         except Exception as e:
             logediterr.log(f"ERROR set_teimcfg_paths. {e}")
             sys.exit(1)
 
     def set_path_files(self, path_text_str):
         try:
-            self.path_text = pthu.str2path(path_text_str)
+            self.path_text = ptu.str2path(path_text_str)
             self.text_dir = self.path_text.parent
-            self.log_dir = pthu.join(self.text_dir, "log")
-            pthu.make_dir(self.log_dir)
-            self.path_teimnote = pthu.join(self.text_dir, TEIMNOTE_CSV)
+            self.log_dir = ptu.join(self.text_dir, "log")
+            ptu.make_dir(self.log_dir)
+            self.path_teimnote = ptu.join(self.text_dir, TEIMNOTE_CSV)
 
             # teim/teim.xml
-            self.path_xml = pthu.update_path_name(
+            self.path_xml = ptu.update_path_name(
                 self.path_text, ".txt", ".xml")
 
             # teim/teim_format.xml
-            self.path_xml_format = pthu.update_path_name(
+            self.path_xml_format = ptu.update_path_name(
                 self.path_text, ".txt", "_format.xml")
 
             # temporaneo  per la gestione dei lfiles mella dir og
             t_name = self.path_text.name
-            path_log = pthu.join(self.log_dir, t_name)
+            path_log = ptu.join(self.log_dir, t_name)
 
             # teim/log/teim_MED.txt
             # teim/log/teim_MED.log
             # teim/log/teim_MED.ERR.log
-            self.path_entity_txt = pthu.update_path_name(
+            self.path_entity_txt = ptu.update_path_name(
                 path_log, ".txt", "_MED.txt")
-            self.path_entity_log = pthu.update_path_name(
+            self.path_entity_log = ptu.update_path_name(
                 path_log, ".txt", "_MED.log")
-            self.path_entity_err = pthu.update_path_name(
+            self.path_entity_err = ptu.update_path_name(
                 path_log, ".txt", "_MED.ERR.log")
 
             # teim/log/teim_WID.xml
             # teim/log/teim_WID.log
             # teim/log/teim_WID.ERR.log
-            self.path_setid_xml = pthu.update_path_name(
+            self.path_setid_xml = ptu.update_path_name(
                 path_log, ".txt", "_WID.xml")
-            self.path_setid_log = pthu.update_path_name(
+            self.path_setid_log = ptu.update_path_name(
                 path_log, ".txt", "_WID.log")
-            self.path_setid_err = pthu.update_path_name(
+            self.path_setid_err = ptu.update_path_name(
                 path_log, ".txt", "_WID.ERR.log")
 
             # teim/log/teim_OVER.xml
             # teim/log/teim_OVER.log
             # teim/log/teim_OVER.ERR.log
-            self.path_over_xml = pthu.update_path_name(
+            self.path_over_xml = ptu.update_path_name(
                 path_log, ".txt", "_OVER.xml")
-            self.path_over_log = pthu.update_path_name(
+            self.path_over_log = ptu.update_path_name(
                 path_log, ".txt", "_OVER.log")
-            self.path_over_err = pthu.update_path_name(
+            self.path_over_err = ptu.update_path_name(
                 path_log, ".txt", "_OVER.ERR.log")
 
             # teim/log/teim_note.ERR.log
-            self.path_note_err = pthu.update_path_name(
+            self.path_note_err = ptu.update_path_name(
                 path_log, ".txt", "_note.ERR.log")
 
             # teim/log/teimCHECK_TXT.txt
-            self.path_check_txt = pthu.update_path_name(
+            self.path_check_txt = ptu.update_path_name(
                 path_log, ".txt", "_CHECK_TXT.log")
 
             # teim/log/teimCHECK_OVER.txt
-            self.path_check_over = pthu.update_path_name(
+            self.path_check_over = ptu.update_path_name(
                 path_log, ".txt", "_CHECK_OVER.log")
 
             # teim/teim_text.txt
             # teim/log/teim_text.ERR.log
-            self.path_text_txt = pthu.update_path_name(
+            self.path_text_txt = ptu.update_path_name(
                 self.path_text, ".txt", "_text.txt")
-            self.path_text_err = pthu.update_path_name(
+            self.path_text_err = ptu.update_path_name(
                 path_log, ".txt", "_text.ERR..log")
 
-            self.path_tmp = pthu.join(self.log_dir, 'tmp')
+            self.path_tmp = ptu.join(self.log_dir, 'tmp')
         except Exception as e:
             logediterr.log(f"ERROR set_path_fies.{os.linesep}{e}")
             sys.exit(1)
 
     def chmod(self, path):
         try:
-            pthu.chmod(path)
+            ptu.chmod(path)
         except Exception as e:
             logediterr.log(f"File {path} Not Found.{os.linesep}{e}")
             self.show_log_top(f"File {path} Not Found.", True)
@@ -343,7 +355,7 @@ class TeimEdit(object):
 
     def read_file(self, path):
         if not path.exists():
-            s = pthu.path2str(path)
+            s = ptu.path2str(path)
             self.show_log_lift(f"{s} Not Found.", True)
             return None
         with path.open('r', encoding='utf-8') as f:
@@ -398,18 +410,19 @@ class TeimEdit(object):
     def reload_text(self):
         self.read_text_file()
 
-    def import_text(self):
-        self.top_order()
-        wrk_dir = os.getcwd()
-        path_read = fdialog.askopenfilename(
-            parnet=self.win0,
-            title=' file',
-            initialdir=wrk_dir,
-            filetypes=[("text", "*.txt")])
-        if len(path_read) < 1:
-            return
-        s = open(path_read, "r").read()
-        self.text_edit.insert_text(s)
+    # TODO
+    # def import_text(self):
+    #     self.top_order()
+    #     wrk_dir = os.getcwd()
+    #     path_read = fdialog.askopenfilename(
+    #         parnet=self.win0,
+    #         title=' file',
+    #         initialdir=wrk_dir,
+    #         filetypes=[("text", "*.txt")])
+    #     if len(path_read) < 1:
+    #         return
+    #     s = open(path_read, "r").read()
+    #     self.text_edit.insert_text(s)
 
     def open_text(self, *args):
         self.top_order()
@@ -420,18 +433,41 @@ class TeimEdit(object):
                        ("*.*", "*.*")])
         if len(path_str) < 1:
             return
-        if not pthu(path_str).exists():
+        if not ptu.exists(path_str):
             return
         self.set_path_files(path_str)
         self.read_text_file()
 
+    def open_recenti(self):
+        try:
+            name_lst=self.rc_get_recenti()
+            if len(name_lst)<1:
+                return
+            self.top_order()
+            file_lst = ptu.strlist2pathlist(name_lst)
+
+            def load_file(n):
+                if n < 0:
+                    return
+                path_text_str = file_lst[n]
+                self.set_path_files(path_text_str)
+                self.read_text_file()
+                self.show_info()
+                self.win0.lift()
+            open_listbox(name_lst, load_file,"find text")
+        except Exception as e:
+            s = f" Not Found.{os.linesep}{e}"
+            logediterr.log(s)
+            sys.exit()
+
     def save_text(self, *args):
         s = self.get_text()
         self.write_file(self.path_text, s)
+        self.rc_update_recenti(ptu.path2str(self.path_text))
 
     def save_text_as(self, *args):
         self.top_order()
-        init_dir = pthu.path2str(self.text_dir)
+        init_dir = ptu.path2str(self.text_dir)
         path_str = fdialog.asksaveasfilename(title='Save as Name',
                                          initialdir=init_dir)
         if path_str is None or len(path_str) < 1:
@@ -439,6 +475,7 @@ class TeimEdit(object):
         text = self.get_text()
         self.set_path_files(path_str)
         self.write_file(self.path_text, text)
+        self.rc_update_recenti(path_str)
         title = f"TEXT: {path_str} "
         self.win0.title(title)
     
@@ -453,9 +490,9 @@ class TeimEdit(object):
         s = self.get_text()
         self.write_file(self.path_tmp, s)
         # def do_main(path_src, path_out):
-        do_main_checktxt(pthu.path2str(self.path_tmp),
+        do_main_checktxt(ptu.path2str(self.path_tmp),
 
-                         pthu.path2str(self.path_check_txt))
+                         ptu.path2str(self.path_check_txt))
         self.chmod(self.path_check_txt)
         s = self.read_file(self.path_check_txt)
         self.show_log_top(s, True)
@@ -464,9 +501,9 @@ class TeimEdit(object):
         s = self.get_text()
         self.write_file(self.path_tmp, s)
         # def do_main(path_src, path_csv, path_out):
-        do_main_checkover(pthu.path2str(self.path_tmp),
-                          pthu.path2str(self.path_over_csv),
-                          pthu.path2str(self.path_check_over))
+        do_main_checkover(ptu.path2str(self.path_tmp),
+                          ptu.path2str(self.path_over_csv),
+                          ptu.path2str(self.path_check_over))
         self.chmod(self.path_check_over)
         s = self.read_file(self.path_check_over)
         self.show_log_top(s, True)
@@ -613,9 +650,9 @@ class TeimEdit(object):
         s = self.get_text()
         self.write_file(self.path_text, s)
         try:
-            do_main_xml(pthu.path2str(self.path_text),
-                        pthu.path2str(self.path_entity_csv),
-                        pthu.path2str(self.path_entity_txt))
+            do_main_xml(ptu.path2str(self.path_text),
+                        ptu.path2str(self.path_entity_csv),
+                        ptu.path2str(self.path_entity_txt))
         except SystemExit as e:
             s = f"ERROR Elab entity {os.linesep}{e}"
             logediterr.log(s)
@@ -637,8 +674,8 @@ class TeimEdit(object):
         # path_txt_1 => path_xml_1
         try:
            # def do_main(path_src, path_out, sigla_scrp, ids_start=""):
-            do_main_setid(pthu.path2str(self.path_entity_txt),
-                          pthu.path2str(self.path_setid_xml),
+            do_main_setid(ptu.path2str(self.path_entity_txt),
+                          ptu.path2str(self.path_setid_xml),
                           self.text_sign)
         except SystemExit as e:
             s = f"Errro in set id{os.linesep} {e}"
@@ -659,9 +696,9 @@ class TeimEdit(object):
         # path_xml_1 => path_xml_2
         try:
             # def do_main(src_path, out_path, csv_path):
-            do_main_over(pthu.path2str(self.path_setid_xml),
-                         pthu.path2str(self.path_over_xml),
-                         pthu.path2str(self.path_over_csv))
+            do_main_over(ptu.path2str(self.path_setid_xml),
+                         ptu.path2str(self.path_over_xml),
+                         ptu.path2str(self.path_over_csv))
         except SystemExit as e:
             s = f"Elaborare overflow {os.linesep} {e}"
             logediterr.log(s)
@@ -681,9 +718,9 @@ class TeimEdit(object):
         # path_xml_2 => path_xml
         try:
             # def do_main(src_path, out_path, note_path):
-            do_main_note(pthu.path2str(self.path_over_xml),
-                         pthu.path2str(self.path_xml),
-                         pthu.path2str(self.path_teimnote))
+            do_main_note(ptu.path2str(self.path_over_xml),
+                         ptu.path2str(self.path_xml),
+                         ptu.path2str(self.path_teimnote))
         except SystemExit as e:
             s = f"Elab. note {os.linesep} {e}"
             logediterr.log(s)
@@ -703,8 +740,8 @@ class TeimEdit(object):
             return
         # path_xml => path_text_txt
         try:
-            do_main_xml2txt(pthu.path2str(self.path_xml_format),
-                            pthu.path2str(self.path_text_txt))
+            do_main_xml2txt(ptu.path2str(self.path_xml_format),
+                            ptu.path2str(self.path_text_txt))
         except SystemExit as e:
             s = f"ERROR Elab. note {os.linesep}{e} "
             logediterr.log(s)
@@ -724,7 +761,7 @@ class TeimEdit(object):
         self.write_file(self.path_tmp, xml)
         try:
             parser = etree.XMLParser(remove_blank_text=True)
-            path = pthu.path2str(self.path_tmp)
+            path = ptu.path2str(self.path_tmp)
             root = etree.parse(path, parser)
             src = etree.tostring(root,
                                  method='xml',
@@ -774,7 +811,7 @@ class TeimEdit(object):
             self.txt3.delete('1.0', tk.END)
 
     def remove_log(self):
-        path_lst = pthu.list_path(self.log_dir)
+        path_lst = ptu.list_path(self.log_dir)
         for p in path_lst:
             p.unlink()
 
@@ -843,7 +880,7 @@ class TeimEdit(object):
                        ("xml", "*.xml")])
         if len(path) < 1:
             return
-        path = pthu.str2path(path)
+        path = ptu.str2path(path)
         if path.exists():
             s = self.read_file(path)
         else:
@@ -910,6 +947,7 @@ class TeimEdit(object):
     def read_text_file(self):
         if self.path_text.exists():
             s = self.read_file(self.path_text)
+            self.rc_update_recenti(ptu.path2str(self.path_text))
         else:
             self.write_file(self.path_text, "Empty")
             r = ["", f"File  {self.path_text} Not Found.",
@@ -991,13 +1029,13 @@ class TeimEdit(object):
         mv_file = new_mv()
         mv_file.add_command(
             label='Reload', command=self.reload_text, underline=0)
-        mv_file.add_command(label='Import text',
-                            command=self.import_text, underline=0)
+        mv_file.add_command(label='Recent Files',
+                            command=self.open_recenti, underline=0)
         mv_file.add_separator()
-        mv_file.add_command(label='Open  Ctrl+O', command=self.open_text)
+        mv_file.add_command(label='Open  Ctrl-O', command=self.open_text)
         mv_file.add_separator()
-        mv_file.add_command(label='Save  Ctrl+S', command=self.save_text)
-        mv_file.add_command(label='Save As.. Ctl-Shift-S',
+        mv_file.add_command(label='Save  Ctrl-S', command=self.save_text)
+        mv_file.add_command(label='Save As... Ctrl-Shift-S',
                             command=self.save_text_as)
         mv_file.add_separator()
         mv_file.add_command(label='Quit', command=self.app_quit,
@@ -1061,48 +1099,48 @@ class TeimEdit(object):
 
         mv_elab = new_mv()
         mv_elab.add_command(label='Elab. Entity', command=self.elab_teimxml)
-        mv_elab.add_command(label='Elab. Set id', command=self.elab_teimsetid)
+        mv_elab.add_command(label='Elab. Set ID', command=self.elab_teimsetid)
         mv_elab.add_command(label='Elab. Overflow', command=self.elab_teimover)
         mv_elab.add_command(label='Elab. Note', command=self.elab_teimnote)
         mv_elab.add_separator()
-        mv_elab.add_command(label='XML => text', command=self.elab_xml2txt)
+        mv_elab.add_command(label='.XML => .txt', command=self.elab_xml2txt)
         mv_elab.add_separator()
         mv_elab.add_command(label='Reload XML', command=self.reload_xml)
 
         mv_log = new_mv()
-        mv_log.add_command(label='Check Txt Err.', command=self.show_check_txt)
+        mv_log.add_command(label='Check Text Err.', command=self.show_check_txt)
         mv_log.add_command(label='Check Over Err.',
                            command=self.show_check_over)
         mv_log.add_separator()
         mv_log.add_command(label='Entity Log.', command=self.show_entity_log)
         mv_log.add_command(label='Entity Err.', command=self.show_entity_err)
         mv_log.add_separator()
-        mv_log.add_command(label='Set id Log.', command=self.show_setwid_log)
-        mv_log.add_command(label='set id Err.', command=self.show_setwid_err)
+        mv_log.add_command(label='Set ID Log.', command=self.show_setwid_log)
+        mv_log.add_command(label='Set ID Err.', command=self.show_setwid_err)
         mv_log.add_separator()
-        mv_log.add_command(label='Over Log.', command=self.show_over_log)
-        mv_log.add_command(label='Over Err.', command=self.show_over_err)
+        mv_log.add_command(label='Overflow Log.', command=self.show_over_log)
+        mv_log.add_command(label='Overflow Err.', command=self.show_over_err)
         mv_log.add_separator()
         mv_log.add_command(label='Note Err.', command=self.show_note_err)
         mv_log.add_separator()
         mv_log.add_command(label='*_text_.txt', command=self.show_text_txt)
-        mv_log.add_command(label='XML => text ERR',
+        mv_log.add_command(label='.XML => .txt Err.',
                            command=self.show_text_txt_err)
         mv_log.add_separator()
         mv_log.add_command(label='TeimEdit Err.', command=self.show_edit_err)
         mv_log.add_separator()
-        mv_log.add_command(label='Read Log.', command=self.open_log)
+        mv_log.add_command(label='Read Log', command=self.open_log)
 
         mv_del = new_mv()
         mv_del.add_command(label='Entity', command=self.delete_txt1)
         mv_del.add_command(label='XML', command=self.delete_txt2)
-        mv_del.add_command(label='Log.', command=self.delete_txt3)
+        mv_del.add_command(label='Log', command=self.delete_txt3)
         mv_del.add_command(label='All', command=self.delete_txt_all)
         mv_del.add_separator()
-        mv_del.add_command(label='Remove log file', command=self.remove_log)
+        mv_del.add_command(label='Remove log files', command=self.remove_log)
 
         mv_help = new_mv()
-        mv_help.add_command(label='Files & Direcory', command=self.show_info)
+        mv_help.add_command(label='Files & Directory', command=self.show_info)
         mv_help.add_command(label='run options', command=self.show_options)
 
         # orizontale
@@ -1110,7 +1148,7 @@ class TeimEdit(object):
         menu_bar.add_cascade(label='Edit', menu=mv_edit, underline=0)
         menu_bar.add_cascade(label='Check', menu=mv_check, underline=0)
         menu_bar.add_cascade(label='Elab.', menu=mv_elab, underline=1)
-        menu_bar.add_cascade(label='Log.', menu=mv_log, underline=0)
+        menu_bar.add_cascade(label='Log', menu=mv_log, underline=0)
         menu_bar.add_cascade(label='Del.', menu=mv_del, underline=0)
         menu_bar.add_command(label='    1-2-3-4 ', command=self.top_order)
         menu_bar.add_command(label=' 1 ', command=self.top_w0)
@@ -1196,50 +1234,34 @@ class TeimEdit(object):
         self.txt3.delete('1.0', tk.END)
         self.txt3.insert('1.0', s)
 
-    def update_rc(self):
-        rc.set('win0',self.win0.winfo_geometry())
-        rc.set('win1',self.win1.winfo_geometry())
-        rc.set('win2',self.win2.winfo_geometry())
-        rc.set('win3',self.win3.winfo_geometry())
-        # self.parent_teimcfg = pthu.str2path(parent_teimcfg)
-        # self.search_text_dir = pthu.str2path(search_text_dir)     
-        # self.text_regex = text_regex
-        # self.text_sign = text_sign
-        # ##############
-        # self.path_text = ""
-        rc.set("parent_teimcfg",pthu.path2str(self.parent_teimcfg))
-        rc.set("search_text_dir",pthu.path2str(self.search_text_dir))
-        rc.set("text_sign",self.text_sign)
-        rc.set("text_regex",self.text_regex)
-        rc.save()
-        rc.prn("upload_rc")
-
-    def load_rc(self):
-        rc.load()
-        self.geometry_win0=rc.get('win0',self.geometry_win0)
-        self.geometry_win1=rc.get('win1',self.geometry_win1)
-        self.geometry_win2=rc.get('win2',self.geometry_win2)
-        self.geometry_win3=rc.get('win3',self.geometry_win3)
-
-        x=rc.get("parent_teimcfg",pthu.path2str(self.parent_teimcfg))
-        self.parent_teimcfg=pthu.str2path(x)
-
-        x=rc.get("search_text_dir",pthu.path2str(self.search_text_dir))
-        self.search_text_dir=pthu.str2path(x)
-
-        self.text_regex=rc.get("text_regex",self.text_regex)
-        self.text_sign=rc.get("text_sign",self.text_sign)
-        rc.prn("load_rc")
 
     def app_quit(self, *args):
         # yn = mbox.askyesno("", "Quit ?", parent=self.win0)
         # if not yn:
         #     return
-        self.update_rc()
+        self.rc_update()
         self.win3.quit()
         self.win2.quit()
         self.win1.quit()
         self.win0.quit()
+
+    def rc_get_recenti(self):
+        lst=rc.get('recenti',[])
+        return lst
+
+    def rc_update_recenti(self,path):
+        lst=rc.get("recenti",[])
+        lst.append(path)
+        lst=list(set(lst))
+        rc.set('recenti',lst)
+
+    def rc_update(self):
+        rc.set('win0',self.win0.winfo_geometry())
+        rc.set('win1',self.win1.winfo_geometry())
+        rc.set('win2',self.win2.winfo_geometry())
+        rc.set('win3',self.win3.winfo_geometry())
+        rc.save()
+        rc.prn("upload_rc")
 
 def do_main(parent_teimcfg,
             search_text_dir,
@@ -1249,7 +1271,6 @@ def do_main(parent_teimcfg,
                    search_text_dir,
                    path_text,
                    sign)
-    tme.load_rc()
     tme.open_win0()
 
 
@@ -1293,11 +1314,11 @@ if __name__ == "__main__":
     parser.add_argument('-x',
                         action="store_true",
                         required=False,
-                        help="[-e  Print examples]")
+                        help="[-x  print examples]")
     parser.add_argument('-e',
                         action="store_true",
                         required=False,
-                        help="[-e dElete history]")
+                        help="[-e delete history]")
     args = parser.parse_args()
     if args.x:
         prn_help()

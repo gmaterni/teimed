@@ -19,15 +19,31 @@ class UaRc(object):
         self.rc[k]=v
         return self
 
-    # x=get('a',100) 
-    # se a esiste ritorna il suo valore in rc
-    # altrimenti ritorna 100 e setta a in rc
+    # x=get('a',v) 
+    # se a NON esiste 
+    #    setta rc e ritorna v
+    # altrimenti 
+    #   ritorna val
     def get(self,k,v):
         val=self.rc.get(k,None)
         if val is None:
-            val=v
-            self.rc[k]=val
-        return val
+            self.rc[k]=v
+            return v
+        else:
+            return val
+
+    # se a NON esiste OR (v!=None AND  v!=''()
+    #    setta rc e ritorna v
+    # altrimenti 
+    #   ritorna val
+    def upd(self,k,v):
+        val=self.rc.get(k,None)
+        if val is None or (v is not None and len(v)> 0):
+            self.rc[k]=v
+            return v
+        else:
+            return val
+
 
     def prn(self,msg=''):
         print("")
