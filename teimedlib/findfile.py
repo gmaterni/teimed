@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import teimedlib.pathutils as pthu
+import teimedlib.pathutils as ptu
 
 #ritorna una lista di path selezionate da math 
 # a partire da initialdir
 def find_path_lst(initialdir, match):
     try:
         if initialdir is None:
-            initialdir = pthu.str2path(".")
+            initialdir = ptu.str2path(".")
         elif isinstance(initialdir,str):
-            initialdir = pthu.str2path(initialdir)
+            initialdir = ptu.str2path(initialdir)
         path_lst = []
         for x in initialdir.rglob(match):
             path_lst.append(x)

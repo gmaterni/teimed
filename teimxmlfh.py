@@ -25,7 +25,7 @@ from teimprjsave import save_text
 
 from teimedlib.ualog import Log
 # from teimedlib.findfile import find_match_files
-import teimedlib.pathutils as pthu
+import teimedlib.pathutils as ptu
 import pathlib as pth
 
 __date__ = "06-05-2021"
@@ -84,9 +84,9 @@ class TeimXmlFh(object):
         #######################
         set_prj_map(prj_name)
         #######################
-        self.path_edit_err = pthu.str2path("log/teimxmlfh.lo")
-        logerr.open(pthu.path2str(self.path_edit_err), 1)
-        self.pwd = pthu.cwd()
+        self.path_edit_err = ptu.str2path("log/teimxmlfh.lo")
+        logerr.open(ptu.path2str(self.path_edit_err), 1)
+        self.pwd = ptu.cwd()
         ##################
         self.root = None
         self.txt_root = None
@@ -268,16 +268,16 @@ class TeimXmlFh(object):
 
     def file_prj_list(self):
         path = str(TPM.prj_dir)
-        path = pthu.str2path(path)
+        path = ptu.str2path(path)
         wtn_lst = TPM.witness_names
         path_lst = []
         for wtn in wtn_lst:
-            path_wtn = pthu.join(path, wtn)
-            lst = pthu.rlist_path(path_wtn, "*.*")
+            path_wtn = ptu.join(path, wtn)
+            lst = ptu.rlist_path(path_wtn, "*.*")
             for x in lst:
                 p = pth.Path(x).relative_to(path)
                 path_lst.append(p)
-        lst = pthu.pathlist2strlist(path_lst)
+        lst = ptu.pathlist2strlist(path_lst)
 
         def load_file(n):
             if n<0:
@@ -296,13 +296,13 @@ class TeimXmlFh(object):
         if len(wtn)<1:
             return
         path = TPM.prj_dir
-        path_wtn = pthu.join(path, wtn)
+        path_wtn = ptu.join(path, wtn)
         path_lst = []
-        lst = pthu.rlist_path(path_wtn, "*.*")
+        lst = ptu.rlist_path(path_wtn, "*.*")
         for x in lst:
             p = pth.Path(x).relative_to(path)
             path_lst.append(p)
-        lst = pthu.pathlist2strlist(path_lst)
+        lst = ptu.pathlist2strlist(path_lst)
 
         def load_file(n):
             print(n)

@@ -71,6 +71,7 @@ class TextEdit(tk.Text):
             self.edit_separator()
 
         self.vbar.bind("<B1-Motion>", redraw)
+        self.bind("<FocusIn>", redraw)
         self.bind("<Enter>", redraw)
         self.bind("<Expose>", redraw)
         self.bind("<Key>", redraw_delay)

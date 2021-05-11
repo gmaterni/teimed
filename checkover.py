@@ -7,7 +7,7 @@ import re
 import sys
 from teimedlib.ualog import Log
 import pprint
-from teimedlib.readovertags import read_over_tags
+from teimedlib.readovertags import read_over_tags_sorted
 
 __date__ = "28-04-2021"
 __version__ = "0.1.4"
@@ -287,7 +287,7 @@ class CheckOverflow(object):
         # csv= self.read_tag_csv()
         # rows= sorted(csv, key=lambda x: (len(x[1]), x[0]), reverse=True)
         try:
-            over_tags=read_over_tags(self.path_csv)
+            over_tags=read_over_tags_sorted(self.path_csv)
         except Exception as e:
             self.logerr.log("ERROR teimcheckover.py read_over_tags()v")
             self.logerr.log(str(e))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from pdb import set_trace
-import teimedlib.pathutils as pthu
+import teimedlib.pathutils as ptu
 import json
 import os
 
@@ -9,11 +9,11 @@ import os
 class UaRc(object):
 
     def __init__(self,name_rc=".uarc"):
-        self.path_rc = pthu.path_rc(name_rc)
+        self.path_rc = ptu.path_rc(name_rc)
         self.rc={}
 
     def remove(self):
-        pthu.remove(self.path_rc)
+        ptu.remove(self.path_rc)
 
     def set(self,k,v):
         self.rc[k]=v
@@ -61,7 +61,7 @@ class UaRc(object):
             raise(Exception(f"ERROR write_rc() {os.linesep}{e}"))
 
     def load(self):
-        if not pthu.exists(self.path_rc):
+        if not ptu.exists(self.path_rc):
             self.save()
         try:
             with open(self.path_rc, "r") as f:

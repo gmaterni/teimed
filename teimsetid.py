@@ -6,7 +6,7 @@ import argparse
 import sys
 from teimedlib.ualog import Log
 from teimedlib.xml_const import *
-from teimedlib.readovertags import read_over_tags
+#from teimedlib.readovertags import read_over_tags_sortes
 import re
 import stat
 from pdb import set_trace

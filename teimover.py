@@ -23,7 +23,7 @@ from teimedlib.ualog import Log
 import pprint
 import re
 import stat
-from teimedlib.readovertags import read_over_tags
+from teimedlib.readovertags import read_over_tags_sorted
 
 __date__ = "20-04-2021"
 __version__ = "0.10.7"
@@ -477,7 +477,7 @@ class Addspan(object):
             #ssys.exit(1)
             return
         try:
-            self.over_tag_rows = read_over_tags(csv_path)
+            self.over_tag_rows = read_over_tags_sorted(csv_path)
         except Exception as e:
             self.logerr.log("ERROR teimover.py read_overTags()")
             self.logerr.log(str(e))

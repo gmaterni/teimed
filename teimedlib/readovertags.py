@@ -2,6 +2,15 @@
 # -*- coding: utf-8 -*-
 import os
 
+# ['damage_high', '{3%', '%3}', 'ODAMH', 'CDAMH'],
+# ['damage_medium', '{2%', '%2}', 'ODAMM', 'CDAMM'],
+# ['damage_low', '{1%', '%1}', 'ODAML', 'CDAML'],
+# ['damage', '{0%', '%0}', 'ODAM', 'CDAM'],
+# ['monologue', '{_', '_}', 'OMON', 'CMON'],
+# ['directspeech', '{', '}', 'ODRD', 'CDRD'],
+# ['agglutination_uncert', '[_', '_]', 'OAGLU', 'CAGLU'],
+# ['agglutination', '[', ']', 'OAGLS', 'CAGLS'],
+
 def read_over_tags(csv_path):
     """
     lettura tag per gestione overflow
@@ -10,7 +19,7 @@ def read_over_tags(csv_path):
     TYPE|TAG_FROM|TAG_TO|SIGLA_FROM|SIGLA_TO
     directspeech|{|}|ODRD|CDRD
     Returns:
-        [type]: rows ordinate ler len(TAG_FROM)
+        [type]: list of list
     """        
     try:
         with open(csv_path, "r") as f:
@@ -29,8 +38,15 @@ def read_over_tags(csv_path):
             if x.lower() == 'type':
                 continue
             csv_rows.append(flds)
-        rows= sorted(csv_rows, key=lambda x: (len(x[1]), x[0]), reverse=True)
-        return rows
+        return csv_rows
     except Exception as e:
         s=str(e)
         raise Exception(s)
+
+def read_over_tags_sorted(csv_path):
+    """
+    rows ordinate ler len(TAG_FROM)
+    """        
+    csv_rows=read_over_tags(csv_path)
+    rows= sorted(csv_rows, key=lambda x: (len(x[1]), x[0]), reverse=True)
+    return rows

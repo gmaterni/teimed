@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from pdb import set_trace
 import re
+
+
 
 def check_entitys(text):
     ptrn = r"(&{1})([\w-]+)([;]{0,1})"
@@ -27,7 +30,7 @@ def check_entity_brackets(text):
         lst.append(e)
     return lst
 
-# lista de patter del tipo from to
+# lista de pattern del tipo from to
 def check_overflow(text, po, pc):
     lst = []
     pc = re.compile(pc)
@@ -62,41 +65,50 @@ def check_overflow(text, po, pc):
         lst.append(js)
     return lst
 
+OVER_KEY_TYPE_LIST = (
+    ('g3', '{3%',0),
+    ('g2', '{2%',0),
+    ('g1', '{1%',0),
+    ('g0', '{0%',0),
 
-tag_list = [
-    ['damage_medium', '{2%', '%2}', 'ODAMM', 'CDAMM'],
-    ['damage_low', '{1%', '%1}', 'ODAML', 'CDAML'],
-    ['damage_high', '{3%', '%3}', 'ODAMH', 'CDAMH'],
-    ['damage', '{0%', '%0}', 'ODAM', 'CDAM'],
-    ['monologue', '{_', '_}', 'OMON', 'CMON'],
-    ['agglutination_uncert', '[_', '_]', 'OAGLU', 'CAGLU'],
-    ['directspeech', '{', '}', 'ODRD', 'CDRD'],
-    ['agglutination', '[', ']', 'OAGLS', 'CAGLS'],
-]
+    ('gu', '{_' ,0),
+    ('qu', '[_' ,1),
+    
+    ('g', '{'   ,0),
+    ('q', '['   ,1)
+)
 
-def build_pattern_over(tag_lst=tag_list):
-    js = {}
+
+def fill_tag_over_lst(tag_lst):
+    
+    def find_over_key_type(tag_op):
+        k=None
+        t=None
+        for kpt in OVER_KEY_TYPE_LIST:
+            if tag_op==kpt[1]:
+                k=kpt[0]
+                t=kpt[2]
+                break
+        return k,t        
+    
+    lst=[]
     for tag in tag_lst:
+        key,func_type=find_over_key_type(tag[1])
+        if key is None:
+            continue
         po = tag[1]
         pc = tag[2]
-        name = tag[0]
-        j = {
-            'o': po,
-            'c': pc
-        }
+        so=po
+        sc=pc
         if po == "[":
-            # agglutination [ ]
             po = po.replace('[', r'\[[^_]')
             pc = pc.replace(']', r'[^_]\]')
         elif po == "[_":
-            # agglutination_uncert [_ _]
             po = po.replace('[', r'\[')
             pc = pc.replace(']', r'\]')
         elif po == "{":
-            # directspeech {}
             po = po.replace('{', r'\{[^_]\w')
             pc = pc.replace('}', r'\w[^_]\}')
-        j['po'] = po
-        j['pc'] = pc
-        js[name] = j
-    return js
+        name = tag[0]
+        lst.append([func_type,name,so,sc,po,pc])
+    return lst
