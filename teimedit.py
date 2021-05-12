@@ -174,7 +174,7 @@ class TeimEdit(object):
         if not path.exists():
             s = ptu.path2str(path)
             self.show_log_lift(f"{s} Not Found.", True)
-            return None
+            return ''
         with path.open('r', encoding='utf-8') as f:
             s = f.read()
         return s
@@ -207,7 +207,7 @@ class TeimEdit(object):
                 self.set_teimcfg_paths()
                 # path_text è il parametro iniziale
                 self.find_file_text(self.text_regex)
-                self.win0.after(20, self.show_info())
+                self.win0.after(20, self.show_psths())
             else:
                 def on_select(n):
                     if n < 0:
@@ -215,7 +215,7 @@ class TeimEdit(object):
                     self.path_teimcfg = dir_lst[n]
                     self.set_teimcfg_paths()
                     self.find_file_text(self.text_regex)
-                    self.win0.after(20, self.show_info())
+                    self.win0.after(20, self.show_psths())
 
                 open_listbox(name_lst, on_select, "find teimcfg")
         except Exception as e:
@@ -234,18 +234,20 @@ class TeimEdit(object):
                 mbox.showinfo("", f"{text_regex}  Not Foud",parent=self.win0)
             elif le == 1:
                 path_text_str = file_lst[0]
-                self.set_path_files(path_text_str)
+                self.set_paths(path_text_str)
                 self.read_text_file()
-                self.show_info()
+                self.show_psths()
+                self.win0.lift()
                 self.text_edit.focus_set()
             else:
                 def load_file(n):
                     if n < 0:
                         return
                     path_text_str = file_lst[n]
-                    self.set_path_files(path_text_str)
+                    self.set_paths(path_text_str)
                     self.read_text_file()
-                    self.show_info()
+                    self.show_psths()
+                    self.win0.lift()
                     self.text_edit.focus_set()
                 open_listbox(name_lst, load_file, "find text")
         except Exception as e:
@@ -277,7 +279,7 @@ class TeimEdit(object):
             mbox.showerror("", f"ERROR set_teimcfg_paths ")
             sys.exit()
 
-    def set_path_files(self, path_text_str):
+    def set_paths(self, path_text_str):
         try:
             self.path_text = ptu.str2path(path_text_str)
             self.text_dir = self.path_text.parent
@@ -404,12 +406,14 @@ class TeimEdit(object):
             initialdir=self.text_dir,
             filetypes=[("text", "*.txt"),
                        ("*.*", "*.*")])
+        # TODO controllo probabilmente inutile
         if len(path_str) < 1:
             return
         if not ptu.exists(path_str):
             return
-        self.set_path_files(path_str)
+        self.set_paths(path_str)
         self.read_text_file()
+        self.show_psths()
 
     def open_recenti(self):
         try:
@@ -423,10 +427,11 @@ class TeimEdit(object):
                 if n < 0:
                     return
                 path_text_str = file_lst[n]
-                self.set_path_files(path_text_str)
+                self.set_paths(path_text_str)
                 self.read_text_file()
-                self.show_info()
+                self.show_psths()
                 self.win0.lift()
+
             open_listbox(name_lst, load_file, "find text")
         except Exception as e:
             editerr.log(f" Not Found.{os.linesep}{e}")
@@ -447,7 +452,7 @@ class TeimEdit(object):
         if path_str is None or len(path_str) < 1:
             return ""
         text = self.get_text()
-        self.set_path_files(path_str)
+        self.set_paths(path_str)
         self.write_file(self.path_text, text)
         self.rc_update_recenti(path_str)
         title = f"TEXT: {path_str} "
@@ -667,7 +672,7 @@ class TeimEdit(object):
     def elab_teimsetid(self):
         if not self.path_entity_txt.exists():
             self.top_order()
-            mbox.showinfo("", f"To do Elab. Entity",parent=self.win0)
+            mbox.showinfo("", f"Before Elab. Entity",parent=self.win0)
             return
         # path_txt_1 => path_xml_1
         try:
@@ -690,7 +695,7 @@ class TeimEdit(object):
     def elab_teimover(self):
         if not self.path_setid_xml.exists():
             self.top_order()
-            mbox.showinfo("", f"To do Elab. Set id",parent=self.win0)
+            mbox.showinfo("", f"Before Elab. Set id",parent=self.win0)
             return
         # path_xml_1 => path_xml_2
         try:
@@ -713,7 +718,7 @@ class TeimEdit(object):
     def elab_teimnote(self):
         if not self.path_over_xml.exists():
             self.top_order()
-            mbox.showinfo("", f"To do Elab. Over",parent=self.win0)
+            mbox.showinfo("", f"Before Elab. Overflow",parent=self.win0)
             return
         # path_xml_2 => path_xml
         try:
@@ -737,7 +742,7 @@ class TeimEdit(object):
     def elab_xml2txt(self):
         if not self.path_xml.exists():
             self.top_order()
-            mbox.showinfo("", f"To do Elab. Note",parent=self.win0)
+            mbox.showinfo("", f"Before Elab. Note",parent=self.win0)
             return
         # path_xml => path_text_txt
         try:
@@ -881,6 +886,7 @@ class TeimEdit(object):
                        ("xml", "*.xml")])
         if len(path) < 1:
             return
+        # TODO controllo probabilmente inutile
         path = ptu.str2path(path)
         if path.exists():
             s = self.read_file(path)
@@ -892,10 +898,11 @@ class TeimEdit(object):
     #############
     # menu_bar
     ############
-    def show_info(self, top=False):
+    def show_psths(self, top=False):
         #abs_teimcfg = os.path.abspath(str(self.teimcfg_dir))
         #abs_text = os.path.abspath(str(self.text_dir))
         wrk_dir = self.pwd
+        
         info = [
             "---------------------------",
             f"work dir       : {wrk_dir}  ",
@@ -950,15 +957,10 @@ class TeimEdit(object):
         if self.path_text.exists():
             s = self.read_file(self.path_text)
             self.rc_update_recenti(ptu.path2str(self.path_text))
+            self.text_edit.insert_text(s)
         else:
-            self.write_file(self.path_text, "Empty")
-            r = ["", f"File  {self.path_text} Not Found.",
-                 "", f"Crated {self.path_text} empyt."]
-            s = os.linesep.join(r)
-        self.text_edit.insert_text(s)
-        file_name = f"{self.path_text}"
-        self.win0.title(file_name)
-        # self.lbl_path_var.set(file_name)
+            s= ''
+        return s
 
     def read_log_file(self, path):
         if path.exists():
@@ -966,7 +968,7 @@ class TeimEdit(object):
             self.show_log_top(s)
         else:
             self.top_order()
-            mbox.showinfo("", f"{path} Not Foud",parent=self.win0)
+            mbox.showinfo("", f"Not Foud",parent=self.win0)
 
     def show_log_top(self, msg, append=False):
         self.show_log(msg, append)
@@ -1150,7 +1152,7 @@ class TeimEdit(object):
         mv_del.add_command(label='Remove log files', command=self.remove_log)
 
         mv_help = new_mv()
-        mv_help.add_command(label='Files & Directory', command=self.show_info)
+        mv_help.add_command(label='Files & Directory', command=self.show_psths)
         mv_help.add_command(label='run options', command=self.show_options)
 
         # orizontale
@@ -1193,8 +1195,8 @@ class TeimEdit(object):
         ##############
 
     def open_win1(self):
-        self.win1 = tk.Tk()
-        #self.win1=tk.Toplevel(self.win0)
+        #self.win1 = tk.Tk()
+        self.win1=tk.Toplevel(self.win0)
         self.win1.title('ENTITY')
         self.win1.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win1.rowconfigure(0, weight=1)
@@ -1205,7 +1207,8 @@ class TeimEdit(object):
         self.txt1.grid(sticky='nsew')
 
     def open_win2(self):
-        self.win2 = tk.Tk()
+        self.win2=tk.Toplevel(self.win0)
+        #self.win2 = tk.Tk()
         self.win2.title('XML')
         self.win2.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win2.rowconfigure(0, weight=1)
@@ -1216,7 +1219,8 @@ class TeimEdit(object):
         self.txt2.grid(sticky='nsew')
 
     def open_win3(self):
-        self.win3 = tk.Tk()
+        self.win3=tk.Toplevel(self.win0)
+        #self.win3 = tk.Tk()
         self.win3.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win3.title('LOG')
         self.win3.rowconfigure(0, weight=1)
