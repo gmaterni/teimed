@@ -83,7 +83,7 @@ def pp(data, w=60):
 
 rc = UaRc('.teimeditrc')
 
-logediterr = Log("w")
+editerr = Log("w")
 
 
 class TeimEdit(object):
@@ -101,7 +101,7 @@ class TeimEdit(object):
             text_sign (str, optional): sigla del manoscritto.
         """
         self.path_edit_err = ptu.str2path("log/teimedit.lo")
-        logediterr.open(ptu.path2str(self.path_edit_err), 1)
+        editerr.open(ptu.path2str(self.path_edit_err), 1)
         # ARGS
         x = rc.upd("parent_teimcfg", parent_teimcfg)
         self.parent_teimcfg = ptu.str2path(x)
@@ -147,8 +147,6 @@ class TeimEdit(object):
         self.path_text_err = None
 
         self.path_tmp = None
-        # variabili per gestione chek edit
-        self.tag_names = ['a', 'b']
         # var per il controllo del check
         self.tag_num_debug = 0
         # dopo la lettutr cfg
@@ -185,8 +183,9 @@ class TeimEdit(object):
         try:
             ptu.chmod(path)
         except Exception as e:
-            logediterr.log(f"File {path} Not Found.{os.linesep}{e}")
-            self.show_log_top(f"File {path} Not Found.", True)
+            editerr.log(f"ERROR in chmod {path} .{os.linesep}{e}")
+            self.top_order()
+            mbox.showerror("", f"ERROR {path}")
 
     def find_teimtag(self):
         """
@@ -220,16 +219,19 @@ class TeimEdit(object):
 
                 open_listbox(name_lst, on_select, "find teimcfg")
         except Exception as e:
-            logediterr.log(f"ERROR {TEIMCFG}  Not Found {os.linesep}{e}")
+            editerr.log("ERROR in find_teimeg() {os.linesep}{e}" )
+            self.iconify()
+            mbox.showerror("", f"{TEIMCFG}  Not Foud")
             sys.exit()
-
+    
     def find_file_text(self, text_regex):
         try:
             file_lst = find_file_lst(self.search_text_dir, text_regex)
             name_lst = ptu.pathlist2strlist(file_lst)
             le = len(file_lst)
             if le == 0:
-                mbox.showinfo("", f"{text_regex}  Not Foud")
+                self.top_order()
+                mbox.showinfo("", f"{text_regex}  Not Foud",parent=self.win0)
             elif le == 1:
                 path_text_str = file_lst[0]
                 self.set_path_files(path_text_str)
@@ -243,13 +245,12 @@ class TeimEdit(object):
                     path_text_str = file_lst[n]
                     self.set_path_files(path_text_str)
                     self.read_text_file()
-                    self.show_info
+                    self.show_info()
                     self.text_edit.focus_set()
                 open_listbox(name_lst, load_file, "find text")
         except Exception as e:
-            s = f"{text_regex} Not Found.{os.linesep}{e}"
-            logediterr.log(s)
-            sys.exit()
+            editerr.log("ERROR {text_regex}.{os.linesep}{e}")
+            self.show_log_top("ERROR {text_regex}.{os.linesep}{e}")
 
     def set_teimcfg_paths(self):
         try:
@@ -265,14 +266,16 @@ class TeimEdit(object):
                 self.iconify()
                 mbox.showerror("", f"{self.path_entity_csv}  Not Foud")
                 sys.exit()
-
+            
             # legge la tabbella per overflow
             lst=read_over_tags(self.path_over_csv)
             # prepara la tabella per la gestione del menu
             self.tag_over_lst=chk.fill_tag_over_lst(lst)
         except Exception as e:
-            logediterr.log(f"ERROR set_teimcfg_paths. {e}")
-            sys.exit(1)
+            editerr.log(f"ERROR set_teimcfg_paths. {e}")
+            self.iconify()
+            mbox.showerror("", f"ERROR set_teimcfg_paths ")
+            sys.exit()
 
     def set_path_files(self, path_text_str):
         try:
@@ -345,8 +348,10 @@ class TeimEdit(object):
 
             self.path_tmp = ptu.join(self.log_dir, 'tmp')
         except Exception as e:
-            logediterr.log(f"ERROR set_path_fies.{os.linesep}{e}")
-            sys.exit(1)
+            editerr.log(f"ERROR set_path_fies.{os.linesep}{e}")
+            self.iconify()
+            mbox.showerror("", f"ERROR set_path_fies ")
+            sys.exit()
 
     ########################
     # manu_bar
@@ -378,11 +383,6 @@ class TeimEdit(object):
     def top_order(self):
         self.top_not()
         self.win0.lift()
-        return
-        # self.win0.attributes("-topmost", 1)
-        # self.win1.attributes("-topmost", 2)
-        # self.win2.attributes("-topmost", 3)
-        # self.win3.attributes("-topmost", 4)
 
     def iconify(self):
         self.win0.iconify()
@@ -429,9 +429,10 @@ class TeimEdit(object):
                 self.win0.lift()
             open_listbox(name_lst, load_file, "find text")
         except Exception as e:
-            s = f" Not Found.{os.linesep}{e}"
-            logediterr.log(s)
-            sys.exit()
+            editerr.log(f" Not Found.{os.linesep}{e}")
+            self.top_order()
+            mbox.showerror("", f"ERROR set_path_fies ")
+
 
     def save_text(self, *args):
         s = self.get_text()
@@ -485,14 +486,14 @@ class TeimEdit(object):
     ###########################################
 
     def del_tags(self):
-        self.text_edit.tag_delete(self.tag_names[0])
-        self.text_edit.tag_delete(self.tag_names[1])
+        self.text_edit.tag_delete(FIND_TAGS[0])
+        self.text_edit.tag_delete(FIND_TAGS[1])
 
     def config_tags(self):
-        self.text_edit.tag_config(self.tag_names[0],
+        self.text_edit.tag_config(FIND_TAGS[0],
                                   background=BG_TAG,
                                   foreground=FG_TAG)
-        self.text_edit.tag_config(self.tag_names[1],
+        self.text_edit.tag_config(FIND_TAGS[1],
                                   background=BG2_TAG,
                                   foreground=FG2_TAG)
 
@@ -516,12 +517,12 @@ class TeimEdit(object):
             if idx == '':
                 break
             idx_end = self.next_idx(idx, len(s))
-            self.text_edit.tag_add(self.tag_names[t], idx, idx_end)
+            self.text_edit.tag_add(FIND_TAGS[t], idx, idx_end)
             idx = idx_end
             self.tag_num_debug += 1
         self.config_tags()
         # usa la prima rag per spostrae il teso alla sua posiziione
-        tag_lst = self.text_edit.tag_ranges(self.tag_names[0])
+        tag_lst = self.text_edit.tag_ranges(FIND_TAGS[0])
         t0 = tag_lst[0] if len(tag_lst) > 0 else "1.0"
         self.text_edit.see(t0)
 
@@ -560,12 +561,12 @@ class TeimEdit(object):
                 if idxc != '':
                     idx_end = self.next_idx(idxc, len(sc))
             # print(f"A4 {idxo} {idx_end} {so}   {sc}  *")
-            self.text_edit.tag_add(self.tag_names[t], idxo, idx_end)
+            self.text_edit.tag_add(FIND_TAGS[t], idxo, idx_end)
             idxo = idx_end
             #print(f"A5 {idxo}  {idx_end} {t}  {so}  {sc}")
         self.config_tags()
         # usa la prima rag per spostrae il teso alla sua posiziione
-        tag_lst = self.text_edit.tag_ranges(self.tag_names[0])
+        tag_lst = self.text_edit.tag_ranges(FIND_TAGS[0])
         t0 = tag_lst[0] if len(tag_lst) > 0 else "1.0"
         self.text_edit.see(t0)
         ###############
@@ -573,10 +574,12 @@ class TeimEdit(object):
         #print(f"tag a:{t0}  {len(tag_lst)}")
         n = len(m_lst)
         if self.tag_num_debug != n:
-            logediterr.log("Error")
+            editerr.log("Error")
             for x in m_lst:
-                logediterr.log(f"{x['t']} {x['s']}")
-            logediterr.log(self.tag_num_debug)
+                editerr.log(f"{x['t']} {x['s']}")
+                self.show_log_top(f"{x['t']} {x['s']}")
+            editerr.log(self.tag_num_debug)
+            self.show_log_top(self.tag_num_debug)
 
     def fin_entity_comma(self):
         text = self.text_edit.get('1.0', tk.END)
@@ -589,6 +592,39 @@ class TeimEdit(object):
         txt_wrk = clean_text(text)
         m_lst = chk.check_entity_brackets(txt_wrk)
         self.add_tags(m_lst)
+
+    def read_tag_set(self):
+        """ Lettura tags da csv
+        tipo|name|tag_txt
+        abbr|mlt|<expan corresp="#ab-ctr-mlt">m<ex>u</ex>lt</expan>
+        abbr|Mlt|<expan corresp="#ab-ctr-mlt">M<ex>u</ex>lt</expan>
+        """
+        DELIMITER='|'
+        lst = []
+        rows=self.path_entity_csv.open().readlines()
+        for row in rows:
+            if row.strip() == '':
+                continue
+            cols = row.split(DELIMITER)
+            tag_name = cols[1].strip()
+            lst.append(tag_name)
+        tag_set=set(lst)
+        return tag_set
+
+
+    def find_entity_undefined(self):
+        text = self.text_edit.get('1.0', tk.END)
+        txt_wrk = clean_text(text)
+        m_lst = chk.check_entitys(txt_wrk)
+        tag_set=self.read_tag_set()
+        err_lst=[]
+        for item in m_lst:
+            tag=item.get('s','').replace('&','').replace(';','').strip()
+            if tag in tag_set:
+                continue
+            item['t']=1
+            err_lst.append(item)
+        self.add_tags(err_lst)
 
     def find_over(self, po, pc, *args):
         text = self.text_edit.get('1.0', tk.END)
@@ -608,29 +644,30 @@ class TeimEdit(object):
     # mv_elab
     #############
     def elab_teimxml(self):
-        s = self.get_text()
-        self.write_file(self.path_text, s)
+        msg = self.get_text()
+        self.write_file(self.path_text, msg)
         try:
             do_main_xml(ptu.path2str(self.path_text),
                         ptu.path2str(self.path_entity_csv),
                         ptu.path2str(self.path_entity_txt))
         except SystemExit as e:
-            s = f"ERROR Elab entity {os.linesep}{e}"
-            logediterr.log(s)
-            self.show_log_top(s, True)
+            msg = f"ERROR Elab entity {os.linesep}{e}"
+            editerr.log(msg)
+            self.show_log_top(msg, True)
             return
         self.chmod(self.path_entity_txt)
-        s = self.read_file(self.path_entity_txt)
-        self.show_win1(s)
+        msg = self.read_file(self.path_entity_txt)
+        self.show_win1(msg)
         ls = ["    Elab. entity",
               f"{self.path_text}",
               f"{self.path_entity_csv}",
               f"{self.path_entity_txt}"]
-        self.show_log(os.linesep.join(ls), True)
+        self.show_log_lift(os.linesep.join(ls), True)
 
     def elab_teimsetid(self):
         if not self.path_entity_txt.exists():
-            self.show_log_top("Call Elab. Entity", True)
+            self.top_order()
+            mbox.showinfo("", f"To do Elab. Entity",parent=self.win0)
             return
         # path_txt_1 => path_xml_1
         try:
@@ -640,7 +677,7 @@ class TeimEdit(object):
                           self.text_sign)
         except SystemExit as e:
             s = f"Errro in set id{os.linesep} {e}"
-            logediterr.log(s)
+            editerr.log(s)
             self.show_log_top(s, True)
             return
         self.chmod(self.path_setid_xml)
@@ -648,11 +685,12 @@ class TeimEdit(object):
               f"{self.path_entity_txt}",
               f"{self.path_setid_xml}",
               f"{self.text_sign}"]
-        self.show_log(os.linesep.join(ls), True)
+        self.show_log_lift(os.linesep.join(ls), True)
 
     def elab_teimover(self):
         if not self.path_setid_xml.exists():
-            self.show_log_top("Cal Elab. Set id ", True)
+            self.top_order()
+            mbox.showinfo("", f"To do Elab. Set id",parent=self.win0)
             return
         # path_xml_1 => path_xml_2
         try:
@@ -661,20 +699,21 @@ class TeimEdit(object):
                          ptu.path2str(self.path_over_xml),
                          ptu.path2str(self.path_over_csv))
         except SystemExit as e:
-            s = f"Elaborare overflow {os.linesep} {e}"
-            logediterr.log(s)
-            self.show_log_top(s, True)
+            msg = f"Elaborare overflow {os.linesep} {e}"
+            editerr.log(msg)
+            self.show_log_top(msg, True)
             return
         self.chmod(self.path_over_xml)
         ls = ["    Eelab. overflow",
               f"{self.path_setid_xml}",
               f"{self.path_over_xml}",
               f"{self.path_over_csv}"]
-        self.show_log(os.linesep.join(ls), True)
+        self.show_log_lift(os.linesep.join(ls), True)
 
     def elab_teimnote(self):
         if not self.path_over_xml.exists():
-            self.show_log_top("Call Elab. Over", True)
+            self.top_order()
+            mbox.showinfo("", f"To do Elab. Over",parent=self.win0)
             return
         # path_xml_2 => path_xml
         try:
@@ -683,36 +722,37 @@ class TeimEdit(object):
                          ptu.path2str(self.path_xml),
                          ptu.path2str(self.path_teimnote))
         except SystemExit as e:
-            s = f"Elab. note {os.linesep} {e}"
-            logediterr.log(s)
-            self.show_log_top(s, True)
+            msg = f"Elab. note {os.linesep} {e}"
+            editerr.log(msg)
+            self.show_log_top(msg, True)
             return
         self.chmod(self.path_xml)
         ls = ["    Elab. Note",
               f"{self.path_over_xml}",
               f"{self.path_xml}",
               f"{self.path_teimnote}"]
-        self.show_log(os.linesep.join(ls), True)
+        self.show_log_lift(os.linesep.join(ls), True)
         self.format_xml()
 
     def elab_xml2txt(self):
         if not self.path_xml.exists():
-            self.show_log_top("Call Elab. XML", True)
+            self.top_order()
+            mbox.showinfo("", f"To do Elab. Note",parent=self.win0)
             return
         # path_xml => path_text_txt
         try:
             do_main_xml2txt(ptu.path2str(self.path_xml_format),
                             ptu.path2str(self.path_text_txt))
         except SystemExit as e:
-            s = f"ERROR Elab. note {os.linesep}{e} "
-            logediterr.log(s)
-            self.show_log_top(s, True)
+            msg = f"ERROR Elab. note {os.linesep}{e} "
+            editerr.log(msg)
+            self.show_log_top(msg, True)
             return
         self.chmod(self.path_xml)
         ls = ["    XML => text",
               f"{self.path_xml}",
               f"{self.path_text_txt}"]
-        self.show_log(os.linesep.join(ls), True)
+        self.show_log_lift(os.linesep.join(ls), True)
 
     def format_xml(self):
         s = self.read_file(self.path_xml)
@@ -844,10 +884,11 @@ class TeimEdit(object):
         path = ptu.str2path(path)
         if path.exists():
             s = self.read_file(path)
+            self.show_log_top(s)
         else:
-            s = "Not Found."
-        self.show_log_top(s)
-
+            self.top_order()
+            mbox.showinfo("", f"Not Foud",parent=self.win0)
+    
     #############
     # menu_bar
     ############
@@ -922,9 +963,10 @@ class TeimEdit(object):
     def read_log_file(self, path):
         if path.exists():
             s = self.read_file(path)
+            self.show_log_top(s)
         else:
-            s = f"{path}   Not Found."
-        self.show_log_top(s)
+            self.top_order()
+            mbox.showinfo("", f"{path} Not Foud",parent=self.win0)
 
     def show_log_top(self, msg, append=False):
         self.show_log(msg, append)
@@ -1059,6 +1101,8 @@ class TeimEdit(object):
                              command=self.fin_entity_comma)
         mv_check.add_command(label='Entity Brackets',
                              command=self.find_entity_brackets)
+        mv_check.add_command(label='Entity Undefined',
+                             command=self.find_entity_undefined)
         mv_check.add_separator()
         #add_mv_check()
 
@@ -1150,6 +1194,7 @@ class TeimEdit(object):
 
     def open_win1(self):
         self.win1 = tk.Tk()
+        #self.win1=tk.Toplevel(self.win0)
         self.win1.title('ENTITY')
         self.win1.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win1.rowconfigure(0, weight=1)
@@ -1204,10 +1249,10 @@ class TeimEdit(object):
         #self.win0.deiconify()
         self.rc_save()
         sys.exit(0)
-        self.win3.quit()
-        self.win2.quit()
-        self.win1.quit()
-        self.win0.quit()
+        # self.win3.quit()
+        # self.win2.quit()
+        # self.win1.quit()
+        # self.win0.quit()
 
     def rc_get_recenti(self):
         lst = rc.get('recenti', [])
@@ -1226,7 +1271,6 @@ class TeimEdit(object):
         rc.set('win3', self.win3.winfo_geometry())
         rc.save()
         #rc.prn("save_rc")
-
 
 def do_main(parent_teimcfg,
             search_text_dir,

@@ -65,3 +65,5 @@ FG_TAG = '#ffffff'
 
 BG2_TAG = '#ffff00'
 FG2_TAG = '#000000'
+
+FIND_TAGS =["findaa","findbb"]

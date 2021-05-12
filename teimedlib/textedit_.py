@@ -97,4 +97,3 @@ class TextEdit(tk.Text):
             self.edit_redo()
         except Exception:
             pass
-

@@ -15,8 +15,6 @@ __author__ = "Marta Materni"
 
 
 def pp(data):
-    if data is None:
-        return ""
     s = pprint.pformat(data, indent=0, width=90)
     return s
 

@@ -22,6 +22,7 @@ def pp(data):
 TAG_MAX_LEN = 30
 ARGS_MAX_LEN = 60
 
+DELIMITER='|'
 COL_TYPE = "tp"
 COL_NAME = "name"
 COL_VAL = "val"
@@ -37,14 +38,12 @@ CHS_TGU = "éèàùòìÀÈÉÒÙÌ"
 CHS_TGS = "&*^`~"
 CHS_TAG = CHS_TGS + CHS_TGU
 
-
 class Med2Xml(object):
 
     def __init__(self, src, tag, path_out):
         self.path_src = src
         self.path_tag = tag
         self.path_out = path_out
-        self.delimiter = '|'
         self.tags = None
         self.LINE_TEXT = ""
         self.LINE_NUM = 0
@@ -69,7 +68,7 @@ class Med2Xml(object):
             for line in f:
                 if line.strip() == '':
                     continue
-                cols = line.split(self.delimiter)
+                cols = line.split(DELIMITER)
                 # name = re.sub(r'[^\x00-\x7F]', '', fs[0])
                 tag_type = cols[0].strip()
                 tag_name = cols[1].strip()
