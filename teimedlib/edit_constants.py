@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-FONT_GENERAL = ('Helvetica', 16, 'normal')
+FONT_GENERAL = ('Helvetica', 14, 'normal')
 FONT_EDIT = ('Helvetica', 16, 'normal')
 FONT_TXT = ('Helvetica', 16, 'normal')
 FONT_LNUM = ('Helvetica', 16, 'normal')

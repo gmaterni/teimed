@@ -1,41 +1,43 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from pdb import set_trace
 import argparse
 import os
 import pprint
 import sys
-from lxml import etree
 
 import tkinter as tk
 import tkinter.filedialog as fdialog
 import tkinter.messagebox as mbox
 
-from teimedlib.uarc import UaRc
-from teimedlib.ualog import Log
-from teimedlib.readovertags import read_over_tags
-import teimedlib.pathutils as ptu
-
-from teimedlib.edit_constants import *
-from teimedlib.teim_constants import *
-from teimedlib.listbox import open_listbox
-from teimedlib.textedit import TextEdit
-from teimedlib.textpad import TextPad
-from teimedlib.findfile import find_dir_lst, find_file_lst
-from teimedlib.clean_text import clean_text
+from pdb import set_trace
+from lxml import etree
 
 import teimedlib.check_teimed as chk
+import teimedlib.pathutils as ptu
+
 from checkover import do_main as do_main_checkover
 from checktxt import do_main as do_main_checktxt
+
+from teimedlib.clean_text import clean_text
+from teimedlib.edit_constants import *
+from teimedlib.findfile import find_dir_lst, find_file_lst
+from teimedlib.listbox import open_listbox
+from teimedlib.readovertags import read_over_tags
+from teimedlib.teim_constants import *
+from teimedlib.textedit import TextEdit
+from teimedlib.textpad import TextPad
+from teimedlib.ualog import Log
+from teimedlib.uarc import UaRc
+
 from teimnote import do_main as do_main_note
 from teimover import do_main as do_main_over
 from teimsetid import do_main as do_main_setid
 from teimxml import do_main as do_main_xml
 from teixml2txt import do_main as do_main_xml2txt
 
-__date__ = "08-05-2021"
-__version__ = "0.21.1"
+__date__ = "12-05-2021"
+__version__ = "0.22.0"
 __author__ = "Marta Materni"
 
 
@@ -105,10 +107,10 @@ class TeimEdit(object):
         # ARGS
         x = rc.upd("parent_teimcfg", parent_teimcfg)
         self.parent_teimcfg = ptu.str2path(x)
-
+      
         x = rc.upd("search_text_dir", search_text_dir)
         self.search_text_dir = ptu.str2path(x)
-
+      
         self.text_regex = rc.upd("text_regex", text_regex)
         self.text_sign = rc.upd("text_sign", text_sign)
         ###################################
@@ -188,11 +190,10 @@ class TeimEdit(object):
             mbox.showerror("", f"ERROR {path}")
 
     def find_teimtag(self):
-        """
-        cerca in modalità ricorsiva la dir teimgcfg a partire dal
-        parametro parent_teimcfg se settato, altrimenti dalla
-        dir corrente.
-        Se esiste legge i file teimedcsv ed overflow.csv 
+        """cerca in modalità ricorsiva la dir teimgcfg a partire dal parametro
+        parent_teimcfg se settato, altrimenti dalla dir corrente.
+
+        Se esiste legge i file teimedcsv ed overflow.csv
         """
         try:
             dir_lst = find_dir_lst(self.parent_teimcfg, TEIMCFG)
@@ -219,11 +220,11 @@ class TeimEdit(object):
 
                 open_listbox(name_lst, on_select, "find teimcfg")
         except Exception as e:
-            editerr.log("ERROR in find_teimeg() {os.linesep}{e}" )
+            editerr.log(f"ERROR in find_teimeg() {os.linesep}{e}")
             self.iconify()
             mbox.showerror("", f"{TEIMCFG}  Not Foud")
             sys.exit()
-    
+
     def find_file_text(self, text_regex):
         try:
             file_lst = find_file_lst(self.search_text_dir, text_regex)
@@ -231,7 +232,7 @@ class TeimEdit(object):
             le = len(file_lst)
             if le == 0:
                 self.top_order()
-                mbox.showinfo("", f"{text_regex}  Not Foud",parent=self.win0)
+                mbox.showinfo("", f"{text_regex}  Not Foud", parent=self.win0)
             elif le == 1:
                 path_text_str = file_lst[0]
                 self.set_paths(path_text_str)
@@ -251,8 +252,8 @@ class TeimEdit(object):
                     self.text_edit.focus_set()
                 open_listbox(name_lst, load_file, "find text")
         except Exception as e:
-            editerr.log("ERROR {text_regex}.{os.linesep}{e}")
-            self.show_log_top("ERROR {text_regex}.{os.linesep}{e}")
+            editerr.log(f"ERROR {text_regex}.{os.linesep}{e}")
+            self.show_log_top(f"ERROR {text_regex}.{os.linesep}{e}")
 
     def set_teimcfg_paths(self):
         try:
@@ -268,11 +269,11 @@ class TeimEdit(object):
                 self.iconify()
                 mbox.showerror("", f"{self.path_entity_csv}  Not Foud")
                 sys.exit()
-            
+
             # legge la tabbella per overflow
-            lst=read_over_tags(self.path_over_csv)
+            lst = read_over_tags(self.path_over_csv)
             # prepara la tabella per la gestione del menu
-            self.tag_over_lst=chk.fill_tag_over_lst(lst)
+            self.tag_over_lst = chk.fill_tag_over_lst(lst)
         except Exception as e:
             editerr.log(f"ERROR set_teimcfg_paths. {e}")
             self.iconify()
@@ -438,7 +439,6 @@ class TeimEdit(object):
             self.top_order()
             mbox.showerror("", f"ERROR set_path_fies ")
 
-
     def save_text(self, *args):
         s = self.get_text()
         self.write_file(self.path_text, s)
@@ -595,39 +595,36 @@ class TeimEdit(object):
     def find_entity_brackets(self):
         text = self.text_edit.get('1.0', tk.END)
         txt_wrk = clean_text(text)
-        m_lst = chk.check_entity_brackets(txt_wrk)
         self.add_tags(m_lst)
 
     def read_tag_set(self):
-        """ Lettura tags da csv
-        tipo|name|tag_txt
-        abbr|mlt|<expan corresp="#ab-ctr-mlt">m<ex>u</ex>lt</expan>
-        abbr|Mlt|<expan corresp="#ab-ctr-mlt">M<ex>u</ex>lt</expan>
-        """
-        DELIMITER='|'
+        """Lettura tags da csv tipo|name|tag_txt abbr|mlt|<expan corresp="#ab-
+        ctr-mlt">m<ex>u</ex>lt</expan> abbr|Mlt|<expan corresp="#ab-ctr-
+        mlt">M<ex>u</ex>lt</expan>"""
+        DELIMITER = '|'
         lst = []
-        rows=self.path_entity_csv.open().readlines()
+        rows = self.path_entity_csv.open().readlines()
+        rows = self.path_entity_csv.open().readlines()
         for row in rows:
             if row.strip() == '':
                 continue
             cols = row.split(DELIMITER)
             tag_name = cols[1].strip()
             lst.append(tag_name)
-        tag_set=set(lst)
+        tag_set = set(lst)
         return tag_set
-
 
     def find_entity_undefined(self):
         text = self.text_edit.get('1.0', tk.END)
         txt_wrk = clean_text(text)
         m_lst = chk.check_entitys(txt_wrk)
-        tag_set=self.read_tag_set()
-        err_lst=[]
+        tag_set = self.read_tag_set()
+        err_lst = []
         for item in m_lst:
-            tag=item.get('s','').replace('&','').replace(';','').strip()
+            tag = item.get('s', '').replace('&', '').replace(';', '').strip()
             if tag in tag_set:
                 continue
-            item['t']=1
+            item['t'] = 1
             err_lst.append(item)
         self.add_tags(err_lst)
 
@@ -672,7 +669,7 @@ class TeimEdit(object):
     def elab_teimsetid(self):
         if not self.path_entity_txt.exists():
             self.top_order()
-            mbox.showinfo("", f"Before Elab. Entity",parent=self.win0)
+            mbox.showinfo("", f"Before Elab. Entity", parent=self.win0)
             return
         # path_txt_1 => path_xml_1
         try:
@@ -695,7 +692,7 @@ class TeimEdit(object):
     def elab_teimover(self):
         if not self.path_setid_xml.exists():
             self.top_order()
-            mbox.showinfo("", f"Before Elab. Set id",parent=self.win0)
+            mbox.showinfo("", f"Before Elab. Set id", parent=self.win0)
             return
         # path_xml_1 => path_xml_2
         try:
@@ -718,7 +715,7 @@ class TeimEdit(object):
     def elab_teimnote(self):
         if not self.path_over_xml.exists():
             self.top_order()
-            mbox.showinfo("", f"Before Elab. Overflow",parent=self.win0)
+            mbox.showinfo("", f"Before Elab. Overflow", parent=self.win0)
             return
         # path_xml_2 => path_xml
         try:
@@ -742,7 +739,7 @@ class TeimEdit(object):
     def elab_xml2txt(self):
         if not self.path_xml.exists():
             self.top_order()
-            mbox.showinfo("", f"Before Elab. Note",parent=self.win0)
+            mbox.showinfo("", f"Before Elab. Note", parent=self.win0)
             return
         # path_xml => path_text_txt
         try:
@@ -893,57 +890,58 @@ class TeimEdit(object):
             self.show_log_top(s)
         else:
             self.top_order()
-            mbox.showinfo("", f"Not Foud",parent=self.win0)
-    
+            mbox.showinfo("", f"Not Foud", parent=self.win0)
+
     #############
     # menu_bar
     ############
     def show_psths(self, top=False):
-        #abs_teimcfg = os.path.abspath(str(self.teimcfg_dir))
-        #abs_text = os.path.abspath(str(self.text_dir))
-        wrk_dir = self.pwd
-        
-        info = [
-            "---------------------------",
-            f"work dir       : {wrk_dir}  ",
-            f"parent teimcfg : {self.parent_teimcfg}",
-            f"search text dir: {self.search_text_dir}",
-            f"text RegEx     : {self.text_regex}",
-            f"sigla          : {self.text_sign}",
-            "---------------------------",
-            f"teimed tags    : {self.path_entity_csv}",
-            f"overflow tags  : {self.path_over_csv}",
-            f"text dir       : {self.text_dir}",
-            f"text name      : {self.path_text}",
-            f"note           : {self.path_teimnote}",
-            "---------------------------",
-            f"chek  txt      : {self.path_check_txt}",
-            f"check over     : {self.path_check_over}",
-            "",
-            f"elab  entity   : {self.path_entity_txt}",
-            f"log   entity   : {self.path_entity_log}",
-            f"ERR   entity   : {self.path_entity_err}",
-            "",
-            f"elab  set id   : {self.path_setid_xml}",
-            f"log   set id   : {self.path_setid_log}",
-            f"err   set id   : {self.path_setid_err}",
-            "",
-            f"elab  over     : {self.path_over_xml}",
-            f"log   over     : {self.path_over_log}",
-            f"err   over     : {self.path_over_err}",
-            "",
-            f"elab  note     : {self.path_xml}",
-            f"err   note     : {self.path_note_err}",
-            "",
-            f"elab  text     : {self.path_text_txt}",
-            f"err   text     : {self.path_text_err}",
-            "---------------------------",
-        ]
-        s = os.linesep.join(info)
-        if top:
-            self.show_log_top(s)
-        else:
-            self.show_log_lift(s)
+        try:
+            wrk_dir = self.pwd
+            info = [
+                "---------------------------",
+                f"work dir       : {wrk_dir}  ",
+                f"parent teimcfg : {self.parent_teimcfg}",
+                f"search text dir: {self.search_text_dir}",
+                f"text RegEx     : {self.text_regex}",
+                f"sigla          : {self.text_sign}",
+                "---------------------------",
+                f"teimed tags    : {self.path_entity_csv}",
+                f"overflow tags  : {self.path_over_csv}",
+                f"text dir       : {self.text_dir}",
+                f"text name      : {self.path_text}",
+                f"note           : {self.path_teimnote}",
+                "---------------------------",
+                f"chek  txt      : {self.path_check_txt}",
+                f"check over     : {self.path_check_over}",
+                "",
+                f"elab  entity   : {self.path_entity_txt}",
+                f"log   entity   : {self.path_entity_log}",
+                f"ERR   entity   : {self.path_entity_err}",
+                "",
+                f"elab  set id   : {self.path_setid_xml}",
+                f"log   set id   : {self.path_setid_log}",
+                f"err   set id   : {self.path_setid_err}",
+                "",
+                f"elab  over     : {self.path_over_xml}",
+                f"log   over     : {self.path_over_log}",
+                f"err   over     : {self.path_over_err}",
+                "",
+                f"elab  note     : {self.path_xml}",
+                f"err   note     : {self.path_note_err}",
+                "",
+                f"elab  text     : {self.path_text_txt}",
+                f"err   text     : {self.path_text_err}",
+                "---------------------------",
+            ]
+            s = os.linesep.join(info)
+            if top:
+                self.show_log_top(s)
+            else:
+                self.show_log_lift(s)
+        except Exception as e:
+            editerr.log(e)
+            raise(Exception("ERROR in show_paths()"))
 
     def show_options(self):
         s = HELP_RUN_OPS()
@@ -959,7 +957,7 @@ class TeimEdit(object):
             self.rc_update_recenti(ptu.path2str(self.path_text))
             self.text_edit.insert_text(s)
         else:
-            s= ''
+            s = ''
         return s
 
     def read_log_file(self, path):
@@ -968,7 +966,7 @@ class TeimEdit(object):
             self.show_log_top(s)
         else:
             self.top_order()
-            mbox.showinfo("", f"Not Foud",parent=self.win0)
+            mbox.showinfo("", f"Not Foud", parent=self.win0)
 
     def show_log_top(self, msg, append=False):
         self.show_log(msg, append)
@@ -1034,7 +1032,7 @@ class TeimEdit(object):
             return mv
 
         self.win0 = tk.Tk()
-        #self.win0.withdraw()
+        # self.win0.withdraw()
         self.win0.title("TeimEdit")
         self.win0.geometry(self.geometry_win0)
         self.win0.config(background=BG_WIN, pady=2)
@@ -1106,7 +1104,7 @@ class TeimEdit(object):
         mv_check.add_command(label='Entity Undefined',
                              command=self.find_entity_undefined)
         mv_check.add_separator()
-        #add_mv_check()
+        # add_mv_check()
 
         mv_elab = new_mv()
         mv_elab.add_command(label='Elab. Entity', command=self.elab_teimxml)
@@ -1180,7 +1178,7 @@ class TeimEdit(object):
         self.show_win2("")
         self.show_win3("")
         ############
-        # cerca la dir teimcfg_dir partendo 
+        # cerca la dir teimcfg_dir partendo
         # -c teimcfg_dir
         # se non la trova exit
         # invoca
@@ -1196,7 +1194,7 @@ class TeimEdit(object):
 
     def open_win1(self):
         #self.win1 = tk.Tk()
-        self.win1=tk.Toplevel(self.win0)
+        self.win1 = tk.Toplevel(self.win0)
         self.win1.title('ENTITY')
         self.win1.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win1.rowconfigure(0, weight=1)
@@ -1207,7 +1205,7 @@ class TeimEdit(object):
         self.txt1.grid(sticky='nsew')
 
     def open_win2(self):
-        self.win2=tk.Toplevel(self.win0)
+        self.win2 = tk.Toplevel(self.win0)
         #self.win2 = tk.Tk()
         self.win2.title('XML')
         self.win2.protocol("WM_DELETE_WINDOW", lambda: False)
@@ -1219,7 +1217,7 @@ class TeimEdit(object):
         self.txt2.grid(sticky='nsew')
 
     def open_win3(self):
-        self.win3=tk.Toplevel(self.win0)
+        self.win3 = tk.Toplevel(self.win0)
         #self.win3 = tk.Tk()
         self.win3.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win3.title('LOG')
@@ -1250,7 +1248,7 @@ class TeimEdit(object):
         # yn = mbox.askyesno("", "Quit ?", parent=self.win0)
         # if not yn:
         #     return
-        #self.win0.deiconify()
+        # self.win0.deiconify()
         self.rc_save()
         sys.exit(0)
         # self.win3.quit()
@@ -1274,14 +1272,15 @@ class TeimEdit(object):
         rc.set('win2', self.win2.winfo_geometry())
         rc.set('win3', self.win3.winfo_geometry())
         rc.save()
-        #rc.prn("save_rc")
+        # rc.prn("save_rc")
+
 
 def do_main(parent_teimcfg,
             search_text_dir,
             path_text,
             sign):
     rc.load()
-    #rc.prn("rc.load")
+    # rc.prn("rc.load")
     tme = TeimEdit(parent_teimcfg,
                    search_text_dir,
                    path_text,

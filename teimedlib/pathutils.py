@@ -52,6 +52,15 @@ def remove(path):
 def join(path0, path1):
     return pth.Path().joinpath(path0, path1)
 
+
+def relative(path0, path1):
+    if path0 is None:
+        return cwd if path1 is None else path1
+    elif path1 is None :
+        return cwd if path0 is None else path
+    else:
+        return pth.Path(path0).relative_to(path1)
+
 def pathlist2strlist(path_lst):
     path_lst = [] if path_lst is None else path_lst
     lst = [path2str(x) for x in path_lst]
