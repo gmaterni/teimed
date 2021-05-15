@@ -3,7 +3,7 @@
 
 import tkinter as tk
 from teimedlib.edit_constants import *
-
+from teimedlib.findreplace import find_replace_new
 
 class TextEdit(tk.Text):
 
@@ -70,6 +70,7 @@ class TextEdit(tk.Text):
             self.after(20, redraw)
             self.edit_separator()
 
+
         self.vbar.bind("<B1-Motion>", redraw)
         self.bind("<FocusIn>", redraw)
         self.bind("<Enter>", redraw)
@@ -80,6 +81,7 @@ class TextEdit(tk.Text):
         self.bind("<Button-5>", redraw_delay)
         self.bind("<Control-KeyPress-z>", self.on_undo)
         self.bind("<Control-Shift-Z>", self. on_redo)
+        self.bind("<Control-f>", self.find_replace)
 
     def insert_text(self, txt):
         self.delete("1.0", tk.END)
@@ -98,3 +100,5 @@ class TextEdit(tk.Text):
         except Exception:
             pass
 
+    def find_replace(self,rgs=None):
+        find_replace_new(self)

@@ -52,7 +52,6 @@ def remove(path):
 def join(path0, path1):
     return pth.Path().joinpath(path0, path1)
 
-
 def relative(path0, path1):
     if path0 is None:
         return cwd if path1 is None else path1

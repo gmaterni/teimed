@@ -1,6 +1,18 @@
 categorie|tag TEI-Med|tag TEI-XML
 
 
+
+log|chB|<div type="chapter">
+log|chE|</div>
+log|hdB|<head type="rubrica">
+log|hdE|</head>
+log|parB|<p>
+log|parE|</p>
+log|sB|<seg type="ms_phrase">
+log|sEB|</seg><seg type="ms_phrase">
+log|sE|</seg>
+
+
 note|ptr-d|<ptr type="dipl" target="#$" n="d$" />
 note|ptr-i|<ptr type="int" target="#$" n="i$" />
 note|note-per|<note type="peritextuelle">$</note>
@@ -319,7 +331,3 @@ sem|num|<w type="number-letter">$</w>
 
 
 mod|^<|^<
-
-
-
-

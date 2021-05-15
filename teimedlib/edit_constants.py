@@ -10,6 +10,10 @@ FONT_MENU = ('Helvetica', 16, 'bold')
 FONT_LABEL = ('Helvetica', 14, 'bold')
 FONT_LIST = ('Monospace', 14, 'normal')
 
+FONT_LBL_BOX = ('Helvetica', 14, 'bold')
+FONT_BTN_BOX = ('Helvetica', 14, 'normal')
+FONT_BTN_CLOSE = ('Helvetica', 14, 'bold underline')
+
 BG_SEP = "#111111"
 # FG_SEP = "#FFFFFF"
 

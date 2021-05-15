@@ -3,9 +3,11 @@ import tkinter as tk
 from teimedlib.edit_constants import *
 from pdb import set_trace
 
-def open_listbox(lst, load_file,title=""):
+
+def open_listbox(lst, load_file, title=""):
     top = tk.Toplevel()
     top.update_idletasks()
+    # top.transient(master)
     #top.protocol("WM_DELETE_WINDOW", lambda: False)
     top.resizable(True, False)
     top.title(title)

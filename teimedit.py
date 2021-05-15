@@ -107,10 +107,10 @@ class TeimEdit(object):
         # ARGS
         x = rc.upd("parent_teimcfg", parent_teimcfg)
         self.parent_teimcfg = ptu.str2path(x)
-      
+
         x = rc.upd("search_text_dir", search_text_dir)
         self.search_text_dir = ptu.str2path(x)
-      
+
         self.text_regex = rc.upd("text_regex", text_regex)
         self.text_sign = rc.upd("text_sign", text_sign)
         ###################################
@@ -167,6 +167,8 @@ class TeimEdit(object):
         self.geometry_win2 = rc.get('win2', g_win2)
         self.geometry_win3 = rc.get('win3', g_win3)
         #####################################
+        self.mv_check=None
+        self.mv_check_filled=False
 
     def write_file(self, path, text):
         path.write_text(text)
@@ -208,7 +210,7 @@ class TeimEdit(object):
                 self.set_teimcfg_paths()
                 # path_text è il parametro iniziale
                 self.find_file_text(self.text_regex)
-                self.win0.after(20, self.show_psths())
+                #self.win0.after(20, self.show_psths())
             else:
                 def on_select(n):
                     if n < 0:
@@ -216,7 +218,7 @@ class TeimEdit(object):
                     self.path_teimcfg = dir_lst[n]
                     self.set_teimcfg_paths()
                     self.find_file_text(self.text_regex)
-                    self.win0.after(20, self.show_psths())
+                    # self.win0.after(20, self.show_psths())
 
                 open_listbox(name_lst, on_select, "find teimcfg")
         except Exception as e:
@@ -274,6 +276,9 @@ class TeimEdit(object):
             lst = read_over_tags(self.path_over_csv)
             # prepara la tabella per la gestione del menu
             self.tag_over_lst = chk.fill_tag_over_lst(lst)
+            # TODO controllare se non duplica
+            self.add_mv_check()
+
         except Exception as e:
             editerr.log(f"ERROR set_teimcfg_paths. {e}")
             self.iconify()
@@ -373,7 +378,6 @@ class TeimEdit(object):
         self.win2.attributes("-topmost", True)
 
     def top_w3(self):
-        # self.win3.lift()
         self.top_not()
         self.win3.attributes("-topmost", True)
 
@@ -385,7 +389,20 @@ class TeimEdit(object):
 
     def top_order(self):
         self.top_not()
+        # self.win1.attributes("-topmost", 2)
+        # self.win2.attributes("-topmost", 1)
+        # self.win3.attributes("-topmost", 0)
+        # self.win0.attributes("-topmost", 3)
+        # self.win2.lift(self.win3)
+        # self.win1.lift(self.win2)
+        # self.win0.lift(self.win1)
+        self.win3.lower(self.win2)
+        self.win2.lower(self.win1)
+        self.win1.lower(self.win0)
         self.win0.lift()
+        # widget.lift(another)   # move to just above another widget
+        # widget.lower()         # move to the bottom of the stack
+        # widget.lower(another)  # move to just below another widget
 
     def iconify(self):
         self.win0.iconify()
@@ -415,6 +432,7 @@ class TeimEdit(object):
         self.set_paths(path_str)
         self.read_text_file()
         self.show_psths()
+        self.win0.lift()
 
     def open_recenti(self):
         try:
@@ -595,12 +613,12 @@ class TeimEdit(object):
     def find_entity_brackets(self):
         text = self.text_edit.get('1.0', tk.END)
         txt_wrk = clean_text(text)
+        m_lst = chk.check_entity_brackets(txt_wrk)
         self.add_tags(m_lst)
 
     def read_tag_set(self):
-        """Lettura tags da csv tipo|name|tag_txt abbr|mlt|<expan corresp="#ab-
-        ctr-mlt">m<ex>u</ex>lt</expan> abbr|Mlt|<expan corresp="#ab-ctr-
-        mlt">M<ex>u</ex>lt</expan>"""
+        """Lettura tags da csv 
+        """
         DELIMITER = '|'
         lst = []
         rows = self.path_entity_csv.open().readlines()
@@ -895,14 +913,20 @@ class TeimEdit(object):
     #############
     # menu_bar
     ############
-    def show_psths(self, top=False):
+    def help_paths(self):
+        self.show_psths()
+        self.top_w3()
+
+    def show_psths(self):
         try:
             wrk_dir = self.pwd
+            parent_teimcfg=self.parent_teimcfg.absolute()
+            search_text_dir=self.search_text_dir.absolute()
             info = [
                 "---------------------------",
                 f"work dir       : {wrk_dir}  ",
-                f"parent teimcfg : {self.parent_teimcfg}",
-                f"search text dir: {self.search_text_dir}",
+                f"parent teimcfg : {parent_teimcfg}",
+                f"search text dir: {search_text_dir}",
                 f"text RegEx     : {self.text_regex}",
                 f"sigla          : {self.text_sign}",
                 "---------------------------",
@@ -935,15 +959,12 @@ class TeimEdit(object):
                 "---------------------------",
             ]
             s = os.linesep.join(info)
-            if top:
-                self.show_log_top(s)
-            else:
-                self.show_log_lift(s)
+            self.show_log(s)
         except Exception as e:
             editerr.log(e)
             raise(Exception("ERROR in show_paths()"))
 
-    def show_options(self):
+    def help_options(self):
         s = HELP_RUN_OPS()
         self.show_log_top(s)
 
@@ -1002,23 +1023,29 @@ class TeimEdit(object):
 #     ['agglutination', '[', ']', 'OAGLS', 'CAGLS'],
 # ]
 
-    def open_win0(self):
+    def add_mv_check(self):
+        # lst.append([func_type,name,so,sc,po,pc])
+        lst = self.tag_over_lst
+        if lst is None:
+            return
+        if self.mv_check_filled:
+            return
+        #self.mv_check.delete(9,20)
+        for item in lst:
+            t, name, so, sc, po, pc = item
+            lbl = f'{name}:  {so}   {sc}'
+            if t == 0:
+                self.mv_check.add_command(
+                    label=lbl,
+                    command=lambda x=po, y=pc, : self.find_form_to(x, y))
+            else:
+                self.mv_check.add_command(
+                    label=lbl,
+                    command=lambda x=po, y=pc: self.find_over(x, y))
+        self.mv_check.add_separator()
+        self.mv_check_filled=True
 
-        def add_mv_check():
-            # lst.append([func_type,name,so,sc,po,pc])
-            lst = self.tag_over_lst
-            for item in lst:
-                t, name, so, sc, po, pc = item
-                lbl = f'{name}:  {so}   {sc}'
-                if t == 0:
-                    mv_check.add_command(
-                        label=lbl,
-                        command=lambda x=po, y=pc, : self.find_form_to(x, y))
-                else:
-                    mv_check.add_command(
-                        label=lbl,
-                        command=lambda x=po, y=pc: self.find_over(x, y))
-            mv_check.add_separator()
+    def open_win0(self):
 
         def new_mv():
             mv = tk.Menu(menu_bar, tearoff=0)
@@ -1088,24 +1115,27 @@ class TeimEdit(object):
         mv_edit.add_command(label="Cut      Ctrl-X")
         mv_edit.add_command(label="Copy     Ctrl-C")
         mv_edit.add_command(label="Paste    Ctrl-V")
-
-        mv_check = new_mv()
-        mv_check.add_command(label='Check Entity Log',
+        mv_edit.add_separator()
+        mv_edit.add_command(label="Find&Replace  Ctrl-F",
+                            command=self.text_edit.find_replace)
+        #########################################
+        self.mv_check = new_mv()
+        self.mv_check.add_command(label='Check Entity Log',
                              command=self.elab_checktxt)
-        mv_check.add_command(label='Check Overflow Log',
+        self.mv_check.add_command(label='Check Overflow Log',
                              command=self.elab_checkover)
-        mv_check.add_separator()
-        mv_check.add_command(label='Clean', command=self.del_tags)
-        mv_check.add_separator()
-        mv_check.add_command(label='Entity Comma',
+        self.mv_check.add_separator()
+        self.mv_check.add_command(label='Clean', command=self.del_tags)
+        self.mv_check.add_separator()
+        self.mv_check.add_command(label='Entity Comma',
                              command=self.fin_entity_comma)
-        mv_check.add_command(label='Entity Brackets',
+        self.mv_check.add_command(label='Entity Brackets',
                              command=self.find_entity_brackets)
-        mv_check.add_command(label='Entity Undefined',
+        self.mv_check.add_command(label='Entity Undefined',
                              command=self.find_entity_undefined)
-        mv_check.add_separator()
+        self.mv_check.add_separator()
         # add_mv_check()
-
+        #########################################
         mv_elab = new_mv()
         mv_elab.add_command(label='Elab. Entity', command=self.elab_teimxml)
         mv_elab.add_command(label='Elab. Set ID', command=self.elab_teimsetid)
@@ -1150,13 +1180,13 @@ class TeimEdit(object):
         mv_del.add_command(label='Remove log files', command=self.remove_log)
 
         mv_help = new_mv()
-        mv_help.add_command(label='Files & Directory', command=self.show_psths)
-        mv_help.add_command(label='run options', command=self.show_options)
+        mv_help.add_command(label='Files & Directory', command=self.help_paths)
+        mv_help.add_command(label='run options', command=self.help_options)
 
         # orizontale
         menu_bar.add_cascade(label='File', menu=mv_file, underline=0)
         menu_bar.add_cascade(label='Edit', menu=mv_edit, underline=0)
-        menu_bar.add_cascade(label='Check', menu=mv_check, underline=0)
+        menu_bar.add_cascade(label='Check', menu=self.mv_check, underline=0)
         menu_bar.add_cascade(label='Elab.', menu=mv_elab, underline=1)
         menu_bar.add_cascade(label='Log', menu=mv_log, underline=0)
         menu_bar.add_cascade(label='Del.', menu=mv_del, underline=0)
@@ -1177,23 +1207,23 @@ class TeimEdit(object):
         self.show_win1("")
         self.show_win2("")
         self.show_win3("")
-        ############
+        ################################
         # cerca la dir teimcfg_dir partendo
         # -c teimcfg_dir
         # se non la trova exit
         # invoca
         # set_file_path
         # read_over_tags
-        # read_text_file
         # self.find_file_text(self.path_text)
         self.find_teimtag()
-        ############
-        add_mv_check()
+        ##################################
+        self.add_mv_check()
+        self.top_order()
+        self.text_edit.focus()
         tk.mainloop()
-        ##############
+        ###############################
 
     def open_win1(self):
-        #self.win1 = tk.Tk()
         self.win1 = tk.Toplevel(self.win0)
         self.win1.title('ENTITY')
         self.win1.protocol("WM_DELETE_WINDOW", lambda: False)
@@ -1206,7 +1236,6 @@ class TeimEdit(object):
 
     def open_win2(self):
         self.win2 = tk.Toplevel(self.win0)
-        #self.win2 = tk.Tk()
         self.win2.title('XML')
         self.win2.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win2.rowconfigure(0, weight=1)
@@ -1218,7 +1247,6 @@ class TeimEdit(object):
 
     def open_win3(self):
         self.win3 = tk.Toplevel(self.win0)
-        #self.win3 = tk.Tk()
         self.win3.protocol("WM_DELETE_WINDOW", lambda: False)
         self.win3.title('LOG')
         self.win3.rowconfigure(0, weight=1)
