@@ -1,0 +1,430 @@
+Tutti i nomi usati nell'esempio sono del tutto convenzionali
+-----------------------------------------
+dir di lavoto: teimed_prj_es
+progettto: flori_xml
+witnes: par1,ven1,tor1
+------------------------------
+creare la dir teimed_prj_es e posizionarsi
+nella medesima
+-----------------------------
+nel file flori_xml.csv 
+le colonne indicano:
+nome progetto,  nomewitness,    nome teseto
+NON è necessario che il/i testi esistano
+in questa fase il nome drl trdto è provvisorio
+potranno essere aggiunti o modificati in seguito
+
+flori_xml|par1|eps0
+flori_xml|par1|eps1
+flori_xml|ven1|eps0
+-------------------------
+lanciare:
+teimprjxml.py flori_xml.csv 
+
+Viene creata una struttura per la gestione del progetto.
+
+Lanciando teimprjxml.py senza argomento
+viene stampato un file di testo che indica modalità
+alternative per la costruzione di un progetto e perl'aggiunta 
+di un witness.
+Ma per il momento proseguiamo 
+-----------------------------------------------------
+FACOLTATIVO
+teimprjmap.py flori_xml
+
+Stampa una mappa completa delle di e dei filesdel progetto.
+Può essere utle per avere un'idea delloschema
+e per visualizzare le modifiche del progetto all'aggiunta
+di witness o testi.
+-------------------------------------------------------
+Posizionarsi nelle dir delle witness.
+Nel caso dell'esempio.
+flori_xml/par1
+flori_xml/ven1
+------------------------------------------------------
+Creare o trasferire nelle dir il/i testi sui quali
+si vuole lavorare.
+Possono inizialmente essere creati vuoti.
+Non è vincolante che abbiano lo stesso nome indicato
+nel file del progetto (eps01).
+Possono essere aggiunti e rinominati in ogni momento.
+!! Per eseguire il prossimo passo ne deve esserecreato 
+per almeno un witness un testo,anche vuoto.
+-------------------------------------------------
+nell'esempio creiamo in par1
+eps0.txt
+eps1.txt
+-------------------------------------------------
+prosi nella di flori_xml
+-------------------------------------------------
+lanciare 
+teimprjtext.py par1
+
+lanciandolo senza argomenti stampa un semplice help
+per poter gestire pià progetti.
+Ma in questa fase continuiamo.
+
+Viene stampata una lista dele dir e dei files cratei.
+
+Se si vuole visualizzare la mappa
+teimprhmap.py
+(stando all'interno del progetto flori_xml
+NON è necessario alcun argomento)
+-------------------------------------------------
+teimprjtext.py <witness> (se si è dentyro la dir flori_xml)
+
+teimprjtext.py <nome progettp> <nome witness>/se si è
+su una dir parent (o anche ancestor) del progetto.
+
+va lanciato ogni volta che si aggiunge un testo in unwitness
+o se ne cambia il nome.
+--------------------------------------
+posizionarsi nella dir flori_xml/teimcfg
+------------------------------------
+copiare i files:
+teim.xml
+teimtags.csv
+teimoverflow.csv
+teimxmlid.csv
+------------------------------------
+FATTO !!!
+-----------------------------------
+
+=======================================================
+elenco comandi da terminale.
+Puoi anche provare prima la versione grafica che
+trovi spiegata successivamente
+======================================================
+
+
+Esempi di esecuzione delle varie fasi.
+I programmi vanno lanciati stando nella dir flori_xml
+-----------------------------------
+prjmgr.py prj/par1.json
+
+esegue le seguenti elaborazioni
+
+prjmgr.py prj/par1_removelog.json,
+prjmgr.py prj/par1_merge.json,
+prjmgr.py prj/par1_txt.json,
+prjmgr.py prj/par1_xml.json
+
+INPUT
+flori_xml/par1/eps01.txt
+....
+flori_xml/par1/eps0n.txt
+
+OUTPUT/INPUT elaborazione
+flori_xml/par1/par1.txt
+    output dell'elaborazione precedente
+    input elaborazxioni successive
+
+OUTPUT FINALE
+flor_xml/par1/par1_format.xml
+        xml formattato er consultazione
+flori_xml/xml/par1.xml
+        xml da utilizzare in produzione
+
+=====================================
+elaborazioni per witness
+================================
+prjmgr.py prj/par1_removelog.json,
+    rimuove i file di log di elaborazioni precedenti
+----------------------------------
+prjmgr.py prj/par1_merge.json,
+    fa il merge di tutti gli episodi del manoscritto:
+
+INPUT
+flori_xml/par1/eps01.txt
+....
+flori_xml/par1/eps0n.txt
+
+OUTPUT
+flory_xml/par1/par1.txt
+-----------------------------------
+prjmgr.py prj/par1_txt.json,
+esegue:
+teimxml.py
+
+INPUT
+flori_xml/par1/par1.txt
+
+OUTPUT
+flori_xml/par1/log/par1_teim.txt
+    applica la prima trasfromazione teimedlib = XML
+-------------------------------------
+prjmgr.py prj/par1_xml.json
+esegue:
+
+teimsetid.py 
+    seconda trasformazione teimedlib => XML
+    sono settati gli ID
+
+teimover.py 
+    crea tutti i riferimenti per la gestione degli overflow
+
+teimnote.py 
+    gestisce le note relative al manoscritto
+
+include: {
+host: teimcfg/tei.xml,
+dest: xml/par1.xml,
+params: [],
+files: [XML_MANO|par1/log/par1_id_over_note.xml]
+    inserisce l'intestazione TEI nel file XML
+
+teimxmllint.py 
+    formatta il file XML per la consultazione
+...................................
+INPUT
+flori_xml/par1/log/par1_teim.txt
+
+OUTPUT / INPUT elaborazione
+flori_xml/par1/log/par1_id.xml
+    generato da teimsetid.py
+flori_xml/par1/log/par1_id_over.xml
+    generato da teimover.py
+flori_xml/par1/log/par1_id_over_note.xml
+    generato da teimnote.py
+
+OUTPUT FINALE
+flor_xml/par1/par1_format.xml
+        xml formattato er consultazione
+flori_xml/xml/par1.xml
+        xml da utilizzare in produzione
+--------------------------------------
+Controlli sul sorgente txt
+
+prjmgr.py prj/par1_chectext.json
+    controlla le entity teimedlib
+esegue:
+checktxt.py 
+
+prjmgr.py prj/par1_checkover.json
+    controlla apertura chiusura overflow
+esegue:
+checkover.py 
+
+************************************************
+elaborazione per singoli episodi.
+************************************************
+Sono utilizzate le stesse procedure che elaborano
+un singolo episodio
+
+esempio:
+progettto: flor_xml
+witnes: par1
+teseto:eps01_txt
+
+situarsi nella dir flori_xml
+lanciare:
+
+pej_mgr.py par1_prj/eps01.json
+
+sone esegue le seguenti elaborazioni:
+----------------------------------
+prjmgr.py par1_prj/eps01_txt.json
+esegue
+teimxml.py 
+----------------------------------
+prjmgr.py par1_prj/eps01_setid.json
+esegue:
+teimsetid.py
+-------------------------------------
+prjmgr.py par1_prj/eps01_over.json
+esegue:
+teimover.py 
+--------------------------------------
+prjmgr.py par1_prj/eps01_note.json
+esegue:
+teimnote.py 
+--------------------------------------
+prjmgr.py par1_prj/eps01_format.json
+esegue:
+teimxmlformat.py 
+--------------------------------------
+Controlli sul sorgente txt
+
+prjmgr.py par1_prj/eps01_chectext.json
+esegue:
+checktxt.py 
+
+prjmgr.py par1_prj/eps01_checkover.json
+esegue:
+checkover.py 
+*********************************************+
+Il progetto che utilizza file jsoon
+Ha lop scopo di offrire un'interfaccia multipiattaforma
+che gestisce automaticamente i parametri di lanciatodei vari applicativi 
+e che li esegue nella giusta sequensa.
+
+!!!
+Quando è stato creato per poter gestire separatamente
+i testi di un gorosso manoscritto, prevedevo un fasedi merge 
+per poter numerarre  dall'inizio id e delle parole delle righe ed altro.
+
+In seguito ho previsto delle meta istruzoni all'inizio diogni testo 
+per definire l'inizio della numerazione.
+Sono implementti e funzionano ambedue i metodi.
+Non sta a me dire quale è più comodo.
+Forse dipende dalle situazioni e dal modo di lavoraredel sigolo o del gruppo.
+------------------------------------------------
+Satndo dentro la dir flori_xml
+
+teimprjsave.py
+
+Fa una copia di tutti i testi nella dir
+flori_xml/back
+indicando data ed ora del salvataggio.
+es.
+eps1_2021_09_16_19_34_47.txt
+
+==============================================
+modalità grafica
+==============================================
+
+Uno dei più grossi difetti degli sviluppatori è quello
+di avere un concetto distorto della semplicità d'uso.
+Deriva dal fatto che ripetendo centinaia di volte lestesse operazioni 
+alla fine sembrano semplici ed intuitive.
+Ovviamente non è così.
+Quello che ti propongo è molto molto sperimentale e prima
+di stabilizzarlo vorrei dei riscontri pratici.
+
+Il nome (un po' vezzoso) deriva da teim xml for human.
+
+da dentro la solita dir flori_xml (in verità anche da unadir nono, 
+ma per adesso non complichiamo le cose)
+
+teimxmlfh.py
+
+Comparirà una videata grafica con il seguente menu:
+
+witness
+  per selezionare il manoscritto sul quale lavorare
+
+Text
+   per selezionare i testi del manoscriutto.
+   E' attiva solo dopo aver selezionato witness.
+
+PrjText
+  lancia le elaborazione per singoloi testo selezionato
+
+PrjWitness:
+  Lancia le elaborazione per witness (compreso il merge di
+  cui ho accennato)
+
+In ambedue i casi possono essere lanciate le singole elaborazioni.
+La penultima opzione (nome del witness o del testo)
+esegute tutta la sequenza.
+L'ultima opzione rimuove i log delle elaborazioni.
+
+List files
+  Permette di selezionare e visualizzare tutti i file 
+  prodotti sia di output che dilog che di errore.
+  Di tutto il progetto o relativi al witness selezionato.
+
+Utils
+ Add Text
+    Dopo aver aggiunto un testo 
+    (Non è necessario aver selezionato un witness )
+Backup Text
+    Fa le copie dei testi come sopra indicato.
+
+Le altre opzioni non considerarle.
+ 
+
+ !!!
+ Alcune stranezze sperimentli.
+
+ In alcune situazioni bisogna gestire il problema degli errori
+ di codifica delle entities.
+ In generale vi sono due strategie:
+- Interromeper l'elaborazione quando si verifica l'errore.
+- Continuare e registrare gli errori su di un file di log.
+
+Nel primo caso la correzione è molto laboriosa, perchè dopoogni 
+errore bisogna lnaciare i programmi di check ed in certi casi 
+l'intera elaborazione.
+Nel secondo si ottiene una lista spesso molto lunga di errorri
+non molto comoda da gestire e comprendere, soprattutto perchèin 
+molti casi - per esempio con le parentesi -  gli errori sono
+solo conseguenza di errori precedenti.
+Quindi (non in tutt e le elaborazione) ho sperimentato un altro 
+metodo.
+
+Quando si verifca un errore viene stampato il messaggi e compare
+un input con "?" nel punto in cui si è verificato l'errore,
+Premendo return l'elaborazioe continua fino all'errore successivo.
+Digitando "." l'elaborazione continua fino al termine.
+Questa opzione è sperimentale perchè non so se sia la via miglior,
+in ogni caso è configurabile (mcome altre opzioni) ma di questo
+vedremo poi poer non ccomplicare troppo le cose in questra fase.
+
+Quando si seleziona una sequenza di eleaborazioni a cascata.
+Ad esemioio
+Avendo slezionato par1_checkoversi seleziona 
+Prj witness
+  par1
+Se una elaborazione non a a buon fine e non riesce a produrre ilfile di output
+la successiva da come errore input not found. e cosi le successive.
+Quindi nelle prime fasi della correzione è pià conveniente lancirae 
+le singole elaborazioni.
+
+
+Solo per tua conodità ho allegato alcuni testi di esempio, sono pieni
+di errori ma in questa fase possono esserti utili.
+
+Ti consiglio, la prima volta, di crearti una tua dir di lavoro
+e creare il progetto passo passo,opuure usare la stessa dir 
+Ecrearti il progetto nico_xml uilizzando il file nico_xml.csv
+usando l'esempio solo come riferimento.
+
+Comunque, se sei curoso di teimxmlfh.py, lo puoi lanciare dadentro il progetto 
+flori_xml, non cancella nulla
+
+Scusa gli innumerevoli errori, ma è già abbastanza noioso scrivere leistruzioni 
+per cui provvederò poi a dargli un minimo di dignità orotgrafica.
+
+Per ogni dubbio fammi sapere. Spero che l'applicazione grafica funzioni
+sotto windows.
+
+!!!!!
+QUando usi la modalità grafica (se funziona) ricordati
+
+Utils
+  Add Text
+ 
+ ogni volta che aggiungi un testo o ne modifichi il nome.
+ 
+ Stai tranquillo che non cancella i tuoi testi.
+ 
+ Ricordti anche,quando codifichi o correggi, di fare ogni tanto 
+ 
+ Utils
+    Backup Text
+
+ ti eviterà qualche arrabbiatura
+
+
+Rispetto alla versione che hai installato ho fatto solo due
+piccole modifiche a teimxmlfh.py
+(metti in ordine alfabetico witness e text nel menu)
+Quindi puoi anche evitare di reinstallare i programmi.
+Comunque se lo fai sarà semplicemente sovrascritta la
+versione precedente.
+
+Buona fortuna
+ 
+
+
+
+
+
+
+
+
+
+
+
+

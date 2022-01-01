@@ -1,0 +1,101 @@
+TGIDJS = {
+    'div_episode': {
+        'tag_id': 'X',
+        'id': -1,
+        'xid': 'K',
+        "chld_lst": [
+            'div_chapter',
+            'head',
+            'cb',
+            'pb',
+            'p',
+            'lg',
+            'persName',
+            'geogName',
+            'placeName',
+            'choice'
+        ]
+    },
+    'div_chapter': {
+        'tag_id': 'chp',
+        'id': -1,
+        'xid': '',
+        'id': 0,
+        "chld_lst": ['head',
+            'p',
+            'lg'
+        ]
+    },
+    'head': {
+        'tag_id': 'hd',
+        'id': 0,
+        'xid': '',
+        "chld_lst": ['w']
+    },
+    'cb': {
+        'tag_id': 'cb',
+        'id': 0,
+        'xid': '',
+        "chld_lst": []
+    },
+    'pb': {
+        'tag_id': 'pb',
+        'id': 0,
+        'xid': '',
+        "chld_lst": []
+    },
+    'p': {
+        'tag_id': 'p',
+        'id': 0,
+        'xid': '',
+        "chld_lst": ['w', 'pc']
+    },
+    'lg': {
+        'tag_id': 'lg',
+        'id': 0,
+        'xid': '',
+        "chld_lst": ['l']
+    },
+    'l': {
+        'tag_id': 'l',
+        'id': 0,
+        'xid': '',
+        "chld_lst": ['w']
+    },
+    'w': {
+        'tag_id': 'w',
+        'id': 0,
+        'xid': '',
+        "chld_lst": []
+    },
+    'pc': {
+        'tag_id': 'pc',
+        'id': 0,
+        'xid': '',
+        "chld_lst": []
+    },
+    'persName': {
+        'tag_id': 'peN',
+        'id': 0,
+        'xid': '',
+        "chld_lst": []
+    },
+    'geogName': {
+        'tag_id': 'geN',
+        'id': 0,
+        'xid': '',
+        "chld_lst": []
+    },
+    'placeName': {
+        'tag_id': 'plN',
+        'id': 0,
+        'xid': '',
+        "chld_lst": []
+    },
+    'choice': {
+        'tag_id': 'chc',
+        'id': 0,
+        'xid': '',
+        "chld_lst": []
+    }
+}
