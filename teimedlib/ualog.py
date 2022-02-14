@@ -16,7 +16,7 @@ class Log(object):
         self.out_liv > 0    print attivato globalmente
         self.out_liv  <1    disattivato
         
-        prn()/prn()          attivato localmente anche  
+        prn()/prn(1)          attivato localmente anche  
                             se distattivato globalmente
 
         prn(0)               disattivato localmente

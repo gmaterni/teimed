@@ -14,8 +14,8 @@ from teimedlib.ualog import Log
 from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 
-__date__ = "01-08-2021"
-__version__ = "0.4.8"
+__date__ = "09-01-2022"
+__version__ = "0.4.9"
 __author__ = "Marta Materni"
 
 """
@@ -113,7 +113,7 @@ class TeimSetId(object):
         self.path_csv = path_csv
 
         # testo.txt => testo_id.ERR.log
-        path_err = set_path_id_log(path_text)
+        path_err = set_path_id_err(path_text)
         self.log_err = Log("w").open(path_err, 1).log
 
         # testo.txt => testo_id.log

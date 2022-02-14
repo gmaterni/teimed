@@ -2,27 +2,23 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import stat
+import teimedlib.write_path as wp
 
-BIN = "teimed_flori/bin"
+"""
+scrittura comandi
 
-def path_bin():
-    pwd=os.getcwd()
-    sp=pwd.partition("/tei/")
-    path_tei=f"{sp[0]}{sp[1]}"
-    path_flori=os.path.join(path_tei,BIN)
-    return path_flori
+uash.py dir1/dir2/cmd.py ls .
+scrive in cmd.py ls .
 
+"""
 def write_cmd(lst):
-    name=lst[0]
+    name = lst[0]
     cmd = " ".join(lst[1:])
-    path = os.path.join(path_bin(), name)
+    # path = os.path.join(path_bin(), name)
     print(name)
     print(cmd)
-    with open(path,"w+") as f: 
-        f.write(cmd)
-    os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
+    wp.write_path_file(name, cmd)
 
 
-if len(sys.argv)>1:
+if len(sys.argv) > 1:
     write_cmd(sys.argv[1:])
