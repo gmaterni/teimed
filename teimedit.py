@@ -690,12 +690,16 @@ class TeimEdit(object):
         menu_bar.add_cascade(label='Elab.', menu=mv_elab, underline=1)
         menu_bar.add_cascade(label='Log', menu=mv_log, underline=0)
         menu_bar.add_cascade(label='Del.', menu=mv_del, underline=0)
-        menu_bar.add_command(label='    1>2>3>4 ', command=self.top_order)
-        menu_bar.add_command(label='1234 ', command=self.top_free)
-        menu_bar.add_command(label=' 1 ', command=self.top_w0,)
-        menu_bar.add_command(label=' 2 ', command=self.top_w1)
-        menu_bar.add_command(label=' 3 ', command=self.top_w2)
+
+        s = f"W:"
+        menu_bar.add_command(label=s, activeforeground=FG_MENU,
+                             activebackground=BG_MENU),
+        menu_bar.add_command(label=' 1', command=self.top_w0,)
+        menu_bar.add_command(label=' 2', command=self.top_w1)
+        menu_bar.add_command(label=' 3', command=self.top_w2)
         menu_bar.add_command(label=' 4 ', command=self.top_w3)
+        menu_bar.add_command(label='1234 ', command=self.top_free)
+        menu_bar.add_command(label='Tidy', command=self.top_order)
         s = f"                               "
         menu_bar.add_command(label=s, activeforeground=FG_MENU,
                              activebackground=BG_MENU),
