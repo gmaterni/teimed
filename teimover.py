@@ -15,7 +15,7 @@ from teimedlib.readovertags import read_over_tags_sorted
 from teimedlib.teim_paths import *
 
 __date__ = "07-03-2023"
-__version__ = "0.10.11"
+__version__ = "1.1.0"
 __author__ = "Marta Materni"
 
 

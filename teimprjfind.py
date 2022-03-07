@@ -7,7 +7,7 @@ import os
 import pathlib as pth
 
 __date__ = "09-08-2021"
-__version__ = "0.1.1"
+__version__ = "1.1.1"
 __author__ = "Marta Materni"
 
 

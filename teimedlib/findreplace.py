@@ -5,7 +5,7 @@ from teimedlib.edit_constants import *
 
 
 __date__ = "19-05-2021"
-__version__ = "0.2.0"
+__version__ = "1.2.0"
 __author__ = "Marta Materni"
 
 def find_replace_new(master):

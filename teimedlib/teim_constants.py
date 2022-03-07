@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __date__ = "09-07-2021"
-__version__ = "0.1.0"
+__version__ = "1.1.0"
 __author__ = "Marta Materni"
 
 TEIMCFG="teimcfg"

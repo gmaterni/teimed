@@ -15,7 +15,7 @@ from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 
 __date__ = "07-05-2022"
-__version__ = "0.4.10"
+__version__ = "1.4.10"
 __author__ = "Marta Materni"
 
 """

@@ -9,7 +9,7 @@ import argparse
 import sys
 
 __date__ = "19-01-2021"
-__version__ = "0.2.2"
+__version__ = "1.2.2"
 __author__ = "Marta Materni"
 
 

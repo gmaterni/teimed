@@ -9,7 +9,7 @@ import os
 
 
 __date__ = "27-07-2021"
-__version__ = "0.2.1"
+__version__ = "1.2.1"
 __author__ = "Marta Materni"
 
 

@@ -12,7 +12,7 @@ from teimedlib.teim_paths import *
 
 
 __date__ = "20-07-2021"
-__version__ = "0.2.7"
+__version__ = "1.1.1"
 __author__ = "Marta Materni"
 
 

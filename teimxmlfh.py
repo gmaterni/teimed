@@ -27,7 +27,7 @@ from teimedlib.ualog import Log
 import teimedlib.pathutils as ptu
 
 __date__ = "01-01-2022"
-__version__ = "0.3.0"
+__version__ = "1.3.0"
 __author__ = "Marta Materni"
 
 

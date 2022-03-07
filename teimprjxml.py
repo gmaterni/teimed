@@ -9,7 +9,7 @@ import json
 from teimedlib import template_xml_prj
 
 __date__ = "29-07-2021"
-__version__ = "0.1.8"
+__version__ = "1.1.8"
 __author__ = "Marta Materni"
 
 help = """

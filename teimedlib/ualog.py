@@ -4,7 +4,7 @@
 import os
 
 __date__ = "13-07-2021"
-__version__ = "0.5.3"
+__version__ = "1.5.3"
 __author__ = "Marta Materni"
 
 

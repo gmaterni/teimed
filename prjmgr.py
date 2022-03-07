@@ -14,7 +14,7 @@ def pp(data,wd=60):
     return s+os.linesep
 
 __date__ = "09-08-2021"
-__version__ = "0.4.2"
+__version__ = "1.4.0"
 __author__ = "Marta Materni"
 
 

@@ -12,7 +12,7 @@ from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 
 __date__ = "21-07-2021"
-__version__ = "0.1.9"
+__version__ = "1.1.1"
 __author__ = "Marta Materni"
 
 def pp(data,w=40):

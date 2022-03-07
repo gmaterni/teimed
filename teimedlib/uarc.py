@@ -6,7 +6,7 @@ import pathlib as pth
 from pdb import set_trace
 
 __date__ = "30-08-2021"
-__version__ = "0.1.2"
+__version__ = "1.1.2"
 __author__ = "Marta Materni"
 
 

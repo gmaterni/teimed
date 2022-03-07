@@ -14,7 +14,7 @@ from teimedlib.ualog import Log
 from pdb import set_trace
 
 __date__ = "09-07-2021"
-__version__ = "0.2.3"
+__version__ = "1.2.3"
 __author__ = "Marta Materni"
 
 def make_dir_of_file(path):

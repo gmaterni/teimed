@@ -12,7 +12,7 @@ from teimedlib.ualog import Log
 from teimedlib.xml_const import *
 
 __date__ = "09-09-2021"
-__version__ = "0.9.9"
+__version__ = "1.1.0"
 __author__ = "Marta Materni"
 
 

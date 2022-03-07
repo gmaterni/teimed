@@ -166,7 +166,6 @@ teimnote.py -i eps01.txt -n teimnote.csv
 <== ./log/eps01_id_over.xml
 ==> ./log/eps01_id_over_note.xml
 
-
 teimxmlformat.py -i log/eps01_id_over_note.xml -o eps01.xml -a
 <== log/eps01_id_over_note.xml
 ==> eps01.xml

@@ -9,7 +9,7 @@ from teimedlib.ualog import Log
 from teimedlib.teim_paths import *
 
 __date__ = "25-07-2021"
-__version__ = "0.1.12"
+__version__ = "1.1.12"
 __author__ = "Marta Materni"
 
 """

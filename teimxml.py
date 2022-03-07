@@ -13,7 +13,7 @@ from teimedlib.xml_const import *
 from teimedlib.teim_paths import *
 
 __date__ = "26-07-2021"
-__version__ = "0.5.4"
+__version__ = "1.5.4"
 __author__ = "Marta Materni"
 
 """

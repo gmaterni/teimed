@@ -3,7 +3,7 @@
 
 
 __date__ = "29-07-2021"
-__version__ = "0.3.1"
+__version__ = "1.3.1"
 __author__ = "Marta Materni"
 
 prj = {
