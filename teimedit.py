@@ -35,8 +35,8 @@ from teimsetid import do_main as do_main_setid
 from teimxml import do_main as do_main_xml
 from teixml2txt import do_main as do_main_xml2txt
 
-__date__ = "05-09-2021"
-__version__ = "0.3.13"
+__date__ = "07-03-2022"
+__version__ = "1.2.1"
 __author__ = "Marta Materni"
 
 
@@ -700,10 +700,13 @@ class TeimEdit(object):
         menu_bar.add_command(label=' 4 ', command=self.top_w3)
         menu_bar.add_command(label='1234 ', command=self.top_free)
         menu_bar.add_command(label='Tidy', command=self.top_order)
-        s = f"                               "
+        s = f"                      "
         menu_bar.add_command(label=s, activeforeground=FG_MENU,
                              activebackground=BG_MENU),
         menu_bar.add_cascade(label='Help', menu=mv_help)
+        s = f" {__version__} "
+        menu_bar.add_command(label=s, activeforeground=FG_MENU,
+                             activebackground=BG_MENU),
 
         self.open_win1()
         self.open_win2()
@@ -1560,7 +1563,7 @@ if __name__ == "__main__":
     if le == 1:
         if rc.is_empty():
             print(f"\nauthor: {__author__}")
-            print(f"release: {__version__} { __date__}")
+            print(f"{__date__} { __version__}")
             parser.print_help()
             sys.exit()
         # do_main(None, PATH_ROOT_DIR, None)
@@ -1571,4 +1574,6 @@ if __name__ == "__main__":
         rc.remove()
     if args.path_match:
         args.path_match = args.path_match.replace('$', '*')
+
+    print(f"{__date__} { __version__}")
     do_main(args.parent_cfg, PATH_ROOT_DIR, args.path_match)
