@@ -236,7 +236,7 @@ class TeimXml(object):
         #####################
         if text.find(self.UNDER) > -1:
             text = self.remove_word_underscore(text)
-        # XXX importante ordine  chiamate
+        # importante ordine  chiamate
         # \..\
         text = replace_attr(ptr_attr, text)
         # SL "\"
@@ -391,7 +391,7 @@ class TeimXml(object):
         if word_text_orig.strip() == '':
             return word_ent
 
-        # XXX controlla se esistono tag parametri di riga
+        # controlla se esistono tag parametri di riga
         # nel testo sono del tiop <l:n:>
         # sono trasformati in <l|n="1"!/>
         # if word_text_orig.find(self.SP_TMP) > -1:
@@ -488,7 +488,7 @@ class TeimXml(object):
             if is_add_w:
                 is_add_w = self.is_tag_to_add_w(word_ent.text)
                 ####################
-                # XXX controllo funzioe per add word
+                # controllo funzioe per add word
                 # n_add = self.xis_tag_to_add_w(word_ent.text)
                 # if is_add_w != n_add:
                 #     LOG(f'{self.row_num}  {word_text_orig}')
@@ -541,10 +541,11 @@ class TeimXml(object):
             self.line_num = self.LB
 
         # tag numerazione righe
-        # aggiunge <lb/>
+        # aggiunge <lb/> all'inizio
         if self.line_num == self.LB:
             if row_text.find('<w') > -1:
-                # row_text = f'{row_text}<lb/>'
+                # AAA gestione <lb/>
+                # AAA row_text = f'{row_text}<lb/>'
                 row_text = f'<lb/>{row_text}'
         elif self.line_num == self.LG_L:
             if row_text.find('<w') > -1:
@@ -580,7 +581,7 @@ class TeimXml(object):
             os.chmod(self.path_out, 0o777)
             # controllo XML
             s, err = self.check_xml(src, "teimxml.py elab_rows()")
-            # XXX da valutare controllo final XML
+            # TODO da valutare controllo final XML
             # if err:
             #     rs=s.split(os.linesep)
             #     for i,r in enumerate(rs):

@@ -65,7 +65,7 @@ class TeimSetId(object):
     """
     Setta gli attributi xml:id nei tag xml.
     Il criterio di aseggnazione e numerazione è
-    definitio in un fule csv,
+    definitio in un file csv,
 
     #key | tag_id|id start|children
     div_episode||-1|div_chapter:head:cb:pb:p:lg:persName:geogName:placeName:choice
@@ -105,6 +105,7 @@ class TeimSetId(object):
 
     def __init__(self, path_text, path_csv):
         self.path_text = path_text
+        
         # testo.txt => testo_txt.txt
         self.path_in = set_path_id_in(path_text)
 
@@ -123,7 +124,8 @@ class TeimSetId(object):
         self.xml_root = etree
         self.tgid_js = {}
         self.id_cfg = {}
-        # UA self.input_err_active = True
+        
+        # self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):
@@ -315,7 +317,7 @@ class TeimSetId(object):
 
     def set_id_cfg(self, rows):
         """
-        XXX testo_id.cfg default
+        testo_id.cfg default
         se testo_id.cfg non esiste utilizza i valori di default
 
         episode:sign=K

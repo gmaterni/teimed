@@ -130,10 +130,15 @@ class TeimTxtRead(object):
             rows[i] = self.text_add_spc_to_punct(row)
         return rows
 
+    # AAA  direttive controllare 
     def read_id_cfg(self):
+        """
+        legge direttive per numerazione in testa al file sorgente
+        """
         rows = []
         try:
             fr = open(self.path_text, "r")
+            print(self.path_text)
             # HEACK while (row := fr.readline()) != '':
             while True:
                 row = fr.readline()
@@ -153,7 +158,7 @@ class TeimTxtRead(object):
                     rows.append(s)
             fr.close()
         except Exception as e:
-            msg = f"ERROR 3 read_id_cfg.py read_id_cfg() \n{e}"
+            msg = f"ERROR 3 read_id_cfg() \n{e}"
             sys.exit(msg)
         else:
             return rows
@@ -161,7 +166,7 @@ class TeimTxtRead(object):
 
     def read_text_rows(self):
         """
-        Elimina commenti e direttiva
+        Elimina commenti e direttive
 
         """
         rows = []
