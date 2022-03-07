@@ -11,6 +11,7 @@ def do_main(path_src,path_tags):
     te = TextEntities(path_src, path_tags,log_err)
     lst = te.get_rows_entities()
     path_log=path_src.replace(".txt","_words.log")
+    print(path_log)
     word_entities_log(lst,path_log)
 
 if __name__ == "__main__":

@@ -130,7 +130,7 @@ class TeimXmlFh(object):
         lbl = f"prj:  {self.prj_name}"
         self.lbl_prj_var.set(lbl)
 
-    # XXX menu per la selezione del witness
+    # menu per la selezione del witness
     def add_menu_witness(self):
         names = self.tprmap.witness_name_lst
         self.mv_witness.delete(1, 10)
@@ -172,7 +172,7 @@ class TeimXmlFh(object):
         self.lbl_text_var.set(lbl)
         self.add_menu_prj_text(text_name)
 
-    # XXX setta il menu witness command
+    # setta il menu witness command
     def add_menu_prj_witness(self):
         lst = self.tprmap.cmd_lst[self.witness_name]
         rows = []
@@ -196,7 +196,7 @@ class TeimXmlFh(object):
                 command=lambda x=id: self.exe_prj_witness(x))
         self.mv_prj_witness.add_separator()
 
-    # XXX setta il menu text command
+    # setta il menu text command
     def add_menu_prj_text(self, text_name):
         if self.witness_name is None:
             return
@@ -226,7 +226,7 @@ class TeimXmlFh(object):
                                          command=lambda x=id: self.exe_prj_text(x))
         self.mv_prj_text.add_separator()
 
-    # XXX esegue il comando con prjmgr
+    # esegue il comando con prjmgr
     def exe_prj_witness(self, idx):
         if self.witness_name is None:
             return
@@ -238,7 +238,7 @@ class TeimXmlFh(object):
                 pm.parse_file(json_path)
                 break
 
-    # XXX esegue comando text
+    # esegue comando text
     def exe_prj_text(self, idx):
         if self.witness_name is None:
             self.mbox.showinfo("Select witness")
@@ -264,7 +264,7 @@ class TeimXmlFh(object):
         save_text()
         os.chdir(self.pwd)
 
-    # XXX aggiorna il progetto all'aggiunta di un testo
+    #  aggiorna il progetto all'aggiunta di un testo
     def make_prj_text(self):
         if not self.prj_name:
             return
@@ -451,7 +451,7 @@ class TeimXmlFh(object):
         #####################
         tk.mainloop()
 
-    # UA gestione log
+    # gestione log
     # def top_wroot(self):
     #     self.top_not()
     #     self.root.attributes("-topmost", True)

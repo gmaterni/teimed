@@ -534,7 +534,7 @@ class TextEntities(object):
         rows = ttread.add_spc_to_punct(rows)
         rows = ttread.clean_brackets(rows)
 
-        # XXX rows = self.add_row_tag(rows)
+        # rows = self.add_row_tag(rows)
         
         self.read_tags(self.path_tags)
         self.build_rows_entities(rows)

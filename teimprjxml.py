@@ -209,7 +209,7 @@ def do_main_csv(project):
         sys.exit(1)
 
 def do_main_args(work, witness, text=""):
-    # XXX controllo dir
+    # controllo dir
     """
     if not os.path.isdir(work):
         print(f"{work} Not Found.")

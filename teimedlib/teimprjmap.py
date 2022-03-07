@@ -12,7 +12,7 @@ __date__ = "01-01-2022"
 __version__ = "1.3.0"
 __author__ = "Marta Materni"
 
-# XXX riferimentoiper l'elencop witness e text
+# riferimentoiper l'elencop witness e text
 WITNESS_NAME_RIF = "_setid.json"
 TEXT_NAME_RIF = "_setid.json"
 

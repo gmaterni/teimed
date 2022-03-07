@@ -34,7 +34,8 @@ class TeimTxtRead(object):
 
     def join_words_wrap(self, rows):
         """
-        unisce l'ultima word di una riga che termia con = con la prima della successiva
+        unisce l'ultima word di una riga che 
+        termia con = con la prima della successiva
 
         riga di prova, vedia=
         mo come va
@@ -54,7 +55,7 @@ class TeimTxtRead(object):
                     # fine della riga corrente
                     rows[i] = rows[i].replace(self.WRP, word0)
             except Exception as e:
-                self.log_err(f'ERROR.join_words_wrap().')
+                self.log_err(f'ERROR 1 join_words_wrap().')
                 self.log_err(f'row num:{i+1}')
         return rows
 
@@ -75,7 +76,7 @@ class TeimTxtRead(object):
                 out.write(c)
             out.write(os.linesep)
             if np != 0:
-                self.log_err(f"ERROR. parentesi '()' non bilanciate")
+                self.log_err(f"ERROR 2 parentesi '()' non bilanciate")
                 self.log_err(f"row num:{n+1}")
                 self.log_err(f"{row}")
         out.seek(0)
@@ -152,13 +153,17 @@ class TeimTxtRead(object):
                     rows.append(s)
             fr.close()
         except Exception as e:
-            msg = f"ERROR readteimtxt.py read_id_cfg() \n{e}"
+            msg = f"ERROR 3 read_id_cfg.py read_id_cfg() \n{e}"
             sys.exit(msg)
         else:
             return rows
 
 
     def read_text_rows(self):
+        """
+        Elimina commenti e direttiva
+
+        """
         rows = []
         try:
             fr = open(self.path_text, "r")
@@ -186,7 +191,7 @@ class TeimTxtRead(object):
                 rows.append(row)
             fr.close()
         except Exception as e:
-            msg = f"ERROR readteimtxt.py read_text_rows() \n{e}"
+            msg = f"ERROR 4 read_text_rows() \n{e}"
             sys.exit(msg)
         else:
             return rows

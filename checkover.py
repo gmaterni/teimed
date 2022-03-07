@@ -82,7 +82,7 @@ class CheckOverflow(object):
     def read_text(self):
         ttr=TeimTxtRead(self.path_text,self.log_err)
         rows=ttr.read_text_rows()
-        # UA verificare rows=ttr.add_spc_to_punct(rows)
+        # TODO verificare rows=ttr.add_spc_to_punct(rows)
         rows = ttr.join_words_wrap(rows)
         rows = ttr.clean_brackets(rows)
         # numerazione roq

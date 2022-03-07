@@ -8,7 +8,7 @@ __author__ = "Marta Materni"
 
 
 XML_DECL = "<?xml version='1.0' encoding='utf-8' standalone='yes'?>"
-# UA ELIMINATO TAG tei
+# ELIMINATO TAG tei
 # TEI_TOP="<TEI>"
 # TEI_BOTTOM = "</TEI>"
 TEI_TOP=""

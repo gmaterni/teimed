@@ -65,7 +65,7 @@ class CheckText(object):
     def read_text(self):
         ttr=TeimTxtRead(self.path_text,self.log_err)
         rows=ttr.read_text_rows()
-        # UA VERIFICARE rows=ttr.add_spc_to_punct(rows)
+        # TODO VERIFICARE rows=ttr.add_spc_to_punct(rows)
         rows = ttr.join_words_wrap(rows)
         rows = ttr.clean_brackets(rows)
         self.rows=rows  

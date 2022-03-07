@@ -12,8 +12,8 @@ from teimedlib.textentities_log import *
 from teimedlib.xml_const import *
 from teimedlib.teim_paths import *
 
-__date__ = "26-07-2021"
-__version__ = "1.5.4"
+__date__ = "07-03-2022"
+__version__ = "1.6.0"
 __author__ = "Marta Materni"
 
 """
@@ -62,7 +62,7 @@ LOG = Log("w").open("XXX.log", 1).log
 
 class TeimXml(object):
     """
-        Trasfroma un file testo codificato secondo
+        Trasforma un file testo codificato secondo
         le specifiche teimed in un file xml
         La sostituzione delle entities teimed con
         i tag xml viene effettuato utilizzanod
@@ -78,13 +78,14 @@ class TeimXml(object):
     UNDER = '_'   # carattere _ UNDERLINE
     SP_TMP = '|'     # spazio temporaneo usato neitag di riga
 
-
     def __init__(self, path_text, path_tags):
         # testo.txt => testo_txt,txt
-        self.path_out=set_path_teim_out(path_text)
+        self.path_out = set_path_teim_out(path_text)
+
         # testo.txt => testo_txt.log
-        path_info=set_path_teim_log(path_text)
+        path_info = set_path_teim_log(path_text)
         self.log_info = Log("w").open(path_info, 0).log
+
         # testo.txt => testo_txt.ERR.log
         path_err = set_path_teim_err(path_text)
         self.log_err = Log("w").open(path_err, 1).log
@@ -103,7 +104,7 @@ class TeimXml(object):
         self.line_num = self.LB
 
         self.trace = False
-        # TODO iself.input_err_active = True 
+        # TODO iself.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):
@@ -125,7 +126,7 @@ class TeimXml(object):
             # ename=entity.name.replace('&','').replace(';','')
             # tag=self.text_entities.get_tag_csv(ename,"?")
             # set_trace()
-            self.log_err(f'\nERROR. numero argomenti')
+            self.log_err(f'\nERROR A numero argomenti')
             self.log_err(f'row num.  : {self.row_num}')
             self.log_err(f'text      : {entity.src}')
             self.log_err(f'tag name  : {entity.tag_name}')
@@ -170,7 +171,8 @@ class TeimXml(object):
                 if c == '<':
                     m = re.search(r'<[\w]+', sl[i:])
                     if m is None:
-                        raise Exception(f'ERROR. teimxml.py\nfind_w_open_close()\n{sl}')
+                        raise Exception(
+                            f'ERROR B teimxml.py\nfind_w_open_close()\n{sl}')
                     po = i + m.end()
                     # TODO  if(m := re.search(r'w>', sl[i:])) is not None:
                     m = re.search(r'w>', sl[i:])
@@ -303,17 +305,17 @@ class TeimXml(object):
             le = len(text)
             msubst1 = re.search(psubst1, text)
             if msubst1 is None:
-                raise Exception(f'\nERROR. </subst> Not Found')
+                raise Exception(f'\nERROR 0 </subst> Not Found')
             if (msubst0.start() > 0) or (msubst1.end() < le):
                 text = f'<w>{text}</w>'
                 return text
 
             mdel0 = re.search(pdel0, text)
             if mdel0 is None:
-                raise Exception(f'\nERROR. <del .. Not Found')
+                raise Exception(f'\nERROR 1 <del .. Not Found')
             mdel1 = re.search(pdel1, text)
             if mdel1 is None:
-                raise Exception(f'\nERROR. </del> Not Found')
+                raise Exception(f'\nERROR 2 </del> Not Found')
             s0 = text[:mdel0.end()]
             s1 = text[mdel0.end():mdel1.start()]
             s2 = text[mdel1.start():]
@@ -321,16 +323,16 @@ class TeimXml(object):
 
             madd0 = re.search(padd0, text)
             if madd0 is None:
-                raise Exception(f'\nERROR. <add .. Not Found')
+                raise Exception(f'\nERROR 3 <add .. Not Found')
             madd1 = re.search(padd1, text)
             if madd1 is None:
-                raise Exception(f'\nERROR. </add> Not Found')
+                raise Exception(f'\nERROR 4  </add> Not Found')
             s0 = text[:madd0.end()]
             s1 = text[madd0.end():madd1.start()]
             s2 = text[madd1.start():]
             text = f'{s0}<w>{s1}</w>{s2}'
         except Exception as e:
-            self.log_err('\nERROR teimxml.py subst_add_w()\n{e}')
+            self.log_err('\nERROR 5  subst_add_w()\n{e}')
             self.log_err(f"row.num: {self.row_num}")
             self.log_err(f'{text}\n')
             self.input_err('subst_add_w>')
@@ -361,7 +363,7 @@ class TeimXml(object):
             le = len(text)
             msupplied1 = re.search(psupplied1, text)
             if msupplied1 is None:
-                raise Exception(f'\nERROR. </supplied> Not Found')
+                raise Exception(f'\nERROR 51 </supplied> Not Found')
             if (msupplied0.start() > 0) or (msupplied1.end() < le):
                 text = f'<w>{text}</w>'
                 return text
@@ -370,7 +372,7 @@ class TeimXml(object):
             s2 = text[msupplied1.start():]
             text = f'{s0}<w>{s1}</w>{s2}'
         except Exception as e:
-            self.log_err('\nERROR teimxml.py supplied_add_w()\n{e}')
+            self.log_err('\nERROR 6 supplied_add_w()\n{e}')
             self.log_err(f"row.num: {self.row_num}")
             self.log_err(f'{text}\n')
             self.input_err('supplied_add_w>')
@@ -486,7 +488,7 @@ class TeimXml(object):
             if is_add_w:
                 is_add_w = self.is_tag_to_add_w(word_ent.text)
                 ####################
-                #XXX controllo funzioe per add word
+                # XXX controllo funzioe per add word
                 # n_add = self.xis_tag_to_add_w(word_ent.text)
                 # if is_add_w != n_add:
                 #     LOG(f'{self.row_num}  {word_text_orig}')
@@ -513,7 +515,7 @@ class TeimXml(object):
                 self.input_err('set_attr_word>')
 
         if word_ent.text.find('&') > 0:
-            self.log_err("\nERROR teimxml.py elab_word_entities()\n& error")
+            self.log_err("\nERROR 7 elab_word_entities()\n& error")
             self.log_err(f"row.num: {self.row_num}")
             self.log_err(f'({word_ent.num})  {word_ent.text}')
             self.log_err('\n')
@@ -539,9 +541,11 @@ class TeimXml(object):
             self.line_num = self.LB
 
         # tag numerazione righe
+        # aggiunge <lb/>
         if self.line_num == self.LB:
             if row_text.find('<w') > -1:
-                row_text = f'{row_text}<lb/>'
+                # row_text = f'{row_text}<lb/>'
+                row_text = f'<lb/>{row_text}'
         elif self.line_num == self.LG_L:
             if row_text.find('<w') > -1:
                 row_text = f'<l>{row_text}</l>'
@@ -554,10 +558,10 @@ class TeimXml(object):
         try:
             rows_entities = self.text_entities.get_rows_entities()
         except Exception as e:
-            msg = f'\nERROR. teimxml.py elab_rows() 1\n {e}'
+            msg = f'\nERROR 8 elab_rows() 1\n {e}'
             self.log_err(msg)
             sys.exit(msg)
- 
+
         try:
             f = StringIO()
             f.write(BODY_TOP)
@@ -584,15 +588,15 @@ class TeimXml(object):
             #     s=os.linesep.join(rs)
             #     self.log_err(f'\n{s}')
         except Exception as e:
-            msg = f'\nERROR. teimxml.py elab_rows() 2\n {e}'
+            msg = f'\nERROR 9 elab_rows() 2\n {e}'
             self.log_err(msg)
             sys.exit(msg)
 
     def check_xml(self, src='', msg=''):
         """
-        controllo e fromat xml
+        controllo e format xml
         Returns:
-            str : xl formattato o src
+            str : xml formattato o src
             bolean: true se si verifica un errore fals altrimenti
         """
         s = src
@@ -618,8 +622,10 @@ class TeimXml(object):
         else:
             return xml, False
 
+
 def do_main(path_text, path_tags):
     TeimXml(path_text, path_tags).elab_rows()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
