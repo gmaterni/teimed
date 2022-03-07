@@ -14,8 +14,8 @@ from teimedlib.ualog import Log
 from teimedlib.readovertags import read_over_tags_sorted
 from teimedlib.teim_paths import *
 
-__date__ = "09-08-2021"
-__version__ = "0.10.10"
+__date__ = "07-03-2023"
+__version__ = "0.10.11"
 __author__ = "Marta Materni"
 
 
@@ -54,11 +54,14 @@ class TeimOverFlow(object):
     def __init__(self, path_text, path_csv):
         # test.txt => testo_id.xml
         self.path_in = set_path_over_in(path_text)
+
         # test.txt => testo_id_over.xml
         self.path_out = set_path_over_out(path_text)
+        
         # test.txt => testo_id_over.log
         path_span = set_path_over_log(path_text)
         self.logspan = Log("w").open(path_span, 0).log
+        
         # test.txt => testo_id_over.ERR.log
         path_err = set_path_over_err(path_text)
         self.logerr = Log("w").open(path_err, 1).log
@@ -123,7 +126,7 @@ class TeimOverFlow(object):
             if pid > 0:
                 tag = tag[pid + 1:]
         except Exception as e:
-            self.logerr("ERROR in xml")
+            self.logerr("ERROR 0 in xml")
             self.logerr(str(e))
             return "XXX"
         else:
@@ -272,14 +275,14 @@ class TeimOverFlow(object):
             item[self.DATA_TO] = to_id
         except Exception as e:
             self.logspan(f'{e}\n')
-            msg = f'ERROR teimover.py set_id_to()\n{e}'
+            msg = f'ERROR 1 set_id_to()\n{e}'
             self.logerr(msg)
             sys.exit(msg)
 
     def log_open(self, nd):
         xml = self.xml2str(nd).strip()
         # log = self.row_js[self.LOP]
-        log = self.row_js[self.OP]
+        # log = self.row_js[self.OP]
         d = self.get_node_data(nd)
         id = f"from:{d['id']}"
         val = d['val']
@@ -291,7 +294,7 @@ class TeimOverFlow(object):
     def log_close(self, nd):
         xml = self.xml2str(nd).strip()
         # log = self.row_js[self.LCL]
-        log = self.row_js[self.CL]
+        # log = self.row_js[self.CL]
         d = self.get_node_data(nd)
         id = f"to  :{d['id']}"
         val = d['val']
@@ -307,7 +310,7 @@ class TeimOverFlow(object):
             # log_cl = self.row_js[self.LCL]
             log_cl = self.row_js[self.CL]
             xml = self.xml2str(nd).strip()
-            e = f"** ERROR missing {log_cl}"
+            e = f"ERROR 2 missing {log_cl}"
             s = '{:<30}{}'.format(e, xml)
             self.logspan(s)
             self.logspan("")
@@ -320,7 +323,7 @@ class TeimOverFlow(object):
             # log_op = self.row_js[self.LOP]
             log_op = self.row_js[self.OP]
             xml = self.xml2str(nd).strip()
-            e = f"** ERROR missing {log_op}"
+            e = f"ERROR 3 missing {log_op}"
             s = '{:<30}{}'.format(e, xml)
             self.logspan(s)
             self.row_js[self.CTRL] += 1
@@ -369,7 +372,7 @@ class TeimOverFlow(object):
                     return False
             return ok
         except Exception as e:
-            self.logerr("ERROR teimover.py rfind_tag_to()")
+            self.logerr("ERROR 4 rfind_tag_to()")
             self.logerr(f"{s}")
             sys.exit(1)
 
@@ -435,18 +438,18 @@ class TeimOverFlow(object):
         parent_node = self.get_span_parent(nd)
         if parent_node is None:
             self.logerr(
-                "ERROR teimover.py add_span() parent node <div>  Not Found.")
+                "ERROR 5 add_span() parent node <div>  Not Found.")
             sys.exit(1)
         from_id = sp_data[self.DATA_FROM]
         to_id = sp_data[self.DATA_TO]
         tp = sp_data[self.DATA_TYPE]
         s = f'<span from="{from_id}" to="{to_id}" type="{tp}" />'
         if from_id.strip() == "":
-            self.logerr(f"{tp} not open")
+            self.logerr(f"ERROR 51 {tp} not open")
             self.logerr(s)
             self.logerr("")
         if to_id.strip() == "":
-            self.logerr(f"{tp} not close")
+            self.logerr(f"ERROR 52 {tp} not close")
             self.logerr(s)
             self.logerr("")
         # log di xml span
@@ -477,14 +480,14 @@ class TeimOverFlow(object):
         try:
             self.root_xml = etree.parse(self.path_in)
         except Exception as e:
-            msg = f"ERROR teimover.py add_span_to_xml()1\n{self.path_in}\n{e}"
+            msg = f"ERROR 6 add_span_to_xml()1\n{self.path_in}\n{e}"
             self.logerr(msg)
             # ssys.exit(1)
             return
         try:
             self.over_tag_rows = read_over_tags_sorted(csv_path)
         except Exception as e:
-            msg = f"ERROR teimover.py add_span_to_xml()2\n{self.path_in}\n{e}"
+            msg = f"ERROR 7 add_span_to_xml()2\n{self.path_in}\n{e}"
             self.logerr(msg)
             # sys.exit(1)
             return

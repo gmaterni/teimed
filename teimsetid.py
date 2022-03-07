@@ -14,8 +14,8 @@ from teimedlib.ualog import Log
 from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 
-__date__ = "09-01-2022"
-__version__ = "0.4.9"
+__date__ = "07-05-2022"
+__version__ = "0.4.10"
 __author__ = "Marta Materni"
 
 """
@@ -153,7 +153,7 @@ class TeimSetId(object):
                 }
                 self.tgid_js[key] = tgid
         except Exception as e:
-            msg = f'ERROR. teimsetid.py build_tgid_js() \n{e}\n{row}'
+            msg = f'ERROR B build_tgid_js() \n{e}\n{row}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -164,7 +164,7 @@ class TeimSetId(object):
             s = json.dumps(self.tgid_js, indent=2)
             log_json(s)
         except Exception as e:
-            msg = f'ERROR. teimsetid.py log_tgid_js() \n{e}'
+            msg = f'ERROR 0 log_tgid_js() \n{e}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -182,7 +182,7 @@ class TeimSetId(object):
                     flds = row.split(self.SEP)
                     tgid_rows.append(flds)
                 except Exception as e:
-                    msg = f'ERROR. teimsetid.py read_csv() \n{e}\n row:{row}'
+                    msg = f'ERROR 1 read_csv() \n{e}\n row:{row}'
                     self.log_err(msg)
                     sys.exit(msg)
         self.build_tgid_js(tgid_rows)
@@ -206,7 +206,7 @@ class TeimSetId(object):
                 tag_id = tgid[self.TAG_ID]
                 tgid[self.XID] = f'{xid_parent}{tag_id}'
         except KeyError as e:
-            msg = f'ERROR. teimsetid.py init_tgid_children() \n{e}'
+            msg = f'ERROR 2 init_tgid_children() \n{e}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -214,7 +214,7 @@ class TeimSetId(object):
         try:
             self.tgid_js[key][k] = v
         except Exception as e:
-            msg = f'ERROR.teimsetid.py set_tgid()\n{e}\ntag_name:{key} k:{k} v:{v}'
+            msg = f'ERROR 3 set_tgid()\n{e}\ntag_name:{key} k:{k} v:{v}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -222,7 +222,7 @@ class TeimSetId(object):
         try:
             tgid = self.tgid_js[key]
         except Exception as e:
-            msg = f'ERROR. teimsetid.py get_tgid()\n{e}\ntag_name:{key}'
+            msg = f'ERROR 4 get_tgid()\n{e}\ntag_name:{key}'
             self.log_err(msg)
             sys.exit(msg)
         else:
@@ -295,7 +295,7 @@ class TeimSetId(object):
             js = self.id_cfg[key0]
             val = js[key1]
         except KeyError as e:
-            msg = f'ERROR. id_cfg\n{e}\n '
+            msg = f'ERROR 5 id_cfg\n{e}\n '
             self.log_err(msg)
             js = pp(self.id_cfg, 30)
             self.log_err(js)
@@ -354,7 +354,7 @@ class TeimSetId(object):
                     continue
                 self.id_cfg[key][k] = v.strip()
             except Exception as e:
-                msg = f'ERROR temsetid.py set_id_cfg()\n{e}\n{row}'
+                msg = f'ERROR 6 set_id_cfg()\n{e}\n{row}'
                 self.log_err(msg)
 
     def read_id_cfg(self):
@@ -362,7 +362,7 @@ class TeimSetId(object):
             ttread = TeimTxtRead(self.path_text, self.log_err)
             rows = ttread.read_id_cfg()
         except Exception as e:
-            msg = f'ERROR. teimsetid.py read_id_cfg() \n{e}'
+            msg = f'ERROR 7 read_id_cfg() \n{e}'
             self.log_err(msg)
             sys.exit(msg)
         else:
@@ -403,7 +403,7 @@ class TeimSetId(object):
             if pid > 0:
                 tag = tag[pid + 1:]
         except Exception as e:
-            msg = f'ERROR teimsetid.py node_tag()\n{e}'
+            msg = f'ERROR 8 node_tag()\n{e}'
             self.log_err(msg)
             sys, exit(msg)
         else:
@@ -489,7 +489,7 @@ class TeimSetId(object):
                     chld_lst = self.node_children(nd)
                     self.updatte_node_id_descendants(chld_lst)
         if not has_episode:
-            msg = f"WARNING.  {self.path_text}\nepisode Not Found "
+            msg = f"ERROR D  {self.path_text}\nepisode Not Found "
             self.log_err(msg)
             self.input_err('>')
             # sys.exit(msg)
@@ -549,7 +549,7 @@ class TeimSetId(object):
             parser = etree.XMLParser(ns_clean=True)
             self.xml_root = etree.parse(self.path_in, parser)
         except Exception as e:
-            msg = f'ERROR teimsetid.py parse_xml()\n {e}'
+            msg = f'ERROR 9 parse_xml()\n {e}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -572,7 +572,7 @@ class TeimSetId(object):
                 f.write(xml)
             os.chmod(self.path_out, 0o777)
         except Exception as e:
-            msg = f'ERROR teimsetid.py write_xml()\n {e}'
+            msg = f'ERROR A write_xml()\n {e}'
             self.log_err(msg)
             sys.exit(msg)
 
