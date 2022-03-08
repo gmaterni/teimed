@@ -14,7 +14,7 @@ from teimedlib.ualog import Log
 from teimedlib.readovertags import read_over_tags_sorted
 from teimedlib.teim_paths import *
 
-__date__ = "07-03-2023"
+__date__ = "07-03-2022"
 __version__ = "1.1.0"
 __author__ = "Marta Materni"
 
@@ -36,11 +36,13 @@ class TeimOverFlow(object):
     CTRL = 'ctrl'
 
     """
-    legge da un file csv i tag per la gestion degli overflog
+    teimover.py -i text.txt -c teimcfg/teimoverflow.csv
+    legge da un file csv i tag per la gestione degli overflow
     aggiunge in coda al file xml gli elementi
     from=.. to=..
-    es. file csv
-    TYPE|TAG_FROM|TAG_TO|SIGLA_FROM!SIGLA_TO
+
+    Esempio di teimoverflow.csv
+    TYPE|TAG_FROM|TAG_TO|SIGLA_FROM|SIGLA_TO
     directspeech|{|}|ODRD|CDRD
     monologue|{_|_}|OMON|CMON
     agglutination|[|]|OAGLS|CAGLS
@@ -406,13 +408,13 @@ class TeimOverFlow(object):
                 nd_last = nd
 
                 if self.find_tag_from(val):
-                    # print(f"{self.row_js[self.LOP]} {self.row_js[self.OP]}  {val} {text}")
+                    #print(f"{self.row_js[self.LOP]} {self.row_js[self.OP]}  {val} {text}")
                     self.set_from_id(nd_data)
                     self.control_open(nd)
                     self.log_open(nd)
 
                 if self.find_tag_from(tail):
-                    # print(f"{self.row_js[self.LOP]} {self.row_js[self.OP]}  {tail} {text}")
+                    #print(f"{self.row_js[self.LOP]} {self.row_js[self.OP]}  {tail} {text}")
                     self.set_from_id(nd_data)
                     self.control_open(nd)
                     self.log_open(nd)
