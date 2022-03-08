@@ -77,6 +77,7 @@ class TeimXml(object):
     SP = " "
     UNDER = '_'   # carattere _ UNDERLINE
     SP_TMP = '|'     # spazio temporaneo usato neitag di riga
+    LB_TMP = "XXXX"
 
     def __init__(self, path_text, path_tags):
         # testo.txt => testo_txt,txt
@@ -522,7 +523,7 @@ class TeimXml(object):
             self.input_err('remain &>')
         return word_ent
 
-    def elab_row(self, row_ent):
+    def elab_row(self, row_ent, bl_in_word):
         self.log_info(f'\nR({row_ent.num})')
         if row_ent.text.strip() == '':
             return ''
@@ -533,7 +534,6 @@ class TeimXml(object):
             self.log_info(f'W: {word_ent.text}')
             lst.append(word_ent.text)
         row_text = ' '.join(lst).strip()
-
         # setta il tipo di numerazione delle linee
         if row_text.find('<lg') > -1:
             self.line_num = self.LG_L
@@ -545,8 +545,8 @@ class TeimXml(object):
         if self.line_num == self.LB:
             if row_text.find('<w') > -1:
                 # AAA gestione <lb/>
-                # AAA row_text = f'{row_text}<lb/>'
-                row_text = f'<lb/>{row_text}'
+                if not bl_in_word:
+                    row_text = f'<lb/>{row_text}'
         elif self.line_num == self.LG_L:
             if row_text.find('<w') > -1:
                 row_text = f'<l>{row_text}</l>'
@@ -562,15 +562,20 @@ class TeimXml(object):
             msg = f'\nERROR 8 elab_rows() 1\n {e}'
             self.log_err(msg)
             sys.exit(msg)
-
         try:
             f = StringIO()
             f.write(BODY_TOP)
+            bl_in_word = False
             for row_ent in rows_entities:
                 self.row_num = row_ent.num
-                row_text = self.elab_row(row_ent)
+                row_text = self.elab_row(row_ent, bl_in_word)
                 if row_text == '':
                     continue
+                #AAA controlla se nella riga l'ultima parola contiene LB_TMP
+                # il flag per non far insrire <lb/> nella riga successiva
+                bl_in_word = row_text.find(self.LB_TMP) > -1
+                if bl_in_word:
+                    row_text = row_text.replace(self.LB_TMP, "<lb/>")
                 f.write(row_text)
                 f.write(os.linesep)
             f.write(BODY_BOTTOM)
@@ -617,7 +622,7 @@ class TeimXml(object):
                                  inclusive_ns_prefixes=None,
                                  strip_text=False)
         except etree.ParseError as e:
-            err = f'XML Error.\n{msg} \n{e}'
+            err = f'ERROR XML\n{msg} \n{e}'
             self.log_err(err)
             return s, True
         else:

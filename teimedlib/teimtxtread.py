@@ -23,6 +23,7 @@ clean_brackets
 class TeimTxtRead(object):
     SP = ' '
     WRP = '='
+    LB_TMP='XXXX'
 
     def __init__(self, path_text, log_err=None):
         self.path_text = path_text
@@ -33,15 +34,18 @@ class TeimTxtRead(object):
             self.log_err = log_err
 
     def join_words_wrap(self, rows):
-        """
-        unisce l'ultima word di una riga che 
+        """ unisce l'ultima word di una riga che 
         termia con = con la prima della successiva
 
         riga di prova, vedia=
         mo come va
 
-        riga di prova, vdciamo
+        riga di prova, vediaXXXXmo
         come va
+
+        il flag XXXX serve per gestire <lb> che
+        non verra' inserito all'inizio della riga successiva
+
         """
         for i in range(0, len(rows)):
             try:
@@ -51,9 +55,11 @@ class TeimTxtRead(object):
                     # elimina la prima word dalla riga successiva
                     words = words[1:]
                     rows[i+1] = self.SP.join(words)
-                    # aggiunge la prima word dela riga successiva alla
+                    # AAA aggiunge la prima word dela riga successiva alla
                     # fine della riga corrente
-                    rows[i] = rows[i].replace(self.WRP, word0)
+                    # sostituisce = con XXXX
+                    #rows[i] = rows[i].replace(self.WRP, word0)
+                    rows[i] = rows[i].replace(self.WRP,f"{self.LB_TMP}{word0}")
             except Exception as e:
                 self.log_err(f'ERROR 1 join_words_wrap().')
                 self.log_err(f'row num:{i+1}')
@@ -130,7 +136,7 @@ class TeimTxtRead(object):
             rows[i] = self.text_add_spc_to_punct(row)
         return rows
 
-    # AAA  direttive controllare 
+    # AAA  direttive controllare
     def read_id_cfg(self):
         """
         legge direttive per numerazione in testa al file sorgente
@@ -142,7 +148,7 @@ class TeimTxtRead(object):
             # HEACK while (row := fr.readline()) != '':
             while True:
                 row = fr.readline()
-                if  not row:
+                if not row:
                     break
                 row = row.replace('\t', self.SP, -1)
                 # direttive @abc;....
@@ -153,8 +159,8 @@ class TeimTxtRead(object):
                     m_end = m.end()
                     tag = g.replace('@', '')
                     src = row[m_end:].strip()
-                    s=f'{tag}{src}'
-                    s=s.replace(self.SP,'')
+                    s = f'{tag}{src}'
+                    s = s.replace(self.SP, '')
                     rows.append(s)
             fr.close()
         except Exception as e:
@@ -162,7 +168,6 @@ class TeimTxtRead(object):
             sys.exit(msg)
         else:
             return rows
-
 
     def read_text_rows(self):
         """
