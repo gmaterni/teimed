@@ -59,7 +59,6 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     Il criterio di assegnazione e numerazione è
     definitio in un file teimxmlid.csv
 
-
 Esempio di teimxmlid.csv  
 #key|tag_id|id|children
 div_episode|K|-1|div_chapter:cb:pb:p:lg:l:persName:geogName:placeName:choice

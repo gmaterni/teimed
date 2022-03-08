@@ -14,15 +14,18 @@ from teimedlib.ualog import Log
 from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 
-__date__ = "07-05-2022"
-__version__ = "1.4.10"
+__date__ = "08-02-2022"
+__version__ = "1.4.11"
 __author__ = "Marta Materni"
 
 """
+
 update_xml
+
     read_csv
         build_tgid_js
         log_tgid_js
+
     parse_xml
     numerate_xml_id
         node_tgid_key
@@ -43,7 +46,10 @@ update_xml
             next_tgid_xid
             update_node_id
             node_descendants
-    numerate_xml_n
+    
+    numerate_xml_chapter
+    numerate_xml_p
+    numerate_xml_l
     write_xml
 
 """
@@ -63,14 +69,16 @@ def pp(data, width=40):
 
 class TeimSetId(object):
     """
+teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     Setta gli attributi xml:id nei tag xml.
-    Il criterio di aseggnazione e numerazione è
-    definitio in un file csv,
+    Il criterio di assegnazione e numerazione è
+    definitio in un file teimxmlid.csv
 
-    #key | tag_id|id start|children
-    div_episode||-1|div_chapter:head:cb:pb:p:lg:persName:geogName:placeName:choice
-    div_chapter|chp|0|head:p:lg:l
-    head|he|0|w
+    Esempio di teimxmlid.csv  
+    #key|tag_id|id|children
+    div_episode|K|-1|div_chapter:cb:pb:p:lg:l:persName:geogName:placeName:choice
+    div_chapter|ch|0|head:w:p
+    head|h|0|w:pc
     cb|cb|0|
     pb|pb|0|
     p|p|0|w:pc
@@ -84,8 +92,7 @@ class TeimSetId(object):
     choice|chc|0|
 
     La numerazione è definita a partire dall'elemento
-    con id==-1
-
+    con id=-1
     Viene stampato un file json che rappresenta la
     logica dell numerazione.
 
@@ -105,7 +112,7 @@ class TeimSetId(object):
 
     def __init__(self, path_text, path_csv):
         self.path_text = path_text
-        
+
         # testo.txt => testo_txt.txt
         self.path_in = set_path_id_in(path_text)
 
@@ -124,7 +131,7 @@ class TeimSetId(object):
         self.xml_root = etree
         self.tgid_js = {}
         self.id_cfg = {}
-        
+
         # self.input_err_active = True
         self.input_err_active = False
 
@@ -171,6 +178,10 @@ class TeimSetId(object):
             sys.exit(msg)
 
     def read_csv(self):
+        """legge il file csv
+        costruisce un file json self.tgid_js[
+        salva in un log il file json
+        """
         tgid_rows = []
         with open(self.path_csv, "r") as f:
             for row in f:
@@ -475,7 +486,7 @@ class TeimSetId(object):
             attrs = self.node_items(nd)
             # TODO if (tp := attrs.get('type', '')) == 'episode':
             tp = attrs.get('type', '')
-            if tp =='episode':
+            if tp == 'episode':
                 has_episode = True
             tgid_key = self.node_tgid_key(nd)
             if self.tgid_exists(tgid_key):
@@ -547,6 +558,8 @@ class TeimSetId(object):
         return -1 if n == no else n-1
 
     def parse_xml(self):
+        """inizializza sel.xml_root come  radice dell'albero XML
+        """
         try:
             parser = etree.XMLParser(ns_clean=True)
             self.xml_root = etree.parse(self.path_in, parser)
@@ -587,21 +600,21 @@ class TeimSetId(object):
         last_p = self.numerate_xml_p()
         last_l = self.numerate_xml_l()
         self.write_xml()
-
-        last_chp=0 if last_chp < 0 else last_chp-1
-        last_p=0 if last_p < 0 else last_p-1
-        last_l=0 if last_l < 0 else last_l-1
-        last=f"\nLAST:\nchapter:{last_chp}\nparagraph:{last_p}\nl:{last_l}\n"
+        # ultimo capitolo
+        last_chp = 0 if last_chp < 0 else last_chp-1
+        # ultimo paragrafo
+        last_p = 0 if last_p < 0 else last_p-1
+        # ultima linea
+        last_l = 0 if last_l < 0 else last_l-1
+        last = f"\nLAST:\nchapter:{last_chp}\nparagraph:{last_p}\nl:{last_l}\n"
         self.log_info(last)
         return last
 
 
 def do_main(path_text,  path_csv):
     alwp = TeimSetId(path_text, path_csv)
-    last=alwp.update_xml()
+    last = alwp.update_xml()
     return last
-
-
 
 
 if __name__ == "__main__":
@@ -623,4 +636,5 @@ if __name__ == "__main__":
                         metavar="",
                         help="-t <file.csv> (tags per gestione id)")
     args = parser.parse_args()
-    do_main(args.src, args.tag)
+    last = do_main(args.src, args.tag)
+    print(last)
