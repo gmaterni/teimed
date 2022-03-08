@@ -331,7 +331,8 @@ class TeimOverFlow(object):
             self.row_js[self.CTRL] += 1
             self.logerr(s)
 
-    def find_tag_from(self, s):
+    # text = val or tail
+    def find_tag_from(self, text):
         """
         testo:
             pipppo {% esempio
@@ -346,36 +347,36 @@ class TeimOverFlow(object):
         ATTNZIONE
             in chiusura la ricerca avviene a partire da destra
             utilizzanod re group.end()
-
         """
         t = self.row_js[self.OP]
-        p0 = s.find(t)
+        p0 = text.find(t)
         if p0 < 0:
             return False
         ok = True
         for x in self.op_alter:
-            p1 = s.find(x)
+            p1 = text.find(x)
             if p1 > -1 and p0 == p1:
                 return False
         return ok
 
-    def find_tag_to(self, s):
+    # text = val
+    def find_tag_to(self, text):
         try:
             t = self.row_js[self.CL]
-            m = re.search(t, s)
+            m = re.search(t, text)
             if m is None:
                 return False
             p0 = m.end()
             ok = True
             for x in self.cl_alter:
-                m = re.search(x, s)
+                m = re.search(x, text)
                 p1 = -1 if m is None else m.end()
                 if p1 > -1 and p0 == p1:
                     return False
             return ok
         except Exception as e:
             self.logerr("ERROR 4 rfind_tag_to()")
-            self.logerr(f"{s}")
+            self.logerr(f"{text}")
             sys.exit(1)
 
     def fill_span(self):
@@ -404,9 +405,9 @@ class TeimOverFlow(object):
                 text = nd_data['text']
                 val = nd_data['val']
                 tail = nd_data['tail']
-                # nd_data_last=nd_data
                 nd_last = nd
 
+                # esiste un tag from
                 if self.find_tag_from(val):
                     #print(f"{self.row_js[self.LOP]} {self.row_js[self.OP]}  {val} {text}")
                     self.set_from_id(nd_data)
@@ -432,7 +433,8 @@ class TeimOverFlow(object):
                         self.set_to_id(nd_data)
                         self.control_close(nd)
                         self.log_close(nd)
-        if self.row_js['ctrl'] > 0:
+        
+        if self.row_js[self.CTRL] > 0:
             self.control_open(nd_last)
             self.log_open(nd_last)
 
@@ -487,18 +489,37 @@ class TeimOverFlow(object):
             # ssys.exit(1)
             return
         try:
+            # legge i tga per la gestione overflow da teimoverflow.csv
             self.over_tag_rows = read_over_tags_sorted(csv_path)
         except Exception as e:
             msg = f"ERROR 7 add_span_to_xml()2\n{self.path_in}\n{e}"
             self.logerr(msg)
             # sys.exit(1)
             return
+        
+        #per ogni riga dei tags 
         for i in range(0, len(self.over_tag_rows)):
+            # setta 
+            # self.row_js
+            # self.op_lst
+            # self.cl_lst
+            # self.op_alter.append(o)
+            # self.cl_alter.append(c)
             self.set_row_js(i)
+            
             self.span_data = {}
             self.key_span_data = None
+
+            # per tutti i nodi xml e i tag w,pc
+            # crea la lista from to 
+            # controllo apertura e chiusura dei tag
             self.fill_span()
+            
+            # per tutti i nodi xml
+            # aggiunge a xml i le righe xml
+            # fromm to
             self.update_xml()
+
         xml = etree.tostring(self.root_xml,
                              xml_declaration=None,
                              encoding='unicode',
@@ -510,12 +531,14 @@ class TeimOverFlow(object):
                              exclusive=False,
                              inclusive_ns_prefixes=None,
                              strip_text=False)
+
         # rimuove da xml tutti i pattern iniziando
         # da quelli pià lunghi]
         for i, x in enumerate(self.op_lst):
             xml = xml.replace(x, '')
             y = self.cl_lst[i]
             xml = xml.replace(y, '')
+        
         with open(self.path_out, "w") as f:
             f.write(xml)
         os.chmod(self.path_out, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)

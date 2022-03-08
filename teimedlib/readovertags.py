@@ -45,7 +45,7 @@ def read_over_tags(csv_path):
 
 def read_over_tags_sorted(csv_path):
     """
-    rows ordinate ler len(TAG_FROM)
+    tags per la gestione di overflow da teimoverflow.csv
     """        
     csv_rows=read_over_tags(csv_path)
     rows= sorted(csv_rows, key=lambda x: (len(x[1]), x[0]), reverse=True)
