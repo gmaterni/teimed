@@ -97,7 +97,15 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     logica dell numerazione.
 
     Numera <l> dopo il primo <lg> se NON hanno l'atributo n=..
+    La numerazione inizia dai valori settati con i flag id all'inizio
+    del file testo.
+    @episode:sign=A
+    @episode:id=100
+    @chapter:n=100
+    @p:n=100
+    @l:n=100
 
+    XXX ATTENZIONE il sign del flag sostituisce quello definito nel file csv
     """
     TAG_ID = 'tag_id'
     ID = 'id'
@@ -130,7 +138,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
         self.xml_root = etree
         self.tgid_js = {}
-        self.id_cfg = {}
+        self.flags_id = {}
 
         # self.input_err_active = True
         self.input_err_active = False
@@ -206,7 +214,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     def init_tgid_children(self, key):
         """
         resetta numeratore id di tutti i children
-        lasciando la parte del genitore 
+        lasciando la parte che riguarda il  genitore 
         Kchp10p3w11 => Kchp10p3w
         """
         try:
@@ -240,31 +248,16 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             sys.exit(msg)
         else:
             return tgid
-
-    # def set_tgid_id(self, key, id):
-    #     try:
-    #         tgid = self.tgid_js[key]
-    #         tgid[self.ID] = id
-    #     except Exception as e:
-    #         msg = f'ERROR. teimsetid.py set_tgid_id() \n{e}\ntag_name:{key}'
-    #         self.log_err(msg)
-    #         sys.exit(msg)
-
-    def set_tgid_tag_id(self, key, tag_id):
-        self.set_tgid(key, self.TAG_ID, tag_id)
-
-    def set_tgid_xid(self, key, xid):
-        self.set_tgid(key, self.XID, xid)
-
+    
     def get_tgid_id(self, key):
         tgid = self.get_tgid(key)
         id = tgid[self.ID]
         return id
 
-    def get_tgid_tag_id(self, key):
-        tgid = self.get_tgid(key)
-        tag_id = tgid[self.TAG_ID]
-        return tag_id
+    # def get_tgid_tag_id(self, key):
+    #     tgid = self.get_tgid(key)
+    #     tag_id = tgid[self.TAG_ID]
+    #     return tag_id
 
     def get_tgid_xid(self, key):
         """
@@ -295,30 +288,31 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         return key in self.tgid_js
 
     #####################################
-
-    def get_id_cfg(self, key0='', key1=''):
+    # gestione flag id settati nel testo sorgente
+    #####################################
+    def get_flag_id(self, key0='', key1=''):
         """
-        ese.
-        sign=self.id_cfg['episode']['sign']
-        sign=self.id_cfg_get('episode','sign')
+        es.
+        sign=self.flags_id['episode']['sign']
+        sign=self.flags_id('episode','sign')
 
         """
         # sign=self.id_cfg['episode']['sign']
         try:
-            js = self.id_cfg[key0]
+            js = self.flags_id[key0]
             val = js[key1]
         except KeyError as e:
             msg = f'ERROR 5 id_cfg\n{e}\n '
             self.log_err(msg)
-            js = pp(self.id_cfg, 30)
+            js = pp(self.flags_id, 30)
             self.log_err(js)
             self.input_err('?>')
             return ''
         else:
             return val
 
-    def get_id_cfg_int(self, key0='', key1=''):
-        s = self.get_id_cfg(key0, key1)
+    def get_flag_id_int(self, key0='', key1=''):
+        s = self.get_flag_id(key0, key1)
         try:
             id = int(s)
         except Exception:
@@ -326,7 +320,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         else:
             return id
 
-    def set_id_cfg(self, rows):
+    def set_flags_id(self, rows):
         """
         testo_id.cfg default
         se testo_id.cfg non esiste utilizza i valori di default
@@ -337,7 +331,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         p:n=1
         l:n=1
         """
-        self.id_cfg = {
+        self.flags_id = {
             "episode": {
                 "sign": "K",
                 "id": '0'
@@ -361,25 +355,27 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
                 k, v = sp[1].split('=')
                 k = k.strip()
                 v = v.strip()
-                old = self.get_id_cfg(key, k)
+                old = self.get_flag_id(key, k)
                 if old == '':
                     v = old
                     continue
-                self.id_cfg[key][k] = v.strip()
+                self.flags_id[key][k] = v.strip()
             except Exception as e:
                 msg = f'ERROR 6 set_id_cfg()\n{e}\n{row}'
                 self.log_err(msg)
 
-    def read_id_cfg(self):
+    def read_flags_id(self):
+        """flag per la numerazione degli id
+        """
         try:
             ttread = TeimTxtRead(self.path_text, self.log_err)
-            rows = ttread.read_id_cfg()
+            rows = ttread.read_flags_id()
         except Exception as e:
             msg = f'ERROR 7 read_id_cfg() \n{e}'
             self.log_err(msg)
             sys.exit(msg)
         else:
-            self.set_id_cfg(rows)
+            return rows
 
     ######################################
 
@@ -476,10 +472,18 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     def numerate_xml_id(self):
         """
         set xml:id nei nodi secondo il criterio definito 
-        nel file teimxmlid.csv e test_id.cfg
+        nel file teimxmlid.csv e partendo dai valor
+        settai nei flag id all'inizio del testo sorgente
+        es.
+        @episode:sign=X
+        @episode:id=100
+        @chapter:n=100
+        @p:n=100
+        @l:n=100
+
         """
-        sign = self.get_id_cfg('episode', 'sign')
-        eps_id = self.get_id_cfg_int('episode', 'id')
+        sign = self.get_flag_id('episode', 'sign')
+        eps_id = self.get_flag_id_int('episode', 'id')
         eps_xid = f'{sign}{eps_id}' if eps_id > 0 else sign
         has_episode = False
         for nd in self.xml_root.iter(self.DIV):
@@ -488,18 +492,24 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             tp = attrs.get('type', '')
             if tp == 'episode':
                 has_episode = True
+            # tag id estratto dal nodo xml
             tgid_key = self.node_tgid_key(nd)
+            #verifica el il tag esiste in quelli estratti 
+            # da teimxmlid.csv
             if self.tgid_exists(tgid_key):
+                # estrae id da self.tgid_js (tags estatti da teimxmlid.csv) 
                 id = self.get_tgid_id(tgid_key)
                 if id < 0:
                     # div root identificato da id < 0
                     # setta xid di episode
-                    # quindi -1 è sosituito xida
-                    self.set_tgid_xid(tgid_key, eps_xid)
-                    #self.set_tgid_xid(tgid_key, tag_id)
+                    # quindi -1 è sosituito eps_xid
+                    self.set_tgid(tgid_key, self.XID, eps_xid)
                     self.log_info(f'{tgid_key} {eps_xid}')
+                    # resetta la parte di id dei nodi figli
                     self.init_tgid_children(tgid_key)
+                    #lista dei nodi figli
                     chld_lst = self.node_children(nd)
+                    # aggiorna gli id di tutti i figli
                     self.updatte_node_id_descendants(chld_lst)
         if not has_episode:
             msg = f"ERROR D  {self.path_text}\nepisode Not Found "
@@ -509,12 +519,15 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     def numerate_xml_l(self):
         """
-        set nel tag <l> n=".."
+        numerazione tag <l>
         NON viene numerato se è prsente l'attributo n=".."
+        la numerazione inizia dal valore del flag:
+        @l:n=100
+
         """
         TAG = 'l'
         ATTR_N = 'n'
-        n = self.get_id_cfg_int('l', 'n')
+        n = self.get_flag_id_int('l', 'n')
         no = n
         for nd in self.xml_root.iter(TAG):
             attrs = self.node_items(nd)
@@ -526,11 +539,16 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     def numerate_xml_p(self):
         """
+        TODO controllare numerazione paragrafi
+        numerazione tag <p>
         set nel tag <p> n=".."
+        iniziando dal flag nel testo:
+        @p:n=100
+
         """
         TAG = 'p'
         ATTR_N = 'n'
-        n = self.get_id_cfg_int('p', 'n')
+        n = self.get_flag_id_int('p', 'n')
         no = n
         for nd in self.xml_root.iter(TAG):
             nd.set(ATTR_N, str(n))
@@ -540,13 +558,14 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     def numerate_xml_chapter(self):
         """
             numera i capitoli iniziando dal valore
-            settato in tetso_id.cfg
+            settato nel tsto sorgente con
+            @chapter:n=100
         """
         TAG = 'div'
         TYPE = 'type'
         TYPE_VAL = 'chapter'
         ATTR_n = 'n'
-        n = self.get_id_cfg_int('chapter', 'n')
+        n = self.get_flag_id_int('chapter', 'n')
         no = n
         for nd in self.xml_root.iter(TAG):
             attrs = self.node_items(nd)
@@ -592,20 +611,30 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             sys.exit(msg)
 
     def update_xml(self):
+        # legge tags
         self.read_csv()
-        self.read_id_cfg()
+
+        # legge fla id  per numerazione
+        # setttate in self.flags_id
+        rows = self.read_flags_id()
+        self.set_flags_id(rows)
+
         self.parse_xml()
         self.numerate_xml_id()
         last_chp = self.numerate_xml_chapter()
         last_p = self.numerate_xml_p()
         last_l = self.numerate_xml_l()
         self.write_xml()
+        
         # ultimo capitolo
         last_chp = 0 if last_chp < 0 else last_chp-1
+        
         # ultimo paragrafo
         last_p = 0 if last_p < 0 else last_p-1
+        
         # ultima linea
         last_l = 0 if last_l < 0 else last_l-1
+        
         last = f"\nLAST:\nchapter:{last_chp}\nparagraph:{last_p}\nl:{last_l}\n"
         self.log_info(last)
         return last

@@ -136,10 +136,11 @@ class TeimTxtRead(object):
             rows[i] = self.text_add_spc_to_punct(row)
         return rows
 
-    # AAA  direttive controllare
-    def read_id_cfg(self):
+    # AAA  flag id per per inizio numeraione
+    def read_flags_id(self):
         """
-        legge direttive per numerazione in testa al file sorgente
+        legge flags id  per numerazione in testa al 
+        file sorgente
         """
         rows = []
         try:
@@ -151,8 +152,7 @@ class TeimTxtRead(object):
                 if not row:
                     break
                 row = row.replace('\t', self.SP, -1)
-                # direttive @abc;....
-                # HEACK if (m := re.search(r'@[\w]+:', row)) is not None:
+                # flag @abc;....
                 m = re.search(r'@[\w]+:', row)
                 if m is not None:
                     g = m.group()
@@ -164,14 +164,14 @@ class TeimTxtRead(object):
                     rows.append(s)
             fr.close()
         except Exception as e:
-            msg = f"ERROR 3 read_id_cfg() \n{e}"
+            msg = f"ERROR 3 read_flag_id() \n{e}"
             sys.exit(msg)
         else:
             return rows
 
     def read_text_rows(self):
         """
-        Elimina commenti e direttive
+        Elimina commenti e flag id
 
         """
         rows = []
@@ -191,7 +191,7 @@ class TeimTxtRead(object):
                 elif p_comment == 0:
                     row = ''
 
-                # direttive @abc;....
+                # flag id  @abc;....
                 if re.search(r'@[\w]+:', row) is not None:
                     row = ''
 
