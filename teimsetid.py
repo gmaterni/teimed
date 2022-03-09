@@ -78,14 +78,15 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     #key|tag_id|id|children
     div_episode|K|-1|div_chapter:cb:pb:p:lg:l:persName:geogName:placeName:choice
     div_chapter|ch|0|head:w:p
-    head|h|0|w:pc
+    head|h|0|w:pc:gap
     cb|cb|0|
     pb|pb|0|
-    p|p|0|w:pc
+    p|p|0|w:pc:gap
     lg|lg|0|    
-    l|l|0|w:pc
+    l|l|0|w:pc:gap
     w|w|0|
     pc|pc|0|
+    gap|gap|0|
     persName|peNm|0|
     geogName|geNm|0|
     placeName|plNm|0|
