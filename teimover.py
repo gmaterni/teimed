@@ -11,7 +11,7 @@ import pprint
 import re
 import stat
 from teimedlib.ualog import Log
-from teimedlib.readovertags import read_over_tags_sorted
+from teimedlib.readovertags import read_tags_over_sorted
 from teimedlib.teim_paths import *
 
 __date__ = "07-03-2022"
@@ -23,7 +23,7 @@ def pp(data, w=40):
     return pprint.pformat(data, indent=2, width=w)
 
 
-LOGDEBUG = Log("w").open("debug.log", 0).log
+LGDB = Log("w").open("debug.log", 1).log
 
 
 class TeimOverFlow(object):
@@ -75,46 +75,51 @@ class TeimOverFlow(object):
         self.root_xml = etree
         self.span_data = {}
         self.key_span_data = ''
-        self.row_js = {}
-        self.op_alter = []
-        self.cl_alter = []
-        self.op_lst = []
-        self.cl_lst = []
-        self.over_tag_rows = []
+        self.row_tag_over_js = {}
+        self.tag_op_alter = []
+        self.tag_cl_alter = []
+        self.tag_op_lst = []
+        self.tag_cl_lst = []
+        self.rows_tag_over = []
         # self.over_op_set=[]
         # self.over_cl_set=[]
         # self.over_tag_set=[]
-        self.add_span_to_xml(path_csv)
+        self.add_xml_span_overflow_list(path_csv)
 
-    def set_row_js(self, i):
+    def set_row_tag_js(self, i):
+        # costruisce una riga della struttura json dei tagovwrflo
         #  0        1       2      3       4
         # descr|from tag|to tag|log opn|log close
-        row = self.over_tag_rows[i]
-        self.row_js = {
-            self.OP: row[1],
-            self.CL: row[2],
-            self.LOP: row[3],
-            self.LCL: row[4],
-            self.TP: row[0],
+        row_tag = self.rows_tag_over[i]
+        self.row_tag_over_js = {
+            self.OP: row_tag[1],
+            self.CL: row_tag[2],
+            self.LOP: row_tag[3],
+            self.LCL: row_tag[4],
+            self.TP: row_tag[0],
             self.OPEN_CLOSE: 0
         }
-        # ordinati per lunghezza ddesc.
-        for r in self.over_tag_rows:
-            self.op_lst.append(r[1])
-            self.cl_lst.append(r[2])
-        self.op_alter = []  # tag alternativi a quello selezionato
-        self.cl_alter = []
-        op = row[1]         # tag open
-        # nella lista di controllo son settati i tag di lunghezza
-        # > del tag selezionato
-        for j, r in enumerate(self.over_tag_rows):
+        # LGDB(f"\n{i}-----------")
+        # LGDB(pp(row_tag))
+
+        # tag alternativi a quello selezionato
+        # nella lista son settati i tag di
+        # lunghezza > del tag selezionato
+        self.tag_op_alter = []
+        self.tag_cl_alter = []
+        op = row_tag[1]
+        for j, r in enumerate(self.rows_tag_over):
             o = r[1]
             c = r[2]
             if j == i:
                 continue
             if len(o) > len(op):
-                self.op_alter.append(o)
-                self.cl_alter.append(c)
+                self.tag_op_alter.append(o)
+                self.tag_cl_alter.append(c)
+        # LGDB(f"op_alter:\n{pp(self.tag_op_alter)}")
+        # LGDB(f"cl_alter:\n{pp(self.tag_cl_alter)}")
+
+    #############################################
 
     def node_liv(self, node):
         d = 0
@@ -158,17 +163,15 @@ class TeimOverFlow(object):
         return tail
 
     def node_val(self, nd):
-        """
         ls = []
         for x in nd.itertext():
             ls.append(x)
         text = " ".join(ls)
         return text
-        """
-        val = ""
-        for t in nd.itertext():
-            val = val + t
-        return val
+        # val = ""
+        # for t in nd.itertext():
+        #     val = val + t
+        # return val
 
     def get_node_data(self, nd):
         tag = self.node_tag(nd)
@@ -187,40 +190,47 @@ class TeimOverFlow(object):
         }
         return nd_data
 
-    # nodo precedente <w> or <pc>
+    # nodo precedente <w> , <pc> <gap>
     def get_prev(self, node):
+
+        def get_container(node):
+            nd = None
+            while node is not None:
+                node = node.getparent()
+                if node is None:
+                    break
+                tag = self.get_node_data(node)['tag']
+                if tag in ['l', 'p', 'seg']:
+                    nd = node
+                    break
+            return nd
+
         nd_prev = node.getprevious()
-        tag = nd_prev.tag if type(nd_prev.tag) is str else "XXX"
-        if tag.strip() in ['w', 'pc', 'gap']:
-            return nd_prev
+        if not nd_prev is None:
+            tag = self.get_node_data(nd_prev)['tag']
+            if tag in ['w', 'pc', 'gap']:
+                return nd_prev
         node_data = self.get_node_data(node)
         node_id = node_data['id']
-        node_l = self.get_parent_l(node)
-        nd_prev = node.getprevious()
-        for nd in node_l.iterdescendants():
-            tag = node.tag if type(node.tag) is str else "XXX"
+        nd_container = get_container(node)
+        #nd_prev = node.getprevious()
+        for nd in nd_container.iterdescendants():
+            #tag = node.tag if type(node.tag) is str else "XXX"
+            nd_data = self.get_node_data(nd)
+            tag = nd_data['tag']
             if tag.strip() in ['w', 'pc', 'gap']:
-                nd_data = self.get_node_data(nd)
                 nd_id = nd_data['id']
                 if nd_id == node_id:
                     break
                 nd_prev = nd
+        if nd_prev is None:
+            nd_data = self.get_node_data(node)
+            msg = f"ERROR Z Not found node previus.\n{pp(nd_data)}"
+            raise Exception(msg)
         return nd_prev
 
-    # rtorna la linea <l> parent
-    def get_parent_l(self, node):
-        nd = None
-        while node is not None:
-            node = node.getparent()
-            if node is None:
-                break
-            tag = node.tag if type(node.tag) is str else "XXX"
-            if tag == 'l':
-                nd = node
-                break
-        return nd
-
     # rtorna il <div> parent
+
     def get_span_parent(self, node):
         nd = None
         while node is not None:
@@ -258,7 +268,7 @@ class TeimOverFlow(object):
             nd_data (dict): dati del nodo xml
         """
         from_id = nd_data['id']
-        tp = self.row_js[self.TP]
+        tp = self.row_tag_over_js[self.TP]
         item = {}
         item[self.DATA_TYPE] = tp
         item[self.DATA_TO] = ''
@@ -292,7 +302,7 @@ class TeimOverFlow(object):
         id = f"from:{d['id']}"
         val = d['val']
         # s = '{:<6}{:<15}{:<15}{}'.format(log, id, val, xml)
-        s = '{:<18}{:<18}{}'.format(id, val, xml)
+        s = '{:<18} {:<18} {}'.format(id, val, xml)
         s = s.replace(os.linesep, ' ', -1)
         self.logspan(s)
 
@@ -304,34 +314,34 @@ class TeimOverFlow(object):
         id = f"to  :{d['id']}"
         val = d['val']
         # s = '{:<6}{:<15}{:<15}{}'.format(log, id, val, xml)
-        s = '{:<18}{:<18}{}'.format(id, val, xml)
+        s = '{:<18} {:<18} {}'.format(id, val, xml)
         s = s.replace(os.linesep, ' ', -1)
         self.logspan(s)
         self.logspan("")
 
     def control_open(self, nd):
-        self.row_js[self.OPEN_CLOSE] += 1
-        if self.row_js[self.OPEN_CLOSE] > 1:
+        self.row_tag_over_js[self.OPEN_CLOSE] += 1
+        if self.row_tag_over_js[self.OPEN_CLOSE] > 1:
             # log_cl = self.row_js[self.LCL]
-            log_cl = self.row_js[self.CL]
+            log_cl = self.row_tag_over_js[self.CL]
             xml = self.xml2str(nd).strip()
             e = f"ERROR 2 missing {log_cl}"
             s = '{:<30}{}'.format(e, xml)
             self.logspan(s)
             self.logspan("")
-            self.row_js[self.OPEN_CLOSE] -= 1
+            self.row_tag_over_js[self.OPEN_CLOSE] -= 1
             self.logerr(s)
 
     def control_close(self, nd):
-        self.row_js[self.OPEN_CLOSE] -= 1
-        if self.row_js[self.OPEN_CLOSE] < 0:
+        self.row_tag_over_js[self.OPEN_CLOSE] -= 1
+        if self.row_tag_over_js[self.OPEN_CLOSE] < 0:
             # log_op = self.row_js[self.LOP]
-            log_op = self.row_js[self.OP]
+            log_op = self.row_tag_over_js[self.OP]
             xml = self.xml2str(nd).strip()
             e = f"ERROR 3 missing {log_op}"
             s = '{:<30}{}'.format(e, xml)
             self.logspan(s)
-            self.row_js[self.OPEN_CLOSE] += 1
+            self.row_tag_over_js[self.OPEN_CLOSE] += 1
             self.logerr(s)
 
     # text = val or tail
@@ -339,24 +349,35 @@ class TeimOverFlow(object):
         """
         testo:
             pipppo {% esempio
+
         pattern: {%
-        testa tutti pattern di lunghezza >'{%'
-        qunidi '{' non viene testato
-        ritorna true
+        se non lo trova ritorna Faòse
+        se lo trova testa tutti pattern di 
+        lunghezza >'{%' come {2% , {3%
+        qunidi sono piu testati { , {%,  {_
+        se ne trova uno con la settasa posizione di {%
+        ritorna false
+        altrimenti  ritorna true
+
         pattern: {
-            testa tutti i pattern dilunghezza > '{'
-            viene trovato per '{%'
-            ritona false
+        se non lo trova ritorna Faòse
+        se lo trova testa tutti pattern di 
+        lunghezza >'{' come {_, {%. {2% , {3%
+        qunidi sono piu testati { 
+        se ne trova uno con la settasa posizione di {
+        ritorna false
+        altrimenti  ritorna true
+
         ATTNZIONE
             in chiusura la ricerca avviene a partire da destra
             utilizzanod re group.end()
         """
-        t = self.row_js[self.OP]
+        t = self.row_tag_over_js[self.OP]
         p0 = text.find(t)
         if p0 < 0:
             return False
         ok = True
-        for x in self.op_alter:
+        for x in self.tag_op_alter:
             p1 = text.find(x)
             if p1 > -1 and p0 == p1:
                 return False
@@ -365,13 +386,13 @@ class TeimOverFlow(object):
     # text = val
     def find_tag_to(self, text):
         try:
-            t = self.row_js[self.CL]
+            t = self.row_tag_over_js[self.CL]
             m = re.search(t, text)
             if m is None:
                 return False
             p0 = m.end()
             ok = True
-            for x in self.cl_alter:
+            for x in self.tag_cl_alter:
                 m = re.search(x, text)
                 p1 = -1 if m is None else m.end()
                 if p1 > -1 and p0 == p1:
@@ -382,97 +403,84 @@ class TeimOverFlow(object):
             self.logerr(f"{text}")
             sys.exit(1)
 
-    def is_node_oepn_close(self,nd):
-        nd_data = self.get_node_data(nd)
-        tag=nd_data['tag']
-        if tag=="body":
-            return False
-        l = nd_data['liv']
-        if l < 3:
-            return False
-        if tag in ['cb', 'lg', 'pb', 'p', 'head', 'seg']:
-            return False
-        val = nd_data['val'].strip()
-        nln = val.count("\n")
-        if not tag in ['w','pc','gap'] and nln > 4:
-            return False
-        # text = nd_data['text']
-        # tail = nd_data['tail'].strip()
-        # print(op+" "+cl)
-        # print(f'{tag}  {l}')
-        # print(nln)
-        # print("text:"+text)
-        # print("val:"+val)
-        # print("tail:"+tail)
-        # input("?")
-
     def fill_span(self):
-        # self.over_tag_rows
-        # LOGDEBUG(pp(self.row_js))
-        tp = self.row_js[self.TP]
-        op = self.row_js[self.OP]
-        cl = self.row_js[self.CL]
+        # popola  self.span_data
+        #         self.key_span_data
+        # per una specifica
+        # self.row_tag_over_js
+        tp = self.row_tag_over_js[self.TP]
+        op = self.row_tag_over_js[self.OP]
+        cl = self.row_tag_over_js[self.CL]
         self.logspan(f">>>     {tp}   {op} {cl}  <<<"+os.linesep)
         # nd_data_last=None
         nd_last = None
+        # LGDB(pp(self.row_tag_over_js))
+        # input('js')
         for nd in self.root_xml.iter():
             trace = False
-            # esclude iltag body(liv 0)
-            if not self.is_node_oepn_close(nd):
-                continue
             nd_data = self.get_node_data(nd)
-
-            """
-            id=nd_data.get('id','XXX')
-            if id=='Gl4w2':
+            tag = nd_data['tag']
+            if tag == "body":
+                continue
+            l = nd_data['liv']
+            if l < 3:
+                continue
+            id_=nd_data.get('id','XXX')
+            if id_=='Kch3p1w978':
                 # trace=True
+                # LGDB(pp(nd_data))
                 # set_trace()
                 pass
-            """
+            if not tag.lower() in ['w', 'pc', 'gap','persname','geogname','placename']:
+                continue
             val = nd_data['val'].strip()
-            text = nd_data['text']
+            text = nd_data['text'].strip()
             tail = nd_data['tail'].strip()
-            # AAA modificata logica selezione node
+            if tag.lower() in ['persname','geogname','placename']:
+                src=tail
+            else:
+                src=val+tail
             nd_last = nd
-            if self.find_tag_from(val):
-                LOGDEBUG(
-                    f"\n{self.row_js[self.LOP]} {self.row_js[self.OP]}  {val.strip()} {text.strip()}")
+            op_ = self.row_tag_over_js[self.OP]
+            cl_ = self.row_tag_over_js[self.CL]
+            # if len(text)> len(val) :
+            #LGDB(f'----------')
+            #     LGDB(f"op_cl:{op_} {cl_}\nnode:\n{pp(nd_data)}")
+            # continue
+            if self.find_tag_from(src):
+                LGDB(f"F {op_} {cl_} src:{src}")
                 self.set_from_id(nd_data)
                 self.control_open(nd)
                 self.log_open(nd)
-
-            if self.find_tag_from(tail):
-                LOGDEBUG(
-                    f"\n{self.row_js[self.LOP]} {self.row_js[self.OP]}  {tail.strip()} {text.strip()}")
-                self.set_from_id(nd_data)
-                self.control_open(nd)
-                self.log_open(nd)
-
-            if self.find_tag_to(val):
-                if text.strip() == self.row_js[self.CL]:
-                    LOGDEBUG(
-                        f"{self.row_js[self.OP]}_A {self.row_js[self.OP]}  {val.strip()} {text.strip()}")
+            if self.find_tag_to(src):
+                # il testo coincide con il tag
+                if src == self.row_tag_over_js[self.CL]:
+                    LGDB(f"T0 {op_} {cl_} src:{src}")
                     nd_prev = self.get_prev(nd)
                     nd_data = self.get_node_data(nd_prev)
                     self.set_to_id(nd_data)
                     self.control_close(nd)
                     self.log_close(nd)
                 else:
-                    LOGDEBUG(
-                        f"{self.row_js[self.LOP]}_B {self.row_js[self.OP]}  {val.strip()} {text.strip()}")
+                    LGDB(f"T1 {op_} {cl_} src:{src}")
                     self.set_to_id(nd_data)
                     self.control_close(nd)
                     self.log_close(nd)
-
-        if self.row_js[self.OPEN_CLOSE] > 0:
+            # LGDB(f'span:\n{pp(self.span_data)}')
+            # LGDB(pp(self.key_span_data))
+            # input("?")
+        if self.row_tag_over_js[self.OPEN_CLOSE] > 0:
             # input(self.row_js[self.OPEN_CLOSE])
             # set_trace()
             self.control_open(nd_last)
             self.log_open(nd_last)
+            input("ERR **************")
             # AAA modifica di prova
             # self.row_js[self.OPEN_CLOSE] = 0
 
-    def add_span(self, nd, sp_data):
+    ###################################
+
+    def add_xml_span(self, nd, sp_data):
         parent_node = self.get_span_parent(nd)
         if parent_node is None:
             self.logerr(
@@ -507,14 +515,16 @@ class TeimOverFlow(object):
                 nd_id = nd_data['id']
                 sp_data = self.span_data.get(nd_id, None)
                 if sp_data is not None:
-                    self.add_span(nd, sp_data)
+                    self.add_xml_span(nd, sp_data)
                 # elimina word vuote
                 val = nd_data['val']
                 if val == '':
                     nd_p = nd.getparent()
                     nd_p.remove(nd)
 
-    def add_span_to_xml(self, csv_path):
+    # start
+    def add_xml_span_overflow_list(self, csv_path):
+
         try:
             self.root_xml = etree.parse(self.path_in)
         except Exception as e:
@@ -522,24 +532,23 @@ class TeimOverFlow(object):
             self.logerr(msg)
             # ssys.exit(1)
             return
+
         try:
-            # legge i tga per la gestione overflow da teimoverflow.csv
-            self.over_tag_rows = read_over_tags_sorted(csv_path)
+            self.rows_tag_over = read_tags_over_sorted(csv_path)
         except Exception as e:
             msg = f"ERROR 7 add_span_to_xml()2\n{self.path_in}\n{e}"
             self.logerr(msg)
             # sys.exit(1)
             return
 
-        # per ogni riga dei tags
-        for i in range(0, len(self.over_tag_rows)):
-            # setta
-            # self.row_js
-            # self.op_lst
-            # self.cl_lst
-            # self.op_alter.append(o)
-            # self.cl_alter.append(c)
-            self.set_row_js(i)
+        for r in self.rows_tag_over:
+            self.tag_op_lst.append(r[1])
+            self.tag_cl_lst.append(r[2])
+        # LGDB(f"op_lst:\n{pp(self.tag_op_lst)}")
+        # LGDB(f"cl_lst:\n{pp(self.tag_cl_lst)}")
+
+        for i in range(0, len(self.rows_tag_over)):
+            self.set_row_tag_js(i)
 
             self.span_data = {}
             self.key_span_data = None
@@ -568,9 +577,9 @@ class TeimOverFlow(object):
 
         # rimuove da xml tutti i pattern iniziando
         # da quelli pià lunghi]
-        for i, x in enumerate(self.op_lst):
+        for i, x in enumerate(self.tag_op_lst):
             xml = xml.replace(x, '')
-            y = self.cl_lst[i]
+            y = self.tag_cl_lst[i]
             xml = xml.replace(y, '')
 
         with open(self.path_out, "w") as f:
@@ -580,6 +589,7 @@ class TeimOverFlow(object):
 
 def do_main(path_text,  path_csv):
     TeimOverFlow(path_text, path_csv)
+    # add_span_to_xml()
 
 
 if __name__ == "__main__":
