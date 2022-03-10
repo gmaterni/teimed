@@ -8,8 +8,8 @@ import io
 from teimedlib.ualog import Log
 from teimedlib.teim_paths import *
 
-__date__ = "25-07-2021"
-__version__ = "1.1.12"
+__date__ = "10-03-2022"
+__version__ = "1.2.0"
 __author__ = "Marta Materni"
 
 """
@@ -23,7 +23,7 @@ clean_brackets
 class TeimTxtRead(object):
     SP = ' '
     WRP = '='
-    LB_TMP='XXXX'
+    LB_TMP = 'XXXX'
 
     def __init__(self, path_text, log_err=None):
         self.path_text = path_text
@@ -38,20 +38,21 @@ class TeimTxtRead(object):
         termia con = con la prima della successiva
 
         riga di prova, vedia=
-        mo come va
+        mo come vanno le cose
 
-        riga di prova, vediaXXXXmo
-        come va
+        oppure
 
-        Nuova versione
         riga di prova, vedia=mo 
-        come va
+        come vanno le cose
+
+        è trasformati in
 
         riga di prova, vediaXXXXmo
-        come va
+        come vanno le code
 
-        il flag XXXX serve per gestire <lb> che
-        non verra' inserito all'inizio della riga successiva
+        il flag XXXX serve po per gestire <lb> che
+        sostituisce XXXX e non vine inserito all'inizio 
+        della riga successiva
 
         """
         for i in range(0, len(rows)):
@@ -71,14 +72,18 @@ class TeimTxtRead(object):
                 #     rows[i] = rows[i].replace(self.WRP,self.LB_TMP)
 
                 if rows[i].find(self.WRP) > -1:
-                    words_next = rows[i+1].split(' ')
-                    if rows[i][-1:]==self.WRP:
-                        word0 = words_next[0]
-                        rows[i+1] = self.SP.join(words_next[1:])
-                        rows[i] = rows[i].replace(self.WRP,f"{self.LB_TMP}{word0}")
+                    # token riga successiva
+                    tokens_next = rows[i+1].split(' ')
+                    if rows[i][-1:] == self.WRP:
+                        # la riga termona con =
+                        token_first = tokens_next[0]
+                        # nella riga successiva è eliminatto il primo token
+                        rows[i+1] = self.SP.join(tokens_next[1:])
+                        # nella riga corrente sostituito =
+                        rows[i] = rows[i].replace(
+                            self.WRP, f"{self.LB_TMP}{token_first}")
                     else:
-                        rows[i] = rows[i].replace(self.WRP,self.LB_TMP)
-
+                        rows[i] = rows[i].replace(self.WRP, self.LB_TMP)
 
             except Exception as e:
                 self.log_err(f'ERROR 1 join_words_wrap().')

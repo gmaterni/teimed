@@ -12,8 +12,8 @@ from teimedlib.textentities_log import *
 from teimedlib.xml_const import *
 from teimedlib.teim_paths import *
 
-__date__ = "07-03-2022"
-__version__ = "1.6.0"
+__date__ = "10-03-2022"
+__version__ = "1.6.1"
 __author__ = "Marta Materni"
 
 """
@@ -105,8 +105,8 @@ class TeimXml(object):
         self.type_line = self.LB
 
         self.trace = False
-        # TODO iself.input_err_active = True
-        self.input_err_active = False
+        self.input_err_active = True
+        #TODO  self.input_err_active = False
 
     def input_err(self, msg='?'):
         if self.input_err_active:
