@@ -177,7 +177,6 @@ class TeimXml(object):
                         raise Exception(
                             f'ERROR B teimxml.py\nfind_w_open_close()\n{sl}')
                     po = i + m.end()
-                    # TODO  if(m := re.search(r'w>', sl[i:])) is not None:
                     m = re.search(r'w>', sl[i:])
                     if m is not None:
                         pc = i + m.end()
@@ -186,7 +185,6 @@ class TeimXml(object):
 
         def replace_attr(ptrn, s):
             prn = False
-            # TODO while (m := re.search(ptrn, s)) is not None:
             while True:
                 m = re.search(ptrn, s)
                 if m is None:

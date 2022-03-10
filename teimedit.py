@@ -35,8 +35,8 @@ from teimsetid import do_main as do_main_setid
 from teimxml import do_main as do_main_xml
 from teixml2txt import do_main as do_main_xml2txt
 
-__date__ = "07-03-2022"
-__version__ = "1.2.1"
+__date__ = "10-03-2022"
+__version__ = "1.2.2"
 __author__ = "Marta Materni"
 
 
@@ -1203,7 +1203,6 @@ class TeimEdit(object):
     def format_xml(self, src, path_out, path_err, add_div=True):
 
         def make_xml_err(xml, err):
-            # TODO if(m := re.search(r'(line )([0-9]+)(,)', err)):
             m = re.search(r'(line )([0-9]+)(,)', err)
             if m is not None:
                 s = m.group(2)

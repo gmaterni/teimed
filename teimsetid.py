@@ -490,7 +490,6 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         has_episode = False
         for nd in self.xml_root.iter(self.DIV):
             attrs = self.node_items(nd)
-            # TODO if (tp := attrs.get('type', '')) == 'episode':
             tp = attrs.get('type', '')
             if tp == 'episode':
                 has_episode = True

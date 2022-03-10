@@ -475,9 +475,8 @@ class TeimOverFlow(object):
             self.log_open(nd_last)
             msg=f"ERROR OVERFLOW \n{pp(self.row_js)}\n{pp(nd_data)}"
             self.logerr(msg)
+            # AAA  controllo errore temporaneo
             input("ERROR W teimover.py overflow")
-            # TODO modifica di prova
-            # self.row_js[self.OPEN_CLOSE] = 0
 
     ###################################
 

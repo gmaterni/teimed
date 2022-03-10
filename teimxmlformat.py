@@ -23,7 +23,6 @@ def do_main(path_in,path_out,add_div):
     path_err=path_out.replace('.xml',".xml.ERR.log")
     log_err = Log("w").open(path_err, 1).log
     def make_xml_err(xml, err):
-        #TODO f(m := re.search(r'(line )([0-9]+)(,)', err)):
         m = re.search(r'(line )([0-9]+)(,)', err)
         if m is not None:
             s = m.group(2)
