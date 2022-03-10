@@ -535,7 +535,7 @@ class TeimXml(object):
             lst.append(word_ent.text)
         row_text = ' '.join(lst).strip()
 
-        # setta il tipo di numerazione delle linee
+        #XXX setta il tipo di numerazione delle linee
         #inizio numerazione linea tipo lg
         if row_text.find('<lg') > -1:
             self.type_line = self.LG_L
@@ -543,9 +543,9 @@ class TeimXml(object):
         if row_text.find('</lg>') > -1:
             self.type_line = self.LB
 
-        # tag numerazione righe
-        # AAA aggiunge <lb/> all'inizio se la riga precedente
-        # non finisce con una parola spezzata
+        #tag numerazione righe
+        #aggiunge <lb/> all'inizio se la riga precedente
+        #non finisce con una parola spezzata
         if self.type_line == self.LB:
             if row_text.find('<w') > -1:
                 if not bl_in_word:
@@ -577,7 +577,7 @@ class TeimXml(object):
                 row_text = self.elab_row(row_ent, bl_in_word)
                 if row_text == '':
                     continue
-                #AAA controlla se nella riga l'ultima parola contiene LB_TMP
+                #XXX controlla se nella riga l'ultima parola contiene LB_TMP
                 # il flag per non far insrire <lb/> nella riga successiva
                 bl_in_word = row_text.find(self.LB_TMP) > -1
                 if bl_in_word:

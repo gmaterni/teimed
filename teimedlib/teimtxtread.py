@@ -9,14 +9,30 @@ from teimedlib.ualog import Log
 from teimedlib.teim_paths import *
 
 __date__ = "10-03-2022"
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 __author__ = "Marta Materni"
 
 """
 read_text_rows
-add_spc2punct
+    import from da ..
+
+read_flags_id
+    import form 
+        teimedit.py
+        
+add_spc_to_punct
+    text_spc_to_punct_
+    import from
+        ....
+
 join_words_wrap
+    import from
+        ...
+
 clean_brackets
+    import from
+        ...
+
 """
 
 
@@ -57,20 +73,6 @@ class TeimTxtRead(object):
         """
         for i in range(0, len(rows)):
             try:
-                # if rows[i].find(self.WRP) > -1:
-                #     words = rows[i+1].split(' ')
-                #     word0 = words[0]
-                #     # elimina la prima word dalla riga successiva
-                #     words = words[1:]
-                #     rows[i+1] = self.SP.join(words)
-                #     # AAA aggiunge la prima word dela riga successiva alla
-                #     # fine della riga corrente
-                #     # sostituisce '=' con LB_TMP 'XXXX'
-                #     #rows[i] = rows[i].replace(self.WRP, word0)
-                #     # rows[i] = rows[i].replace(self.WRP,f"{self.LB_TMP}{word0}")
-                #     # Nuova versione
-                #     rows[i] = rows[i].replace(self.WRP,self.LB_TMP)
-
                 if rows[i].find(self.WRP) > -1:
                     # token riga successiva
                     tokens_next = rows[i+1].split(' ')
@@ -116,7 +118,7 @@ class TeimTxtRead(object):
         rows = [r.strip() for r in rs]
         return rows
 
-    def text_add_spc_to_punct(self, text):
+    def text_spc_to_punct_(self, text):
         """
         aggiunge spazi a ddestra e sinistra della punteggiatura
         al di fuori delle () e non considerando &abc;
@@ -157,11 +159,13 @@ class TeimTxtRead(object):
         return text
 
     def add_spc_to_punct(self, rows):
+        """Aggiunge spazi attorno ai caratteri
+        di punteggiatrura.
+        """
         for i, row in enumerate(rows):
-            rows[i] = self.text_add_spc_to_punct(row)
+            rows[i] = self.text_spc_to_punct_(row)
         return rows
 
-    # AAA  flag id per per inizio numeraione
     def read_flags_id(self):
         """
         legge flags id  per numerazione in testa al 
@@ -195,7 +199,7 @@ class TeimTxtRead(object):
             return rows
 
     def read_text_rows(self):
-        """
+        """Legge il testo sorgente
         Elimina commenti e flag id
 
         """

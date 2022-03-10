@@ -106,7 +106,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     @p:n=100
     @l:n=100
 
-    XXX ATTENZIONE il sign del flag sostituisce quello definito nel file csv
+    ATTENZIONE il sign del flag sostituisce quello definito nel file csv
     """
     TAG_ID = 'tag_id'
     ID = 'id'

@@ -14,7 +14,7 @@ from teimedlib.ualog import Log
 from teimedlib.readovertags import read_tags_over_sorted
 from teimedlib.teim_paths import *
 
-__date__ = "07-03-2022"
+__date__ = "10-03-2022"
 __version__ = "1.1.0"
 __author__ = "Marta Materni"
 
@@ -71,7 +71,6 @@ class TeimOverFlow(object):
         path_err = set_path_over_err(path_text)
         self.logerr = Log("w").open(path_err, 1).log
 
-        # FIXME WARNING self.root = etree
         self.root_xml = etree
         self.span_data = {}
         self.key_span_data = ''
