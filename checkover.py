@@ -290,6 +290,7 @@ class CheckOverflow(object):
             self.log_err("ERROR ceckover.py read_over_tags()v")
             self.log_err(str(e))
             sys.exit(1)
+
         for tag_data in over_tags:
             self.len_text = len(self.text)
             self.tag_open = tag_data[1]

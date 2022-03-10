@@ -36,7 +36,7 @@ from teimxml import do_main as do_main_xml
 from teixml2txt import do_main as do_main_xml2txt
 
 __date__ = "10-03-2022"
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 __author__ = "Marta Materni"
 
 
@@ -234,6 +234,7 @@ class TeimEdit(object):
     ####################################
 
     def write_file(self, path, text):
+        # AAA verificare se utilizzare file_uitl.write
         if isinstance(path, str):
             path = ptu.str2path(path)
         path.write_text(text)
@@ -1072,17 +1073,17 @@ class TeimEdit(object):
         self.add_tags(err_lst)
 
     def find_over(self, po, pc, *args):
+        # FIXME  controlla tag [] e [_ _]
         text = self.text_edit.get('1.0', tk.END)
         txt_wrk = clean_text(text)
         m_lst = chk.check_overflow(txt_wrk, po, pc)
-        #
         self.add_tags(m_lst)
 
     def find_form_to(self, po, pc):
+        # contolla tags di tipo overflow
         text = self.text_edit.get('1.0', tk.END)
         txt_wrk = clean_text(text)
         m_lst = chk.check_overflow(txt_wrk, po, pc)
-        #
         self.add_tags_from_to(m_lst)
 
     #############
