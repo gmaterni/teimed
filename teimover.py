@@ -448,21 +448,21 @@ class TeimOverFlow(object):
             #     LGDB(f"op_cl:{op_} {cl_}\nnode:\n{pp(nd_data)}")
             # continue
             if self.find_tag_from(src):
-                LGDB(f"F {op_} {cl_} src:{src}")
+                #LGDB(f"F {op_} {cl_} src:{src}")
                 self.set_from_id(nd_data)
                 self.control_open(nd)
                 self.log_open(nd)
             if self.find_tag_to(src):
                 # il testo coincide con il tag
                 if src == self.row_tag_over_js[self.CL]:
-                    LGDB(f"T0 {op_} {cl_} src:{src}")
+                    #LGDB(f"T0 {op_} {cl_} src:{src}")
                     nd_prev = self.get_prev(nd)
                     nd_data = self.get_node_data(nd_prev)
                     self.set_to_id(nd_data)
                     self.control_close(nd)
                     self.log_close(nd)
                 else:
-                    LGDB(f"T1 {op_} {cl_} src:{src}")
+                    #LGDB(f"T1 {op_} {cl_} src:{src}")
                     self.set_to_id(nd_data)
                     self.control_close(nd)
                     self.log_close(nd)
@@ -474,8 +474,10 @@ class TeimOverFlow(object):
             # set_trace()
             self.control_open(nd_last)
             self.log_open(nd_last)
-            input("ERR **************")
-            # AAA modifica di prova
+            msg=f"ERROR OVERFLOW \n{pp(self.row_js)}\n{pp(nd_data)}"
+            self.logerr(msg)
+            input("ERROR W teimover.py overflow")
+            # TODO modifica di prova
             # self.row_js[self.OPEN_CLOSE] = 0
 
     ###################################

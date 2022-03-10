@@ -122,7 +122,9 @@ class TextEntities(object):
         # set punt
         self.set_punt = '.,:?!;'
         self.tags_csv_js = {}
-        self.input_err_active = True
+
+        # AAA set input_err
+        self.input_err_active = False
 
     def input_err(self, msg='?'):
         if self.input_err_active:
@@ -202,7 +204,7 @@ class TextEntities(object):
                 break
         else:
             # non esiste ')' che bilanci
-            self.log_err("\nERROR. parentesi '()' non bilanciate")
+            self.log_err("\nERROR parentesi '()' non bilanciate")
             self.log_err(f"{word_text}")
             self.log_err(f'{group}')
             self.log_err(f'row num:{self.row_num}')
