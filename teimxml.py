@@ -105,8 +105,10 @@ class TeimXml(object):
         self.type_line = self.LB
 
         self.trace = False
-        self.input_err_active = True
-        #TODO  self.input_err_active = False
+
+        #UA input_err
+        #self.input_err_active = True
+        self.input_err_active = False
 
     def input_err(self, msg='?'):
         if self.input_err_active:
@@ -535,7 +537,7 @@ class TeimXml(object):
             lst.append(word_ent.text)
         row_text = ' '.join(lst).strip()
 
-        #XXX setta il tipo di numerazione delle linee
+        #UA setta il tipo di numerazione delle linee
         #inizio numerazione linea tipo lg
         if row_text.find('<lg') > -1:
             self.type_line = self.LG_L
@@ -577,7 +579,7 @@ class TeimXml(object):
                 row_text = self.elab_row(row_ent, bl_in_word)
                 if row_text == '':
                     continue
-                #XXX controlla se nella riga l'ultima parola contiene LB_TMP
+                #UA controlla se nella riga l'ultima parola contiene LB_TMP
                 # il flag per non far insrire <lb/> nella riga successiva
                 bl_in_word = row_text.find(self.LB_TMP) > -1
                 if bl_in_word:
