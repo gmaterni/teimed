@@ -77,7 +77,7 @@ class TeimXml(object):
     SP = " "
     UNDER = '_'   # carattere _ UNDERLINE
     SP_TMP = '|'     # spazio temporaneo usato neitag di riga
-    LB_TMP = "XXXX"
+    LB_TMP = "XXXX" #flag gestione parla spezzata a fine riga
 
     def __init__(self, path_text, path_tags):
         # testo.txt => testo_txt,txt
@@ -102,7 +102,7 @@ class TeimXml(object):
         # tipo numerazione righe
         self.LB = 'lb'
         self.LG_L = 'lg_l'
-        self.line_num = self.LB
+        self.type_line = self.LB
 
         self.trace = False
         # TODO iself.input_err_active = True
@@ -489,7 +489,7 @@ class TeimXml(object):
             if is_add_w:
                 is_add_w = self.is_tag_to_add_w(word_ent.text)
                 ####################
-                # controllo funzioe per add word
+                # controllo funzione per add word
                 # n_add = self.xis_tag_to_add_w(word_ent.text)
                 # if is_add_w != n_add:
                 #     LOG(f'{self.row_num}  {word_text_orig}')
@@ -534,20 +534,23 @@ class TeimXml(object):
             self.log_info(f'W: {word_ent.text}')
             lst.append(word_ent.text)
         row_text = ' '.join(lst).strip()
+
         # setta il tipo di numerazione delle linee
+        #inizio numerazione linea tipo lg
         if row_text.find('<lg') > -1:
-            self.line_num = self.LG_L
+            self.type_line = self.LG_L
+        #fine numerazione riga tipo lg
         if row_text.find('</lg>') > -1:
-            self.line_num = self.LB
+            self.type_line = self.LB
 
         # tag numerazione righe
-        # aggiunge <lb/> all'inizio
-        if self.line_num == self.LB:
+        # AAA aggiunge <lb/> all'inizio se la riga precedente
+        # non finisce con una parola spezzata
+        if self.type_line == self.LB:
             if row_text.find('<w') > -1:
-                # AAA gestione <lb/>
                 if not bl_in_word:
                     row_text = f'<lb/>{row_text}'
-        elif self.line_num == self.LG_L:
+        elif self.type_line == self.LG_L:
             if row_text.find('<w') > -1:
                 row_text = f'<l>{row_text}</l>'
 
@@ -556,15 +559,18 @@ class TeimXml(object):
         return row_text
 
     def elab_rows(self):
+
         try:
             rows_entities = self.text_entities.get_rows_entities()
         except Exception as e:
             msg = f'\nERROR 8 elab_rows() 1\n {e}'
             self.log_err(msg)
             sys.exit(msg)
+
         try:
             f = StringIO()
             f.write(BODY_TOP)
+            #flag controllo a capo con parloa spezzata
             bl_in_word = False
             for row_ent in rows_entities:
                 self.row_num = row_ent.num

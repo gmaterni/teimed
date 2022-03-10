@@ -43,23 +43,43 @@ class TeimTxtRead(object):
         riga di prova, vediaXXXXmo
         come va
 
+        Nuova versione
+        riga di prova, vedia=mo 
+        come va
+
+        riga di prova, vediaXXXXmo
+        come va
+
         il flag XXXX serve per gestire <lb> che
         non verra' inserito all'inizio della riga successiva
 
         """
         for i in range(0, len(rows)):
             try:
+                # if rows[i].find(self.WRP) > -1:
+                #     words = rows[i+1].split(' ')
+                #     word0 = words[0]
+                #     # elimina la prima word dalla riga successiva
+                #     words = words[1:]
+                #     rows[i+1] = self.SP.join(words)
+                #     # AAA aggiunge la prima word dela riga successiva alla
+                #     # fine della riga corrente
+                #     # sostituisce '=' con LB_TMP 'XXXX'
+                #     #rows[i] = rows[i].replace(self.WRP, word0)
+                #     # rows[i] = rows[i].replace(self.WRP,f"{self.LB_TMP}{word0}")
+                #     # Nuova versione
+                #     rows[i] = rows[i].replace(self.WRP,self.LB_TMP)
+
                 if rows[i].find(self.WRP) > -1:
-                    words = rows[i+1].split(' ')
-                    word0 = words[0]
-                    # elimina la prima word dalla riga successiva
-                    words = words[1:]
-                    rows[i+1] = self.SP.join(words)
-                    # AAA aggiunge la prima word dela riga successiva alla
-                    # fine della riga corrente
-                    # sostituisce = con XXXX
-                    #rows[i] = rows[i].replace(self.WRP, word0)
-                    rows[i] = rows[i].replace(self.WRP,f"{self.LB_TMP}{word0}")
+                    words_next = rows[i+1].split(' ')
+                    if rows[i][-1:]==self.WRP:
+                        word0 = words_next[0]
+                        rows[i+1] = self.SP.join(words_next[1:])
+                        rows[i] = rows[i].replace(self.WRP,f"{self.LB_TMP}{word0}")
+                    else:
+                        rows[i] = rows[i].replace(self.WRP,self.LB_TMP)
+
+
             except Exception as e:
                 self.log_err(f'ERROR 1 join_words_wrap().')
                 self.log_err(f'row num:{i+1}')
