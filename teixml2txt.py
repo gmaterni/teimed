@@ -12,31 +12,32 @@ import traceback
 from lxml import etree
 from teimedlib.txtbuilder import TxtBuilder
 from teimedlib.ualog import Log
+import teimedlib.write_path as wrpt
 
 __date__ = "15-03-2022"
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 __author__ = "Marta Materni"
 
 
-#FIXME  sostituire con libreria def make_dir_of_file(path):
-def make_dir_of_file(path):
-    dirname = os.path.dirname(path)
-    if dirname.strip() == '':
-        return
-    make_dir(dirname)
+#XXX  sostituire con libreria def make_dir_of_file(path):
+# def make_dir_of_file(path):
+    # dirname = os.path.dirname(path)
+    # if dirname.strip() == '':
+    #     return
+    # make_dir(dirname)
 
-def make_dir(dirname):
-    try:
-        if not os.path.isdir(dirname):
-            os.mkdir(dirname)
-            os.chmod(dirname, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
-            return True
-        else:
-            return False
-    except Exception as e:
-        s = str(e)
-        msg = f"ERROR make_dir{os.linesep}{s}"
-        raise Exception(msg)
+# def make_dir(dirname):
+    # try:
+    #     if not os.path.isdir(dirname):
+    #         os.mkdir(dirname)
+    #         os.chmod(dirname, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
+    #         return True
+    #     else:
+    #         return False
+    # except Exception as e:
+    #     s = str(e)
+    #     msg = f"ERROR make_dir{os.linesep}{s}"
+    #     raise Exception(msg)
 
 
 def chmod(path):
@@ -249,7 +250,8 @@ class Xml2Txt:
             ########################
             self.txt_builder.elab()
             txt = self.txt_builder.txt
-            make_dir_of_file(self.path_txt)
+            #XXX wrpt
+            wrpt.make_dir_of_file(self.path_txt)
             with open(self.path_txt, self.write_append) as f:
                 f.write(txt)
             chmod(self.path_txt)

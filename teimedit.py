@@ -637,6 +637,8 @@ class TeimEdit(object):
         mv_elab.add_command(label='Elab. TEI', command=self.elab_tei)
         mv_elab.add_separator()
         mv_elab.add_command(label='XML => text', command=self.elab_xml2txt)
+        mv_elab.add_separator()
+        mv_elab.add_command(label='Elab. All', command=self.elab_all)
 
         mv_log = new_mv()
         mv_log.add_command(label='Check Text Err.', command=self.show_checktxt)
@@ -1099,9 +1101,11 @@ class TeimEdit(object):
             msg = f"ERROR Elab entities\n{e}"
             log_err.log(msg)
             self.show_log_top(msg, True)
-            return
-        msg = self.read_file(self.path_teim_out_s)
+            return        
+        #AAA msg = self.read_file(self.path_teim_out_s)
+        msg = self.read_file(self.path_teim_log_s)
         self.show_win1(msg)
+
         ls = ["Elab. entity",
               f"{self.path_teim_in_s}",
               f"{self.path_teim_out_s}",
@@ -1269,8 +1273,18 @@ class TeimEdit(object):
               f"{self.path_xml2txt_in_s}",
               f"{self.path_xml2txt_out_s}"]
         self.show_log_lift(os.linesep.join(ls), True)
-        text = self.read_file(self.path_xml2txt_out_s)
-        self.show_win2(text)
+
+        #XXX text = self.read_file(self.path_xml2txt_out_s)
+        # self.show_win2(text)
+
+
+    def elab_all(self):
+        self.elab_teimxml()
+        self.elab_teimsetid()
+        self.elab_teimover()
+        self.elab_teimnote()
+        self.elab_tei()
+        self.elab_xml2txt()
 
     ##############
     # UA menu del

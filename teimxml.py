@@ -258,7 +258,7 @@ class TeimXml(object):
             return False
         if text.find('<note') > -1:
             return False
-        # AAA modifica da controllare
+        # modifica da controllare
         # xw_children=['c','expan','hi','add']
         # w_children = ['</c>',
         #               '</expan>',
@@ -405,7 +405,7 @@ class TeimXml(object):
         partendo da livello immediatamente successivo a quello corrente
         sostituisce le entities fino al livello 0
         """
-        # AAA
+        
         # if word_ent.text == "°por&space-d;fitable":
         # if word_ent.text.find("&space-d") > -1:
         #     self.trace = True
