@@ -8,8 +8,10 @@ import sys
 import re
 
 
-def pp(data):
-    return pprint.pformat(data, indent=2, width=40)
+def pp(data, w=40):
+    s = pprint.pformat(data, indent=2, width=w)
+    return s
+
 
 """
 i|c+#affr|span||class:diacr_int|%%text%%|c:ç
@@ -41,6 +43,7 @@ END = 't_end'
 MONOLOG = 'monologue'
 DIRECT = 'directspeech'
 
+
 class TxtBuilder:
 
     def __init__(self):
@@ -56,24 +59,24 @@ class TxtBuilder:
         self.up = True
         self.w_liv = 100
         self.trace = False
-        self.ramis=self.set_ramis_dict()
+        self.ramis = self.set_ramis_dict()
 
     def set_ramis_dict(self):
-        js={}
+        js = {}
         for r in RAMIS:
-            k,v=r.split('|')
-            js[k]={}
-            ls=v.split(',')
+            k, v = r.split('|')
+            js[k] = {}
+            ls = v.split(',')
             for xy in ls:
-                x,y=xy.split(':')
-                js[k][x]=y
+                x, y = xy.split(':')
+                js[k][x] = y
         return js
 
-    def get_ramis(self,key,ch):
-        js=self.ramis.get(key,None)
+    def get_ramis(self, key, ch):
+        js = self.ramis.get(key, None)
         if js is None:
             return f"ERR{key}"
-        r=js.get(ch,None)
+        r = js.get(ch, None)
         if r is None:
             return f"ERR{ch}"
         return r
@@ -149,7 +152,7 @@ class TxtBuilder:
         """
         t_up = False
         sic = False
-        w_num = 0
+        #w_num = 0
         for i, d in enumerate(self.data_txt_lst):
             #id = d["id"]
             liv = d["liv"]
@@ -193,18 +196,74 @@ class TxtBuilder:
         v = v.replace('#', '').strip()
         return v == val
 
+    def adjust_tail_inversion(self):
+        """
+        <w xml:id="Kch2h1w14">des
+         <expan corresp="#ab-sus-tu">t
+            <ex>r</ex>u
+        </expan>c
+        <c ana="#hiat">i</c>on
+        </w>
+
+     <w xml:id="Kch1p1w104">
+      <expan corresp="#ab-tir-9">
+        <ex>con</ex>
+      </expan>
+      <expan corresp="#ab-tild-q">q<ex>ue</ex>
+      </expan>re
+
+     </w>
+
+    errattO:  con q re ue
+    corretto: con q ue re
+
+        "re"  tail di expan
+        "ue"  text di ex 
+        "u" è stampato dopo perchè <ex> segue <expan>
+
+        souzione:
+            spostare "ue" prima di "re"
+            <ex>text => prima di <expan>tail
+
+        """
+        le = len(self.data_txt_lst)-1
+        for i, t_curr in enumerate(self.data_txt_lst):
+            if i == 0:
+                continue
+            if i >= le:
+                continue
+            t_prec = self.data_txt_lst[i-1]
+            t_succ = self.data_txt_lst[i+1]
+            if t_curr['tail'] != '':
+                if t_succ['liv'] > t_curr['liv']:
+
+                    # text e tail  di <ex>
+                    text_succ = t_succ['text']
+                    t_succ['text'] = ''
+                    tail_succ = t_succ['tail']
+                    t_succ['tail'] = ''
+
+                    # il tail di<expan>
+                    tail_curr = t_curr['tail']
+                    s = f'{text_succ}{tail_succ}{tail_curr}'
+                    t_curr['tail'] = s
+
     def build_txt_rows(self):
         """crea le righe di testo self._txt_rows
         utilizzando data_text=xml_data + csv_data + t_data
         """
+        self.adjust_tail_inversion()
+
         self.txt_rows = []
         words = []
+        # n=8000
         for i, d in enumerate(self.data_txt_lst):
-            id = d['id']
+            id_ = d['id']
             tag = d['tag'].strip()
             text = d['text'].strip()
             tail = d['tail'].strip()
             items = d['items']
+
             t_start = d['t_start']
             t_sp = d['t_sp']
             t_up = d['t_up']
@@ -212,11 +271,11 @@ class TxtBuilder:
             t_ln = d['t_ln']
 
             if tag == 'c':
-                if len(text)==1:
-                    k=items.get('ana',None)
+                if len(text) == 1:
+                    k = items.get('ana', None)
                     if k is not None:
-                        r=self.get_ramis(k,text)
-                        text=r
+                        r = self.get_ramis(k, text)
+                        text = r
 
             elif tag == 'w':
                 # els
@@ -241,6 +300,7 @@ class TxtBuilder:
             tail = tail.lower()
 
             w = f"{text}{tail}"
+
             if w != '':
                 words.append(w)
 
@@ -251,6 +311,49 @@ class TxtBuilder:
                 row = ''.join(words)
                 self.txt_rows.append(row)
                 words = []
+
+            #
+            # if xtc['tag'] == 'w':
+            #     xtw = xtc
+            # if tail != "" and i < xle:
+            #     if xts['liv'] > xtc['liv']:
+            #         print(pp(xtw, 20))
+            #         s = xtw['val'].replace(" ", "")
+            #         print(pp(xtp, 20))
+            #         print(pp(xtc, 20))
+            #         print(pp(xts, 20))
+            #         print(s)
+            #         input("?")
+            # xtc = d
+            # if xtc['tag'] == 'w' and tail != "":
+            #     print(pp(xtc))
+            #     input("?")
+
+            # if id_ == "Kch1p1w104":
+            #     #self.trace = True
+            #     pass
+            # if self.trace:
+            #     print(pp(d, 20))
+            #     print(text)
+            #     # print(d)
+            #     set_trace()
+
+            # if id_ == "Kch2h1w14":
+            #     n = i
+            # if tag == 'w':
+            #     xtw = self.data_txt_lst[i]
+            # if i == n+1:
+            #     xtp = self.data_txt_lst[i-1]
+            #     xtc = d
+            #     xts = self.data_txt_lst[i+1]
+            #     print(pp(xtw, 20))
+            #     s = xtw['val'].replace(" ", "")
+            #     print(pp(xtp, 20))
+            #     print(pp(xtc, 20))
+            #     print(pp(xts, 20))
+            #     print(s)
+            #     input("?")
+
         row = ''.join(words).strip()
         self.txt_rows.append(row)
 
@@ -279,7 +382,7 @@ class TxtBuilder:
         self.fill_from_to_list()
         # completa gli elemnti di data_txt_lst
         self.set_data_txt_list()
-        # setta start ed end in datat_tx
+        # setta start ed end in data_txt
         self.from_to_set_data_txt()
         # cra le righe di testo
         self.build_txt_rows()

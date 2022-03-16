@@ -7,13 +7,13 @@ import os
 
 def splitlines(path_in, path_ou, rl):
     with open(path_in, "r") as f:
-        text=f.read()
-    text=text.replace(os.linesep," ")
+        text = f.read()
+    text = text.replace(os.linesep, " ")
     fou = open(path_ou, "w")
     n = 0
-    r=list(text)
-    lst=[]
-    le=int(rl)
+    r = list(text)
+    lst = []
+    le = int(rl)
     for i, ch in enumerate(r):
         lst.append(ch)
         if i > 0 and i % le == 0:
@@ -26,6 +26,9 @@ def splitlines(path_in, path_ou, rl):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        print(" file_input  file_output  line_len")
+        sys.exit()
     args = sys.argv[1:]
     inp = args[0]
     ou = args[1]

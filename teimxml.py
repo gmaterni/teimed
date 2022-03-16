@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from pdb import set_trace
 import argparse
 import sys
 import os
 import re
 from io import StringIO
 from lxml import etree
+import pprint
 from teimedlib.ualog import Log
 from teimedlib.textentities import TextEntities
 from teimedlib.textentities_log import *
 from teimedlib.xml_const import *
 from teimedlib.teim_paths import *
 
-__date__ = "10-03-2022"
-__version__ = "1.6.1"
+__date__ = "16-03-2022"
+__version__ = "1.6.2"
 __author__ = "Marta Materni"
 
 """
@@ -52,12 +54,15 @@ LOG = Log("w").open("XXX.log", 1).log
         t = s0 + s1 + s2
         t = t.replace("<note", " <note", -1).replace("</note>", "</note> ", -1)
         return t
-
-   
-   
+ 
         if line.find("<note") > -1:
             line = self.preserve_note(line)
 """
+
+
+def pp(data, w=40):
+    s = pprint.pformat(data, indent=2, width=w)
+    return s
 
 
 class TeimXml(object):
@@ -77,7 +82,7 @@ class TeimXml(object):
     SP = " "
     UNDER = '_'   # carattere _ UNDERLINE
     SP_TMP = '|'     # spazio temporaneo usato neitag di riga
-    LB_TMP = "XXXX" #flag gestione parla spezzata a fine riga
+    LB_TMP = "XXXX"  # flag gestione parla spezzata a fine riga
 
     def __init__(self, path_text, path_tags):
         # testo.txt => testo_txt,txt
@@ -106,7 +111,7 @@ class TeimXml(object):
 
         self.trace = False
 
-        #UA input_err
+        # UA input_err
         #self.input_err_active = True
         self.input_err_active = False
 
@@ -253,10 +258,22 @@ class TeimXml(object):
             return False
         if text.find('<note') > -1:
             return False
-        w_children = ['c', 'expan', 'hi', 'add']
+        # AAA modifica da controllare
+        # xw_children=['c','expan','hi','add']
+        # w_children = ['</c>',
+        #               '</expan>',
+        #               '</hi>',
+        #               '</add>']
+        w_children = ['</c>',
+                      '</expan>',
+                      '</hi>',
+                      '</add>',
+                      '</space>',
+                      '<space']
         w_add_tag = False
         for tag in w_children:
-            if text.find(f'</{tag}>') > -1:
+            #if text.find(f'</{tag}>') > -1:
+            if text.find(tag) > -1:
                 w_add_tag = True
                 break
         return w_add_tag
@@ -388,6 +405,31 @@ class TeimXml(object):
         partendo da livello immediatamente successivo a quello corrente
         sostituisce le entities fino al livello 0
         """
+        # AAA
+        # if word_ent.text == "°por&space-d;fitable":
+        # if word_ent.text.find("&space-d") > -1:
+        #     self.trace = True
+        #     we = word_ent
+        #     print(we.num)
+        #     print(we.text)
+        #     for e in we.entities:
+        #         print(f'  liv :{e.liv}')
+        #         print(f'  src:{e.src}')
+        #         print(f'  name:{e.name} ')
+        #         print(f'  src_args:{e.src_args} ')
+        #         print(f'  err:{e.err}:  {ERR[e.err]}')
+        #         print(f'  tag_tp:{e.tag_tp} ')
+        #         print(f'  tag_name:{e.tag_name}')
+        #         print(f'  tag_text:{e.tag_text}')
+        #         print(f'  tag_nargs:{e.tag_nargs} ')
+        #         if e.src == we.text:
+        #             print(f' *** {e.src} ')
+        #     print(we.entities_ch2)
+        #     print(we.entities_ch1)
+        #     print(we.entities_punt)
+        #     print("----")
+        #     # input("?")
+
         word_text_orig = word_ent.text
         if word_text_orig.strip() == '':
             return word_ent
@@ -447,17 +489,17 @@ class TeimXml(object):
             word_ent.text = word_ent.text.replace(e_tag_name, tag_text, 1)
             is_add_w = False
 
+        #print(f"1 {is_add_w}")
         # aggiunta del tag <w> </w> alle word NON taggate
         if word_text_orig == word_ent.text:
             word_ent.text = f'<w>{word_ent.text}</w>'
 
         # word taggate ma NON con <w>
         if is_add_w and word_ent.text.find('<w') < 0:
-
             # if word_ent.text.find('<c ') > -1:
             #     print(word_ent.text)
             #     set_trace()
-
+            #print(f"2 {is_add_w}")
             if is_add_w:
                 # se è subst aggiunge <w> nelle modalità indicate nel metodo
                 # altrimenti ritorna None
@@ -471,6 +513,7 @@ class TeimXml(object):
                         self.log_err(s)
                         self.input_err('subst_add_w>')
 
+            #print(f"3 {is_add_w}")
             if is_add_w:
                 # se è supplied aggiunge <w> nelle modalità indicate nel metodo
                 # altrimenti ritorna None
@@ -486,6 +529,7 @@ class TeimXml(object):
 
             # word con un tag che prevedono ANCHE il tag <w>
             # che NON sono subst e supplied
+            #print(f"4 {is_add_w}")
             if is_add_w:
                 is_add_w = self.is_tag_to_add_w(word_ent.text)
                 ####################
@@ -497,15 +541,17 @@ class TeimXml(object):
                 #     LOG(f'{is_add_w}  {n_add}')
                 #     self.input_err('X>')
                 #######################
+            #print(f"5 {is_add_w}")
+            # aggiunge <w>
             if is_add_w:
-                # aggiunge <w>
                 word_ent.text = f'<w>{word_ent.text}</w>'
                 msg = f'add_w  row num:{self.row_num}'
                 s, err = self.check_xml(word_ent.text, msg)
                 if err:
                     self.log_err(s)
                     self.input_err('add_w>')
-
+            # if self.trace:
+            #     input("?")
         # tipizazione di word e sostituzione underscore
         if word_ent.text.find('<w') > -1:
             word_ent.text = self.set_word_attr(word_ent.text)
@@ -535,17 +581,17 @@ class TeimXml(object):
             lst.append(word_ent.text)
         row_text = ' '.join(lst).strip()
 
-        #UA setta il tipo di numerazione delle linee
-        #inizio numerazione linea tipo lg
+        # UA setta il tipo di numerazione delle linee
+        # inizio numerazione linea tipo lg
         if row_text.find('<lg') > -1:
             self.type_line = self.LG_L
-        #fine numerazione riga tipo lg
+        # fine numerazione riga tipo lg
         if row_text.find('</lg>') > -1:
             self.type_line = self.LB
 
-        #tag numerazione righe
-        #aggiunge <lb/> all'inizio se la riga precedente
-        #non finisce con una parola spezzata
+        # tag numerazione righe
+        # aggiunge <lb/> all'inizio se la riga precedente
+        # non finisce con una parola spezzata
         if self.type_line == self.LB:
             if row_text.find('<w') > -1:
                 if not bl_in_word:
@@ -570,14 +616,14 @@ class TeimXml(object):
         try:
             f = StringIO()
             f.write(BODY_TOP)
-            #flag controllo a capo con parloa spezzata
+            # flag controllo a capo con parloa spezzata
             bl_in_word = False
             for row_ent in rows_entities:
                 self.row_num = row_ent.num
                 row_text = self.elab_row(row_ent, bl_in_word)
                 if row_text == '':
                     continue
-                #UA controlla se nella riga l'ultima parola contiene LB_TMP
+                # UA controlla se nella riga l'ultima parola contiene LB_TMP
                 # il flag per non far insrire <lb/> nella riga successiva
                 bl_in_word = row_text.find(self.LB_TMP) > -1
                 if bl_in_word:
@@ -587,9 +633,11 @@ class TeimXml(object):
             f.write(BODY_BOTTOM)
             src = f.getvalue()
             f.close()
+
             with open(self.path_out, "w+") as f:
                 f.write(src)
             os.chmod(self.path_out, 0o777)
+
             # controllo XML
             s, err = self.check_xml(src, "teimxml.py elab_rows()")
             # TODO da valutare controllo final XML

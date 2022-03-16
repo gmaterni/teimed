@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from pdb import set_trace
 import argparse
 import os
 import stat
@@ -11,12 +12,13 @@ import traceback
 from lxml import etree
 from teimedlib.txtbuilder import TxtBuilder
 from teimedlib.ualog import Log
-from pdb import set_trace
 
-__date__ = "09-07-2021"
-__version__ = "1.2.3"
+__date__ = "15-03-2022"
+__version__ = "0.2.4"
 __author__ = "Marta Materni"
 
+
+#FIXME  sostituire con libreria def make_dir_of_file(path):
 def make_dir_of_file(path):
     dirname = os.path.dirname(path)
     if dirname.strip() == '':
@@ -36,17 +38,21 @@ def make_dir(dirname):
         msg = f"ERROR make_dir{os.linesep}{s}"
         raise Exception(msg)
 
+
 def chmod(path):
     os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
 
+
 def pp(data, w=40):
-    s = pprint.pformat(data, indent=2, width=40)
+    s = pprint.pformat(data, indent=2, width=w)
     return s
+
 
 class Xml2Txt:
     """
     Estrae un file di testo da un file tei xml
-    """    
+    """
+
     def __init__(self,
                  path_xml='',
                  path_txt='',
@@ -59,6 +65,7 @@ class Xml2Txt:
         self.logerr = Log("w").open(path_err, 1).log
 
         self.txt_builder = None
+        self.w_liv = 1000
         self.trace = False
 
     def node_liv(self, node):
@@ -95,8 +102,8 @@ class Xml2Txt:
                 tag = tag[pid + 1:]
             return tag.strip()
         except Exception as e:
-            self.logerr.log("ERROR in xml")
-            self.logerr.log(str(e))
+            self.logerr("ERROR in xml")
+            self.logerr(str(e))
             return "XXX"
 
     def node_id(self, nd):
@@ -148,16 +155,23 @@ class Xml2Txt:
         if id != '':
             id_num = self.node_id_num(id)
             items['id_num'] = id_num
+        tag = self.node_tag(nd)
+        liv = self.node_liv(nd)
+        if tag == 'w':
+            self.w_liv = liv
+        if liv >= self.w_liv:
+            val = self.node_val(nd)
+        else:
+            val = ''
         js = {
             'id': id,
-            'liv': self.node_liv(nd),
-            'tag': self.node_tag(nd),
+            'liv': liv,
+            'tag': tag,
             'text': self.node_text(nd),
             'tail': self.node_tail(nd),
             'items': items,
             # 'keys': self.node_keys(nd)
-            # 'val': self.node_val(nd),
-            'val': "",
+            'val': val,
             'is_parent': self.node_is_parent(nd)
         }
         return js
@@ -171,16 +185,16 @@ class Xml2Txt:
         Returns:
             json: json=x_data + c_data + t_data
         """
-        x_data = self.get_node_data(nd)
+        nd_data = self.get_node_data(nd)
         txt_data = {
-            'id': x_data.get('id', 0),
-            'is_parent': x_data.get('is_parent', False),
-            'items': x_data.get('items', {}),
-            'liv': x_data.get('liv', 0),
-            'tag': x_data.get('tag', ''),
-            'text': x_data.get('text', ''),
-            'tail': x_data.get('tail', ''),
-            'val': x_data.get('val', ''),
+            'id': nd_data.get('id', 0),
+            'is_parent': nd_data.get('is_parent', False),
+            'items': nd_data.get('items', {}),
+            'liv': nd_data.get('liv', 0),
+            'tag': nd_data.get('tag', ''),
+            'text': nd_data.get('text', ''),
+            'tail': nd_data.get('tail', ''),
+            'val': nd_data.get('val', ''),
             't_i': 0,
             't_type': '',
             't_up': False,
@@ -197,14 +211,40 @@ class Xml2Txt:
             parser = etree.XMLParser(ns_clean=True)
             xml_root = etree.parse(self.path_xml, parser)
         except Exception as e:
-            self.logerr.log("ERROR teixml2txt.py write_txt() parse_xml")
-            self.logerr.log(e)
+            self.logerr("ERROR teixml2txt.py write_txt() parse_xml")
+            self.logerr(e)
             sys.exit(str(e))
         try:
             self.txt_builder = TxtBuilder()
             ########################
             for nd in xml_root.iter():
                 txt_data = self.build_txt_data(nd)
+
+                # 
+                # x_id = txt_data['id']
+                # if x_id == "Kch1p1w104":
+                #     # self.trace = True
+                #     pass
+                # if self.trace:
+                #     print(x_id)
+                #     print(pp(txt_data, 20))
+                #     tag = txt_data['tag']
+                #     if tag in ('w', 'expan','ex'):
+                #         xml = etree.tostring(nd,
+                #                              method='xml',
+                #                              xml_declaration=None,
+                #                              encoding='unicode',
+                #                              with_tail=True,
+                #                              pretty_print=False,
+                #                              standalone=None,
+                #                              doctype=None,
+                #                              exclusive=False,
+                #                              inclusive_ns_prefixes=None)
+                #         xml = xml.replace(os.linesep, '')
+                #         p = xml.find(f'<{tag}')
+                #         print(xml[p:])
+                #     set_trace()
+
                 self.txt_builder.add(txt_data)
             ########################
             self.txt_builder.elab()
@@ -214,18 +254,20 @@ class Xml2Txt:
                 f.write(txt)
             chmod(self.path_txt)
         except Exception as e:
-            self.logerr.log("ERROR teixml2txt.py write_html()")
-            self.logerr.log(e)
+            self.logerr("ERROR teixml2txt.py write_html()")
+            self.logerr(e)
             ou = StringIO()
             traceback.print_exc(file=ou)
             st = ou.getvalue()
             ou.close()
-            self.logerr.log(st)
+            self.logerr(st)
             sys.exit(1)
         return self.path_txt
 
+
 def do_main(xml, txt, wa='w'):
     Xml2Txt(xml, txt, wa).write_txt()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

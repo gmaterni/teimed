@@ -9,6 +9,7 @@ ERR = ["trovata ) che bilancia",
 
 
 def word_entities_log(rows_entities, path_out=None):
+
     def prn(msg):
         f.write(msg)
         f.write('\n')
