@@ -1279,6 +1279,7 @@ class TeimEdit(object):
 
 
     def elab_all(self):
+        self.remove_log()
         self.elab_teimxml()
         self.elab_teimsetid()
         self.elab_teimover()
