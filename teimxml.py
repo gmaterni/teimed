@@ -268,6 +268,8 @@ class TeimXml(object):
                       '</expan>',
                       '</hi>',
                       '</add>',
+                      '<gap>',
+                      '<gap'
                       '</space>',
                       '<space']
         w_add_tag = False
