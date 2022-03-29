@@ -151,7 +151,9 @@ def make_dir_of_file(path_x, mode=0o777):
             path = pth.Path(path_x)
         else:
             path = path_x
-        ps = path.parent.parts
+        path_abs=path.absolute()
+        path_abs_parent=path_abs.parent
+        ps = path_abs_parent.parts
         path_dir_s = ps[0]
         path_dir = pth.Path(path_dir_s)
         path_dir.mkdir(exist_ok=True)
@@ -162,5 +164,5 @@ def make_dir_of_file(path_x, mode=0o777):
             path_dir.mkdir(exist_ok=True)
             chmod(path_dir_s, mode)
     except Exception as e:
-        msg = f"ERROR make_dir_of_file()\n{e}"
+        msg = f"ERROR make_dir_of_file() {path_x}\n{e}"
         raise(Exception(msg))
