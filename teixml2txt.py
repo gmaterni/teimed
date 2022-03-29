@@ -3,8 +3,8 @@
 from pdb import set_trace
 import argparse
 import os
-import stat
-from io import StringIO
+# import stat
+# from io import StringIO
 import pprint
 import re
 import sys
@@ -14,34 +14,30 @@ from teimedlib.txtbuilder import TxtBuilder
 from teimedlib.ualog import Log
 import teimedlib.pathutils as ptu
 
-__date__ = "26-03-2022"
-__version__ = "0.2.6"
+__date__ = "29-03-2022"
+__version__ = "0.2.7"
 __author__ = "Marta Materni"
 
 
-#sostituire con libreria def make_dir_of_file(path):
+# sostituire con libreria def make_dir_of_file(path):
 # def make_dir_of_file(path):
-    # dirname = os.path.dirname(path)
-    # if dirname.strip() == '':
-    #     return
-    # make_dir(dirname)
+# dirname = os.path.dirname(path)
+# if dirname.strip() == '':
+#     return
+# make_dir(dirname)
 
 # def make_dir(dirname):
-    # try:
-    #     if not os.path.isdir(dirname):
-    #         os.mkdir(dirname)
-    #         os.chmod(dirname, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
-    #         return True
-    #     else:
-    #         return False
-    # except Exception as e:
-    #     s = str(e)
-    #     msg = f"ERROR make_dir{os.linesep}{s}"
-    #     raise Exception(msg)
-
-
-def chmod(path):
-    os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
+# try:
+#     if not os.path.isdir(dirname):
+#         os.mkdir(dirname)
+#         os.chmod(dirname, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
+#         return True
+#     else:
+#         return False
+# except Exception as e:
+#     s = str(e)
+#     msg = f"ERROR make_dir{os.linesep}{s}"
+#     raise Exception(msg)
 
 
 def pp(data, w=40):
@@ -221,7 +217,7 @@ class Xml2Txt:
             for nd in xml_root.iter():
                 txt_data = self.build_txt_data(nd)
 
-                # 
+                #
                 # x_id = txt_data['id']
                 # if x_id == "Kch1p1w104":
                 #     # self.trace = True
@@ -253,21 +249,20 @@ class Xml2Txt:
             ptu.make_dir_of_file(self.path_txt)
             with open(self.path_txt, self.write_append) as f:
                 f.write(txt)
-            chmod(self.path_txt)
+            #os.chmod(self.path_txt, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
         except Exception as e:
-            self.logerr("ERROR teixml2txt.py write_html()")
-            self.logerr(e)
-            ou = StringIO()
-            traceback.print_exc(file=ou)
-            st = ou.getvalue()
-            ou.close()
-            self.logerr(st)
-            sys.exit(1)
+            msg = f"{self.path_txt}\n{e}"
+            self.logerr(f"ERROR teixml2txt.py write_txt()\n{msg}")
+            #sys.exit(1)
+            raise Exception(e)
         return self.path_txt
 
 
 def do_main(xml, txt, wa='w'):
-    Xml2Txt(xml, txt, wa).write_txt()
+    try:
+        Xml2Txt(xml, txt, wa).write_txt()
+    except Exception as e:
+        raise Exception(e)
 
 
 if __name__ == "__main__":

@@ -35,8 +35,8 @@ from teimsetid import do_main as do_main_setid
 from teimxml import do_main as do_main_xml
 from teixml2txt import do_main as do_main_xml2txt
 
-__date__ = "10-03-2022"
-__version__ = "1.2.3"
+__date__ = "30-03-2022"
+__version__ = "1.2.4"
 __author__ = "Marta Materni"
 
 
@@ -235,10 +235,27 @@ class TeimEdit(object):
     ####################################
 
     def write_file(self, path, text):
-        if isinstance(path, str):
-            path = ptu.str2path(path)
-        path.write_text(text)
-        self.chmod(path)
+        # if isinstance(path, str):
+        #     path = ptu.str2path(path)
+        # path.write_text(text)
+        if not isinstance(path, str):
+             path = ptu.path2str(path)
+             print(f"WARNING write_file {path}")
+        try:
+            with open("path","w") as f:
+                f.write(text)
+        except IOError as e:
+            log_err.log(f"ERROR write_file() {path}\n{e}")
+            self.top_free()
+            mbox.showerror("", f"{path}\n{e}")
+            return
+        # self.chmod(path)
+        # try:
+        #     ptu.chmod(path)
+        # except Exception as e:
+        #     log_err.log(f"ERROR {path}\n{e}")
+        #     self.top_free()
+        #     mbox.showerror("", f"{path}\n{e}")
 
     def read_file(self, path):
         if isinstance(path, str):
@@ -251,16 +268,18 @@ class TeimEdit(object):
             s = f.read()
         return s
 
-    def chmod(self, path):
-        if isinstance(path, str):
-            path = ptu.str2path(path)
-        try:
-            ptu.chmod(path)
-        except Exception as e:
-            log_err.log(f"ERROR chmod() {path}\n{e}")
-            self.top_free()
-            mbox.showerror("", f"ERROR {path}")
-
+    # def chmod(self, path):
+    #     #AAA if isinstance(path, str):
+    #     #     path = ptu.str2path(path)
+    #     # try:
+    #     #     ptu.chmod(path)
+    #     try:
+    #         ptu.chmod(path)
+    #     except Exception as e:
+    #         log_err.log(f"ERROR chmod() {path}\n{e}")
+    #         self.top_free()
+    #         mbox.showerror("", f"{path}\n{e}")
+         
     def read_text_file(self):
         if self.path_text_s == '':
             return
@@ -1262,10 +1281,11 @@ class TeimEdit(object):
         try:
             do_main_xml2txt(self.path_xml2txt_in_s,
                             self.path_xml2txt_out_s)
-        except SystemExit as e:
+        except Exception as e:
             msg = f"ERROR Elab. xml2txt()\n{e} "
             log_err.log(msg)
-            self.show_log_top(msg, True)
+            self.show_log(msg, True)
+            mbox.showerror("", f"{e}")
             return
         ls = ["XML => text",
               f"{self.path_xml2txt_in_s}",
