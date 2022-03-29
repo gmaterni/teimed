@@ -586,7 +586,7 @@ class TeimOverFlow(object):
 
         # salva xml formattato
         try:
-            xml_path = self.path_out.replace("over.xml", "over_format.xml")
+            xml_path = self.path_out.replace("_over.xml", "_over_format.xml")
             xmf.do_main(self.path_out, xml_path, False)
         except Exception:
             pass

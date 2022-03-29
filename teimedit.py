@@ -1355,7 +1355,7 @@ class TeimEdit(object):
     #
 
     def show_note_out(self):
-        format_path=self.path_over_note_s.replace("_note.xml","_note_format.xml")
+        format_path=self.path_note_out_s.replace("_note.xml","_note_format.xml")
         #AAA self.read_log_file(self.path_note_out_s)
         self.read_log_file(format_path)
 

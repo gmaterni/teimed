@@ -10,9 +10,10 @@ import shutil
 import teimedlib.teim_paths as tpth
 from teimedlib.ualog import Log
 from teimedlib.xml_const import *
+import teimxmlformat as xmf
 
-__date__ = "09-09-2021"
-__version__ = "1.1.0"
+__date__ = "29-09-2021"
+__version__ = "1.1.1"
 __author__ = "Marta Materni"
 
 
@@ -99,6 +100,15 @@ class TeimNote(object):
             msg=f'ERROR teimnote.py add_to_xml()\n{e}'
             self.log_err(msg)
             sys.exit(msg)
+
+        # salva xml formattato
+        try:
+            xml_path = self.path_out.replace("_note.xml", "_note_format.xml")
+            xmf.do_main(self.path_out, xml_path, True)
+        except Exception:
+            pass
+
+
 
 def do_main(path_text, path_note):
     teimnote = TeimNote(path_text, path_note)
