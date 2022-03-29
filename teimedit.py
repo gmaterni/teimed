@@ -1274,7 +1274,7 @@ class TeimEdit(object):
               f"{self.path_xml2txt_out_s}"]
         self.show_log_lift(os.linesep.join(ls), True)
 
-        #XXX text = self.read_file(self.path_xml2txt_out_s)
+        #text = self.read_file(self.path_xml2txt_out_s)
         # self.show_win2(text)
 
 

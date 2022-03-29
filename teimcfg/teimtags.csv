@@ -127,6 +127,8 @@ abbr|to|<expan corresp="#ab-sus-to">t<ex>r</ex>o</expan>
 abbr|tu|<expan corresp="#ab-sus-tu">t<ex>r</ex>u</expan>
 abbr|gi|<expan corresp="#ab-sus-gi">g<ex>r</ex>i</expan>
 abbr|ge|<expan corresp="#ab-sus-ge">g<ex>r</ex>e</expan>
+abbr|gno|<expan corresp="#ab-sus-gno">g<ex>n</ex>o</expan>
+abbr|gni|<expan corresp="#ab-sus-gni">g<ex>n</ex>i</expan>
 
 abbr|7|<expan corresp="#ab-tir-7"><ex>et</ex></expan>
 abbr|7b|<expan corresp="#ab-tir-7barr"><ex>et</ex></expan>
@@ -142,6 +144,7 @@ abbr|qz|<expan corresp="#ab-qe-encl">q<ex>ue</ex></expan>
 abbr|m|<expan corresp="#ab-tild-nas"><ex>m</ex></expan>
 abbr|n|<expan corresp="#ab-tild-nas"><ex>n</ex></expan>
 abbr|en|<expan corresp="#ab-tild-nas"><ex>en</ex></expan>
+abbr|on|<expan corresp="#ab-tild-nas"><ex>on</ex></expan>
 abbr|pre|<expan corresp="#ab-tild-p">p<ex>re</ex></expan>
 abbr|que|<expan corresp="#ab-tild-q">q<ex>ue</ex></expan>
 abbr|Que|<expan corresp="#ab-tild-Q">Q<ex>ue</ex></expan>
@@ -236,7 +239,7 @@ mod|ò|<c ana= "#diacr-desamb">o</c>
 mod|À|<c ana="#diacr-desamb">A</c>
 
 mod|*V|<c ana="#lram-c">V</c>
-mod|*J|<c ana="#lram-c">J</c>
+mod|*I|<c ana="#lram-c">J</c>
 mod|*u|<c ana="#lram-c">u</c>
 mod|*i|<c ana="#lram-c">i</c>
 mod|^V|<c ana="#lram-v">V</c>
@@ -247,8 +250,8 @@ mod|^j|<c ana="#lram-v">j</c>
 
 corr|sic|<sic><w>$</w></sic>
 corr|corr|<choice><sic><w>$</w></sic><corr><w>$</w></corr></choice>
-corr|corr-12|<choice><sic><w>$</w></sic><corr><w>$</w><w>$</w></corr></choice>
-corr|corr-21|<choice><sic><w>$</w><w>$</w></sic><corr><w>$</w></corr></choice>
+corr|corr12|<choice><sic><w>$</w></sic><corr><w>$</w><w>$</w></corr></choice>
+corr|corr21|<choice><sic><w>$</w><w>$</w></sic><corr><w>$</w></corr></choice>
 
 corr|corr-ditt|<choice><sic ana="#ditt">$</sic><corr>$</corr></choice>
 corr|corr-hapl|<choice><sic ana="#hapl">$</sic><corr>$</corr></choice>
