@@ -13,9 +13,10 @@ import stat
 from teimedlib.ualog import Log
 from teimedlib.readovertags import read_tags_over_sorted
 from teimedlib.teim_paths import *
+import teimxmlformat as xmf
 
-__date__ = "10-03-2022"
-__version__ = "1.1.0"
+__date__ = "29-03-2022"
+__version__ = "0.2.1"
 __author__ = "Marta Materni"
 
 
@@ -324,8 +325,8 @@ class TeimOverFlow(object):
             # log_cl = self.row_js[self.LCL]
             log_cl = self.row_tag_over_js[self.CL]
             xml = self.xml2str(nd).strip()
-            e = f"ERROR 2 missing {log_cl}"
-            s = '{:<30}{}'.format(e, xml)
+            e = f"\nERROR 2 missing {log_cl}"
+            s = '{:<20}{}'.format(e, xml)
             self.logspan(s)
             self.logspan("")
             self.row_tag_over_js[self.OPEN_CLOSE] -= 1
@@ -424,26 +425,26 @@ class TeimOverFlow(object):
             l = nd_data['liv']
             if l < 3:
                 continue
-            id_=nd_data.get('id','XXX')
-            if id_=='Kch3p1w978':
-                # trace=True
-                # LGDB(pp(nd_data))
-                # set_trace()
-                pass
-            if not tag.lower() in ['w', 'pc', 'gap','persname','geogname','placename']:
+            id_ = nd_data.get('id', 'XXX')
+            # if id_ == 'Kch3p1w978':
+            #     # trace=True
+            #     # LGDB(pp(nd_data))
+            #     # set_trace()
+            #     pass
+            if not tag.lower() in ['w', 'pc', 'gap', 'persname', 'geogname', 'placename']:
                 continue
             val = nd_data['val'].strip()
             text = nd_data['text'].strip()
             tail = nd_data['tail'].strip()
-            if tag.lower() in ['persname','geogname','placename']:
-                src=tail
+            if tag.lower() in ['persname', 'geogname', 'placename']:
+                src = tail
             else:
-                src=val+tail
+                src = val+tail
             nd_last = nd
             op_ = self.row_tag_over_js[self.OP]
             cl_ = self.row_tag_over_js[self.CL]
             # if len(text)> len(val) :
-            #LGDB(f'----------')
+            # LGDB(f'----------')
             #     LGDB(f"op_cl:{op_} {cl_}\nnode:\n{pp(nd_data)}")
             # continue
             if self.find_tag_from(src):
@@ -473,7 +474,7 @@ class TeimOverFlow(object):
             # set_trace()
             self.control_open(nd_last)
             self.log_open(nd_last)
-            msg=f"ERROR OVERFLOW \n{pp(self.row_js)}\n{pp(nd_data)}"
+            msg = f"ERROR OVERFLOW \n{pp(self.row_js)}\n{pp(nd_data)}"
             self.logerr(msg)
             # UA  controllo errore temporaneo
             input("ERROR W teimover.py overflow")
@@ -483,23 +484,20 @@ class TeimOverFlow(object):
     def add_xml_span(self, nd, sp_data):
         parent_node = self.get_span_parent(nd)
         if parent_node is None:
-            self.logerr(
-                "ERROR 5 add_span() parent node <div>  Not Found.")
+            self.logerr("ERROR 5 add_span() parent node <div>  Not Found.")
             sys.exit(1)
         from_id = sp_data[self.DATA_FROM]
         to_id = sp_data[self.DATA_TO]
         tp = sp_data[self.DATA_TYPE]
         s = f'<span from="{from_id}" to="{to_id}" type="{tp}" />'
         if from_id.strip() == "":
-            self.logerr(f"ERROR X {tp} not open")
+            self.logerr(f"\nERROR X {tp} not open")
             self.logerr(s)
             self.logerr("")
         if to_id.strip() == "":
-            self.logerr(f"ERROR Y {tp} not close")
+            self.logerr(f"\nERROR Y {tp}  not close")
             self.logerr(s)
             self.logerr("")
-        # log di xml span
-        # self.logspan(s)
         span = etree.XML(s)
         parent_node.append(span)
 
@@ -586,10 +584,17 @@ class TeimOverFlow(object):
             f.write(xml)
         os.chmod(self.path_out, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
 
+        # salva xml formattato
+        try:
+            xml_path = self.path_out.replace("over.xml", "over_format.xml")
+            xmf.do_main(self.path_out, xml_path, False)
+        except Exception:
+            pass
+
 
 def do_main(path_text,  path_csv):
     TeimOverFlow(path_text, path_csv)
-    # add_span_to_xml()
+    # self.add_xml_span_overflow_list(path_csv)
 
 
 if __name__ == "__main__":

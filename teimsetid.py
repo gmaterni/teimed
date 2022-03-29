@@ -13,9 +13,10 @@ from teimedlib.xml_const import *
 from teimedlib.ualog import Log
 from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
+import teimxmlformat as xmf
 
-__date__ = "08-02-2022"
-__version__ = "1.4.11"
+__date__ = "29-03-2022"
+__version__ = "1.4.13"
 __author__ = "Marta Materni"
 
 """
@@ -141,8 +142,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         self.tgid_js = {}
         self.flags_id = {}
 
-        #UA input_err
-        #self.input_err_active = True
+        #AAA self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):
@@ -611,6 +611,14 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             self.log_err(msg)
             sys.exit(msg)
 
+        # salva xml formattato
+        try:
+            xml_path = self.path_out.replace("_id.xml", "_id_format.xml")
+            xmf.do_main(self.path_out, xml_path, False)
+        except Exception:
+            pass
+
+
     def update_xml(self):
         # legge tags
         self.read_csv()
@@ -619,7 +627,6 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         # setttate in self.flags_id
         rows = self.read_flags_id()
         self.set_flags_id(rows)
-
         self.parse_xml()
         self.numerate_xml_id()
         last_chp = self.numerate_xml_chapter()

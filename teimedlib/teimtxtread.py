@@ -8,8 +8,8 @@ import io
 from teimedlib.ualog import Log
 from teimedlib.teim_paths import *
 
-__date__ = "10-03-2022"
-__version__ = "1.2.1"
+__date__ = "29-03-2022"
+__version__ = "1.2.2"
 __author__ = "Marta Materni"
 
 """
@@ -174,7 +174,6 @@ class TeimTxtRead(object):
         rows = []
         try:
             fr = open(self.path_text, "r")
-            print(self.path_text)
             # HEACK while (row := fr.readline()) != '':
             while True:
                 row = fr.readline()

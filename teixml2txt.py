@@ -12,14 +12,14 @@ import traceback
 from lxml import etree
 from teimedlib.txtbuilder import TxtBuilder
 from teimedlib.ualog import Log
-import teimedlib.write_path as wrpt
+import teimedlib.pathutils as ptu
 
-__date__ = "15-03-2022"
-__version__ = "0.2.5"
+__date__ = "26-03-2022"
+__version__ = "0.2.6"
 __author__ = "Marta Materni"
 
 
-#XXX  sostituire con libreria def make_dir_of_file(path):
+#sostituire con libreria def make_dir_of_file(path):
 # def make_dir_of_file(path):
     # dirname = os.path.dirname(path)
     # if dirname.strip() == '':
@@ -250,8 +250,7 @@ class Xml2Txt:
             ########################
             self.txt_builder.elab()
             txt = self.txt_builder.txt
-            #XXX wrpt
-            wrpt.make_dir_of_file(self.path_txt)
+            ptu.make_dir_of_file(self.path_txt)
             with open(self.path_txt, self.write_append) as f:
                 f.write(txt)
             chmod(self.path_txt)

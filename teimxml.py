@@ -111,8 +111,7 @@ class TeimXml(object):
 
         self.trace = False
 
-        # UA input_err
-        #self.input_err_active = True
+        #AAA self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):

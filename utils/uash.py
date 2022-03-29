@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import teimedlib.write_path as wp
+import teimedlib.pathutils as ptu
 
 """
 scrittura comandi
@@ -17,7 +17,9 @@ def write_cmd(lst):
     # path = os.path.join(path_bin(), name)
     print(name)
     print(cmd)
-    wp.write_path_file(name, cmd)
+    ptu.make_dir_of_file(name)
+    with open(name,"w") as f:
+        f.write(cmd)
 
 
 if len(sys.argv) > 1:

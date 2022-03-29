@@ -134,7 +134,7 @@ PARENT_TEIMCFG = "."
 TEIMEDIT_LOG = "log/teimedit.log"
 rc = UaRc('.teimeditrc')
 log_err = Log("w")
-os_name=platform.system().lower()
+os_name = platform.system().lower()
 
 
 class TeimEdit(object):
@@ -154,7 +154,8 @@ class TeimEdit(object):
         log_err.open(self.path_edit_err_s, 1)
         log_err.log('')
         # rc init
-        self.parent_teimcfg_s = rc.upd(RC_PARENT_TEIMCFG, parent_teimcfg,PARENT_TEIMCFG)
+        self.parent_teimcfg_s = rc.upd(
+            RC_PARENT_TEIMCFG, parent_teimcfg, PARENT_TEIMCFG)
         # x = rc.upd(RC_ROOT_DIR, root_dir)
         # self.root_dir_p = ptu.str2path(x)
         # self.path_match_s = rc.upd(RC_PATH_MATCH, path_match)
@@ -234,7 +235,6 @@ class TeimEdit(object):
     ####################################
 
     def write_file(self, path, text):
-        # AAA verificare se utilizzare file_uitl.write
         if isinstance(path, str):
             path = ptu.str2path(path)
         path.write_text(text)
@@ -337,7 +337,6 @@ class TeimEdit(object):
             mbox.showerror("", f"{TEIMCFG}\nNot Foud")
             sys.exit(msg)
 
-
     def find_file_text(self):
         """
             se si usa una wilcard cerca nalla root_dir
@@ -353,7 +352,7 @@ class TeimEdit(object):
             return
         # match_file è una wilcard
         try:
-            file_p_lst = find_file_lst(None,match_file)
+            file_p_lst = find_file_lst(None, match_file)
             file_s_lst = ptu.pathlist2strlist(file_p_lst)
             le = len(file_p_lst)
             if le == 0:
@@ -1101,8 +1100,7 @@ class TeimEdit(object):
             msg = f"ERROR Elab entities\n{e}"
             log_err.log(msg)
             self.show_log_top(msg, True)
-            return        
-        #AAA msg = self.read_file(self.path_teim_out_s)
+            return
         msg = self.read_file(self.path_teim_log_s)
         self.show_win1(msg)
 
@@ -1141,11 +1139,11 @@ class TeimEdit(object):
             do_main_over(self.path_over_in_s,
                          self.path_over_csv_s)
         except SystemExit as e:
-            msg = f"Elaborare overflow {os.linesep} {e}"
+            msg = f"Elaborazione overflow {os.linesep} {e}"
             log_err.log(msg)
             self.show_log_top(msg, True)
             return
-        ls = ["    Eelab. overflow",
+        ls = ["Elab. overflow",
               f"{self.path_over_in_s}",
               f"{self.path_over_out_s}",
               f"{self.path_over_csv_s}"]
@@ -1277,7 +1275,6 @@ class TeimEdit(object):
         #text = self.read_file(self.path_xml2txt_out_s)
         # self.show_win2(text)
 
-
     def elab_all(self):
         self.remove_log()
         self.elab_teimxml()
@@ -1334,7 +1331,9 @@ class TeimEdit(object):
     #
 
     def show_setwid_out(self):
-        self.read_log_file(self.path_id_out_s)
+        format_path=self.path_id_out_s.replace("_id.xml","_id_format.xml")
+        #AAA self.read_log_file(self.path_id_out_s)
+        self.read_log_file(format_path)
 
     def show_setwid_log(self):
         self.read_log_file(self.path_id_log_s)
@@ -1344,7 +1343,9 @@ class TeimEdit(object):
     #
 
     def show_over_out(self):
-        self.read_log_file(self.path_over_out_s)
+        format_path=self.path_over_out_s.replace("_over.xml","_over_format.xml")
+        #AAA self.read_log_file(self.path_over_out_s)
+        self.read_log_file(format_path)
 
     def show_over_log(self):
         self.read_log_file(self.path_over_log_s)
@@ -1354,7 +1355,9 @@ class TeimEdit(object):
     #
 
     def show_note_out(self):
-        self.read_log_file(self.path_note_out_s)
+        format_path=self.path_over_note_s.replace("_note.xml","_note_format.xml")
+        #AAA self.read_log_file(self.path_note_out_s)
+        self.read_log_file(format_path)
 
     # def show_note_log(self):
     #     self.read_log_file(self.path_note_log_s)
@@ -1517,7 +1520,7 @@ class TeimEdit(object):
             wg = win.winfo_geometry()
             wd, hxy = wg.split('x')
             he, x, y = hxy.split('+')
-            if os_name=='linux':
+            if os_name == 'linux':
                 x = str(int(x)-3)
                 y = str(int(y)-73)
             return f'{wd}x{he}+{x}+{y}'
@@ -1547,6 +1550,7 @@ def do_main(parent_teimcfg, root_dir, path_match):
 
 def prn_help():
     print(HELP_RUN_OPS())
+
 
 if __name__ == "__main__":
     le = len(sys.argv)
