@@ -1051,7 +1051,7 @@ class TeimEdit(object):
                 s=f"{txt.strip()}"
                 #log_err.log(s)
                 self.show_log_lift(s, True)
-            ]log_err.log(f"{self.tag_num_debug}")
+            #log_err.log(f"{self.tag_num_debug}")
             self.show_log_lift(f"{self.tag_num_debug}", True)
 
     def fin_entity_comma(self):
