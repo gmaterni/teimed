@@ -14,8 +14,8 @@ from teimedlib.textentities_log import *
 from teimedlib.xml_const import *
 from teimedlib.teim_paths import *
 
-__date__ = "16-03-2022"
-__version__ = "1.6.2"
+__date__ = "30-03-2022"
+__version__ = "1.6.3"
 __author__ = "Marta Materni"
 
 """
@@ -133,7 +133,7 @@ class TeimXml(object):
             # ename=entity.name.replace('&','').replace(';','')
             # tag=self.text_entities.get_tag_csv(ename,"?")
             # set_trace()
-            self.log_err(f'\nERROR A numero argomenti')
+            self.log_err(f'\nERROR_0 numero argomenti')
             self.log_err(f'row num.  : {self.row_num}')
             self.log_err(f'text      : {entity.src}')
             self.log_err(f'tag name  : {entity.tag_name}')
@@ -324,17 +324,17 @@ class TeimXml(object):
             le = len(text)
             msubst1 = re.search(psubst1, text)
             if msubst1 is None:
-                raise Exception(f'\nERROR 0 </subst> Not Found')
+                raise Exception(f'\nERROR_1 </subst> Not Found')
             if (msubst0.start() > 0) or (msubst1.end() < le):
                 text = f'<w>{text}</w>'
                 return text
 
             mdel0 = re.search(pdel0, text)
             if mdel0 is None:
-                raise Exception(f'\nERROR 1 <del .. Not Found')
+                raise Exception(f'\nERROR_2 <del .. Not Found')
             mdel1 = re.search(pdel1, text)
             if mdel1 is None:
-                raise Exception(f'\nERROR 2 </del> Not Found')
+                raise Exception(f'\nERROR_3 </del> Not Found')
             s0 = text[:mdel0.end()]
             s1 = text[mdel0.end():mdel1.start()]
             s2 = text[mdel1.start():]
@@ -342,16 +342,16 @@ class TeimXml(object):
 
             madd0 = re.search(padd0, text)
             if madd0 is None:
-                raise Exception(f'\nERROR 3 <add .. Not Found')
+                raise Exception(f'\nERROR_4 <add .. Not Found')
             madd1 = re.search(padd1, text)
             if madd1 is None:
-                raise Exception(f'\nERROR 4  </add> Not Found')
+                raise Exception(f'\nERROR_5  </add> Not Found')
             s0 = text[:madd0.end()]
             s1 = text[madd0.end():madd1.start()]
             s2 = text[madd1.start():]
             text = f'{s0}<w>{s1}</w>{s2}'
         except Exception as e:
-            self.log_err('\nERROR 5  subst_add_w()\n{e}')
+            self.log_err('\nERROR_6  subst_add_w()\n{e}')
             self.log_err(f"row.num: {self.row_num}")
             self.log_err(f'{text}\n')
             self.input_err('subst_add_w>')
@@ -382,7 +382,7 @@ class TeimXml(object):
             le = len(text)
             msupplied1 = re.search(psupplied1, text)
             if msupplied1 is None:
-                raise Exception(f'\nERROR 51 </supplied> Not Found')
+                raise Exception(f'\nERROR_7 </supplied> Not Found')
             if (msupplied0.start() > 0) or (msupplied1.end() < le):
                 text = f'<w>{text}</w>'
                 return text
@@ -391,7 +391,7 @@ class TeimXml(object):
             s2 = text[msupplied1.start():]
             text = f'{s0}<w>{s1}</w>{s2}'
         except Exception as e:
-            self.log_err('\nERROR 6 supplied_add_w()\n{e}')
+            self.log_err('\nERROR_8 supplied_add_w()\n{e}')
             self.log_err(f"row.num: {self.row_num}")
             self.log_err(f'{text}\n')
             self.input_err('supplied_add_w>')
@@ -563,7 +563,7 @@ class TeimXml(object):
                 self.input_err('set_attr_word>')
 
         if word_ent.text.find('&') > 0:
-            self.log_err("\nERROR 7 elab_word_entities()\n& error")
+            self.log_err("\nERROR_9 elab_word_entities()\n& error")
             self.log_err(f"row.num: {self.row_num}")
             self.log_err(f'({word_ent.num})  {word_ent.text}')
             self.log_err('\n')
@@ -610,7 +610,7 @@ class TeimXml(object):
         try:
             rows_entities = self.text_entities.get_rows_entities()
         except Exception as e:
-            msg = f'\nERROR 8 elab_rows() 1\n {e}'
+            msg = f'\nERROR_10 elab_rows()\n{e}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -649,7 +649,7 @@ class TeimXml(object):
             #     s=os.linesep.join(rs)
             #     self.log_err(f'\n{s}')
         except Exception as e:
-            msg = f'\nERROR 9 elab_rows() 2\n {e}'
+            msg = f'\nERROR_11 elab_rows()\n {e}'
             self.log_err(msg)
             sys.exit(msg)
 
