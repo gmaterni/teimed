@@ -242,7 +242,7 @@ class TeimEdit(object):
              path = ptu.path2str(path)
              print(f"WARNING write_file {path}")
         try:
-            with open("path", "w") as f:
+            with open(path, "w") as f:
                 f.write(text)
         except IOError as e:
             log_err.log(f"ERROR write_file() {path}\n{e}")
@@ -1116,6 +1116,7 @@ class TeimEdit(object):
     #############
     # UA menu elab
     #############
+
     def elab_teimxml(self):
         msg=self.get_edit_text()
         self.write_file(self.path_teim_in_s, msg)
@@ -1142,8 +1143,7 @@ class TeimEdit(object):
             mbox.showinfo("", f"Before Elab. Entity", parent=self.win0)
             return
         try:
-            last=do_main_setid(self.path_id_in_s,
-                                 self.path_xmlid_csv_s)
+            last=do_main_setid(self.path_id_in_s, self.path_xmlid_csv_s)
         except SystemExit as e:
             s=f"Errro in set id{os.linesep} {e}"
             log_err.log(s)
@@ -1162,10 +1162,9 @@ class TeimEdit(object):
             mbox.showinfo("", f"Before Elab. Set id", parent=self.win0)
             return
         try:
-            do_main_over(self.path_over_in_s,
-                         self.path_over_csv_s)
+            do_main_over(self.path_over_in_s, self.path_over_csv_s)
         except SystemExit as e:
-            msg=f"Elaborazione overflow {os.linesep} {e}"
+            msg=f"Elab. Overflow {os.linesep} {e}"
             log_err.log(msg)
             self.show_log_top(msg, True)
             return
@@ -1188,7 +1187,7 @@ class TeimEdit(object):
             log_err.log(msg)
             self.show_log_top(msg, True)
             return
-        ls=["    Elab. Note",
+        ls=["Elab. Note",
               f"{self.path_note_in_s}",
               f"{self.path_note_out_s}",
               f"{self.path_note_csv_s}"]
@@ -1282,7 +1281,6 @@ class TeimEdit(object):
 
     def elab_xml2txt(self):
         if not ptu.exists(self.path_xml2txt_in_s):
-            self.top_free()
             mbox.showinfo("", f"Before Elab. Note", parent=self.win0)
             return
         try:
