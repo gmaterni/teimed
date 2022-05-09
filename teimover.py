@@ -418,59 +418,42 @@ class TeimOverFlow(object):
         # input('js')
         for nd in self.root_xml.iter():
             trace = False
-            nd_data = self.get_node_data(nd)
-            tag = nd_data['tag']
+            tag=self.node_tag(nd)
+            tag=tag.lower()
             if tag == "body":
                 continue
-            l = nd_data['liv']
+            l=self.node_liv(nd)
             if l < 3:
                 continue
-            # id_ = nd_data.get('id', 'XXX')
-            # if id_ == 'Kch3p1w978':
-            #     # trace=True
-            #     # LGDB(pp(nd_data))
-            #     # set_trace()
-            if not tag.lower() in ['w', 'pc', 'gap', 'persname', 'geogname', 'placename']:
+            if not tag in ['w', 'pc', 'gap', 'persname', 'geogname', 'placename']:
                 continue
+            nd_data=self.get_node_data(nd)
             val = nd_data['val'].strip()
-            text = nd_data['text'].strip()
+            # text = nd_data['text'].strip()
             tail = nd_data['tail'].strip()
-            if tag.lower() in ['persname', 'geogname', 'placename']:
+            if tag in ['persname', 'geogname', 'placename']:
                 src = tail
             else:
                 src = val+tail
             nd_last = nd
-            # op_ = self.row_tag_over_js[self.OP]
-            # cl_ = self.row_tag_over_js[self.CL]
-            # if len(text)> len(val) :
-            # LGDB(f'----------')
-            #     LGDB(f"op_cl:{op_} {cl_}\nnode:\n{pp(nd_data)}")
-            # continue
             if self.find_tag_from(src):
-                #LGDB(f"F {op_} {cl_} src:{src}")
                 self.set_from_id(nd_data)
                 self.control_open(nd)
                 self.log_open(nd)
             if self.find_tag_to(src):
                 # il testo coincide con il tag
                 if src == self.row_tag_over_js[self.CL]:
-                    #LGDB(f"T0 {op_} {cl_} src:{src}")
                     nd_prev = self.get_prev(nd)
                     nd_data = self.get_node_data(nd_prev)
                     self.set_to_id(nd_data)
                     self.control_close(nd)
                     self.log_close(nd)
                 else:
-                    #LGDB(f"T1 {op_} {cl_} src:{src}")
                     self.set_to_id(nd_data)
                     self.control_close(nd)
                     self.log_close(nd)
-            # LGDB(f'span:\n{pp(self.span_data)}')
-            # LGDB(pp(self.key_span_data))
-            # input("?")
+
         if self.row_tag_over_js[self.OPEN_CLOSE] > 0:
-            # input(self.row_js[self.OPEN_CLOSE])
-            # set_trace()
             self.control_open(nd_last)
             self.log_open(nd_last)
             msg = f"ERROR OVERFLOW \n{pp(self.row_js)}\n{pp(nd_data)}"
