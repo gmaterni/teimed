@@ -15,8 +15,8 @@ from teimedlib.readovertags import read_tags_over_sorted
 from teimedlib.teim_paths import *
 import teimxmlformat as xmf
 
-__date__ = "29-03-2022"
-__version__ = "0.2.1"
+__date__ = "10-05-2022"
+__version__ = "0.2.2"
 __author__ = "Marta Materni"
 
 
@@ -612,6 +612,6 @@ if __name__ == "__main__":
                         dest="csv",
                         required=True,
                         metavar="",
-                        help="-c <file csv dei tag>")
+                        help="-c <teimoverflow.csv> (file dei tags overflow)")
     args = parser.parse_args()
     do_main(args.src, args.csv)
