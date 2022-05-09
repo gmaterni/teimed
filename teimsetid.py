@@ -15,8 +15,8 @@ from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 import teimxmlformat as xmf
 
-__date__ = "29-03-2022"
-__version__ = "1.4.13"
+__date__ = "10-53-2022"
+__version__ = "1.4.14"
 __author__ = "Marta Materni"
 
 """
@@ -671,7 +671,7 @@ if __name__ == "__main__":
                         required=True,
                         default=" ",
                         metavar="",
-                        help="-t <file.csv> (tags per gestione id)")
+                        help="-t <teimxmlid.csv> (tags per gestione id)")
     args = parser.parse_args()
     last = do_main(args.src, args.tag)
     print(last)
