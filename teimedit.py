@@ -35,8 +35,8 @@ from teimsetid import do_main as do_main_setid
 from teimxml import do_main as do_main_xml
 from teixml2txt import do_main as do_main_xml2txt
 
-__date__ = "31-03-2022"
-__version__ = "1.2.5"
+__date__ = "10-05-2022"
+__version__ = "1.2.6"
 __author__ = "Marta Materni"
 
 
@@ -439,7 +439,6 @@ class TeimEdit(object):
             # prepara la tabella per la gestione del menu
             self.tag_over_lst = chk.fill_tag_over_lst(lst)
             self.add_mv_check()
-
         except Exception as e:
             msg = f"ERROR set_teimcfg_paths()\n {e}"
             log_err.log(msg)
@@ -527,7 +526,7 @@ class TeimEdit(object):
     def add_mv_check(self):
         # lst.append([func_type,name,so,sc,po,pc])
         lst = self.tag_over_lst
-        if lst is None:
+        if lst is None or lst==[]:
             return
         if self.mv_check_filled:
             return
@@ -716,7 +715,7 @@ class TeimEdit(object):
         menu_bar.add_command(label=s, activeforeground=FG_MENU,
                              activebackground=BG_MENU),
         menu_bar.add_cascade(label='Help', menu=mv_help)
-        s = f" {__version__} "
+        s = f"  {__version__} "
         menu_bar.add_command(label=s, activeforeground=FG_MENU,
                              activebackground=BG_MENU),
 
@@ -738,7 +737,7 @@ class TeimEdit(object):
         self.show_win3("")
         ################################
         # cerca la dir teimcfg_dir partendo
-        # -c teimcfg_dir od dalla dir corrente se non è settata
+        # -c teimcfg_dir o dalla dir corrente se non è settata
         # se non la trova exit
         # invoca:
         # set_file_path
@@ -1106,7 +1105,6 @@ class TeimEdit(object):
     #############
 
     def elab_teimxml(self):
-        #AAA func_name= inspect.getframeinfo(inspect.currentframe()).function
         msg = self.get_edit_text()
         try:
             with open(self.path_teim_in_s,"w") as f:
@@ -1359,7 +1357,6 @@ class TeimEdit(object):
 
     def show_setwid_out(self):
         format_path = self.path_id_out_s.replace("_id.xml", "_id_format.xml")
-        # AAA self.read_log_file(self.path_id_out_s)
         self.read_log_file(format_path)
 
     def show_setwid_log(self):
@@ -1372,7 +1369,6 @@ class TeimEdit(object):
     def show_over_out(self):
         format_path = self.path_over_out_s.replace(
             "_over.xml", "_over_format.xml")
-        # AAA self.read_log_file(self.path_over_out_s)
         self.read_log_file(format_path)
 
     def show_over_log(self):
@@ -1385,7 +1381,6 @@ class TeimEdit(object):
     def show_note_out(self):
         format_path = self.path_note_out_s.replace(
             "_note.xml", "_note_format.xml")
-        # AAA self.read_log_file(self.path_note_out_s)
         self.read_log_file(format_path)
 
     # def show_note_log(self):

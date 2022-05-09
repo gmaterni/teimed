@@ -11,10 +11,8 @@ Quindi i programmi devono essere lanciati nella sequenza indicata.
 - text.txt è il testo sorgente che utilizza le entities teimed
 - teimcfg è la dir contenente i files di configurazione per le elaborazione
 
-
 checkover.py -i text.txt -c teimcfg/teimoverflow.csv
   controlla i tag per la gestione dell'overflow
-
 
 checktxt.py -i text.txt
     controlla nel file teimed sorgente le entities.
@@ -22,7 +20,6 @@ checktxt.py -i text.txt
     &abcd;
     e la chiusura delle parentesi  nel tipo
     &abcd;(arg1,arg2)
-
 
 teimxml.py -i text.txt -t teimcfg/teimtags.csv
     Trasformare un file testo codificato secondo
@@ -53,7 +50,6 @@ codic|fw-s-br|<fw type="sig" place="bot-right">$</fw>
 codic|fw-s-tc|<fw type="sig" place="top-center">$</fw>
 codic|fw-s-tr|<fw type="sig" place="top-right">$</fw>
 
-
 teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     Setta gli attributi xml:id nei tag xml.
     Il criterio di assegnazione e numerazione è
@@ -80,12 +76,10 @@ choice|chc|0|
     Viene stampato un file json che rappresenta la
     logica dell numerazione.
 
-
 teimover.py -i text.txt -c teimcfg/teimoverflow.csv
     legge da un file csv i tag per la gestione degli overflow
     aggiunge in coda al file xml gli elementi
     from=.. to=..
-
 
 Esempio di teimoverflow.csv
 TYPE|TAG_FROM|TAG_TO|SIGLA_FROM|SIGLA_TO
@@ -128,7 +122,6 @@ J'ignore un tilde d'abréviation audessus de "Aimes".
 <teimed_note xml:id="ind3">
 le scribe conserve le tilde d'abbréviation audessus de "p".
 </teimed_note>
-
 
 teimxmlformat.py -i log/text_id_over_note.xml, -o text.xml, -a
     formatta un file xml aggiungendo al sorgente <div></div>

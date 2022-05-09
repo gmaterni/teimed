@@ -9,6 +9,7 @@ def do_main(path_src,path_tags):
     path_err=path_src.replace(".txt","_words.ERR.log")
     log_err=Log("w").open(path_err,1).log
     te = TextEntities(path_src, path_tags,log_err)
+    # lista entities del teso
     lst = te.get_rows_entities()
     path_log=path_src.replace(".txt","_words.log")
     print(path_log)

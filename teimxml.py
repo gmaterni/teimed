@@ -111,7 +111,7 @@ class TeimXml(object):
 
         self.trace = False
 
-        #AAA self.input_err_active = True
+        #XXX self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):
@@ -610,7 +610,7 @@ class TeimXml(object):
         try:
             rows_entities = self.text_entities.get_rows_entities()
         except Exception as e:
-            msg = f'\nERROR_10 elab_rows()\n{e}'
+            msg = f'\nERROR_10 elab_rows()\n {e}'
             self.log_err(msg)
             sys.exit(msg)
 

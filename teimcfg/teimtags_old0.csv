@@ -93,7 +93,6 @@ seg|space-d|<space type="#degl"/>
 
 abbr|mlt|<expan corresp="#ab-ctr-mlt">m<ex>u</ex>lt</expan>
 abbr|Mlt|<expan corresp="#ab-ctr-mlt">M<ex>u</ex>lt</expan>
-abbr|ml|<expan corresp="#ab-ctr-ml">m<ex>u</ex>l<ex>t</ex></expan>
 abbr|hiMlt|<expan corresp="#ab-ctr-mlt"><hi rend="init-flour">M</hi><ex>u</ex>lt</expan>
 abbr|chr|<expan corresp="#ab-ctr-chr">ch<ex>e<c ana="#lram-c">u</c>alie</ex>r</expan>
 abbr|Chr|<expan corresp="#ab-ctr-chr">Ch<ex>e<c ana="#lram-c">u</c>alie</ex>r</expan>
@@ -108,10 +107,7 @@ abbr|ment|<expan corresp="#ab-ctr-mt">m<ex>en</ex>t</expan>
 abbr|mant|<expan corresp="#ab-ctr-mt">m<ex>an</ex>t</expan>
 abbr|gnt|<expan corresp="#ab-ctr-gnt">g<ex>ra</ex>nt</expan>
 abbr|qnt|<expan corresp="#ab-ctr-qnt">q<ex>ua</ex>nt</expan>
-abbr|aps|<expan corresp="#ab-ctr-aps">ap<ex>ré</ex>s</expan>
-abbr|Aps|<expan corresp="#ab-ctr-aps">Ap<ex>ré</ex>s</expan>
-abbr|sAps|<expan corresp="#ab-ctr-aps">&hi-s;(A)p<ex>ré</ex>s</expan>
-abbr|pl|<expan corresp="#ab-ctr-pl">pl<ex>us</ex></expan>
+abbr|aps|<expan corresp="#ab-ctr-aps">ap<ex>re</ex>s</expan>
 
 abbr|qe|<expan corresp="#ab-sus-qe">q<ex>u</ex>e</expan>
 abbr|Qe|<expan corresp="#ab-sus-qe">Q<ex>u</ex>e</expan>
@@ -227,7 +223,6 @@ mod|?|<pc resp="#ed">?</pc>
 mod|!|<pc resp="#ed">!</pc>
 
 mod|é|<c ana="#e-ton">e</c>
-mod|É|<c ana="#e-ton">E</c>
 mod|~i|<c ana="#hiat">i</c>
 mod|~u|<c ana="#hiat">u</c>
 mod|~e|<c ana="#hiat">e</c>
@@ -254,11 +249,9 @@ mod|^j|<c ana="#lram-v">j</c>
 
 
 corr|sic|<sic><w>$</w></sic>
-corr|sic2|<sic><w>$</w><w>$</w></sic>
 corr|corr|<choice><sic><w>$</w></sic><corr><w>$</w></corr></choice>
 corr|corr12|<choice><sic><w>$</w></sic><corr><w>$</w><w>$</w></corr></choice>
 corr|corr21|<choice><sic><w>$</w><w>$</w></sic><corr><w>$</w></corr></choice>
-corr|corr-exp|<corr type="expunction" resp="#ed">$</corr>
 
 corr|corr-ditt|<choice><sic ana="#ditt">$</sic><corr>$</corr></choice>
 corr|corr-hapl|<choice><sic ana="#hapl">$</sic><corr>$</corr></choice>

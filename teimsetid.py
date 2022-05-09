@@ -142,7 +142,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         self.tgid_js = {}
         self.flags_id = {}
 
-        #AAA self.input_err_active = True
+        #XXX self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):

@@ -20,7 +20,7 @@ def word_entities_log(rows_entities, path_out=None):
         prn(f'\n(R)({n}) {row_ent.text}')
         for word in row_ent.words:
             i = word.num
-            prn(f'(W)({i}) {word.text}')
+            prn(f'\n(W)({i}) {word.text}')
             for e in word.entities:
                 prn(f'liv :{e.liv}')
                 prn(f'src:{e.src}')

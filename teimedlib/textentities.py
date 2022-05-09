@@ -123,7 +123,7 @@ class TextEntities(object):
         self.set_punt = '.,:?!;'
         self.tags_csv_js = {}
 
-        #AAA self.input_err_active = True
+        #XXX self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):

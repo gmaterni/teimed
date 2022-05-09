@@ -19,7 +19,7 @@ def path2str(path):
     try:
         if path is None:
             raise(Exception("path2str() path is None"))
-        # AAA s = f"{path}"
+        # TODO s = f"{path}"
         s = path.as_posix()
         return s.strip()
     except Exception as e:
