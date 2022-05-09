@@ -438,7 +438,9 @@ class TeimOverFlow(object):
                 self.control_open(nd)
                 self.log_open(nd)
             
-            if self.find_tag_to(src):
+            ok_to=self.find_tag_to(src)
+    
+            if ok_to:
                 # il testo coincide con il tag
                 if src == self.row_tag_over_js[self.CL]:
                     nd_prev = self.get_prev(nd)
