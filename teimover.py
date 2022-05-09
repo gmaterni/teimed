@@ -425,12 +425,11 @@ class TeimOverFlow(object):
             l = nd_data['liv']
             if l < 3:
                 continue
-            id_ = nd_data.get('id', 'XXX')
+            # id_ = nd_data.get('id', 'XXX')
             # if id_ == 'Kch3p1w978':
             #     # trace=True
             #     # LGDB(pp(nd_data))
             #     # set_trace()
-            #     pass
             if not tag.lower() in ['w', 'pc', 'gap', 'persname', 'geogname', 'placename']:
                 continue
             val = nd_data['val'].strip()
@@ -441,8 +440,8 @@ class TeimOverFlow(object):
             else:
                 src = val+tail
             nd_last = nd
-            op_ = self.row_tag_over_js[self.OP]
-            cl_ = self.row_tag_over_js[self.CL]
+            # op_ = self.row_tag_over_js[self.OP]
+            # cl_ = self.row_tag_over_js[self.CL]
             # if len(text)> len(val) :
             # LGDB(f'----------')
             #     LGDB(f"op_cl:{op_} {cl_}\nnode:\n{pp(nd_data)}")
