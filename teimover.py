@@ -16,7 +16,7 @@ from teimedlib.teim_paths import *
 import teimxmlformat as xmf
 
 __date__ = "10-05-2022"
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 __author__ = "Marta Materni"
 
 
@@ -438,7 +438,29 @@ class TeimOverFlow(object):
                 self.control_open(nd)
                 self.log_open(nd)
             
+            # gestione del tag con il parent quando
+            # il nodo con il tag di overflow non ha id
+            # e quello con id non ha val+tail
+            # es.
+            # [_la &sic;(arte)_]
+
+            # <w xml:id="Kch3p1w237">[_la</w>
+            # <sic>
+            #   <w xml:id="Kch3p1w238">arte</w>
+            # </sic>
+            # _]
+            # succede quando si usa l'overflo dopo la parentesi
+            # dell'enntitie quando questa non ha un id
+
             ok_to=self.find_tag_to(src)
+            if ok_to is False:
+                nd_p=nd.getparent()
+                tag_p=self.node_tag(nd_p)
+                if tag_p in ['sic']:
+                    val_p=self.node_val(nd_p)
+                    tail_p=self.node_tail(nd_p)
+                    src=val_p+tail_p
+                    ok_to=self.find_tag_to(src)
     
             if ok_to:
                 # il testo coincide con il tag
