@@ -412,10 +412,7 @@ class TeimOverFlow(object):
         op = self.row_tag_over_js[self.OP]
         cl = self.row_tag_over_js[self.CL]
         self.logspan(f">>>     {tp}   {op} {cl}  <<<"+os.linesep)
-        # nd_data_last=None
         nd_last = None
-        # LGDB(pp(self.row_tag_over_js))
-        # input('js')
         for nd in self.root_xml.iter():
             trace = False
             tag=self.node_tag(nd)
@@ -440,6 +437,7 @@ class TeimOverFlow(object):
                 self.set_from_id(nd_data)
                 self.control_open(nd)
                 self.log_open(nd)
+            
             if self.find_tag_to(src):
                 # il testo coincide con il tag
                 if src == self.row_tag_over_js[self.CL]:
