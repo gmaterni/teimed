@@ -10,7 +10,7 @@ from teimedlib.ualog import Log
 from teimedlib.readovertags import read_tags_over_sorted
 from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
-
+  
 __date__ = "10-03-2022"
 __version__ = "1.1.2"
 __author__ = "Marta Materni"
