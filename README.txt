@@ -57,27 +57,49 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     Il criterio di assegnazione e numerazione è
     definitio in un file teimxmlid.csv
 
-Esempio di teimxmlid.csv  
-#key|tag_id|id|children
-div_episode|K|-1|div_chapter:cb:pb:p:lg:l:persName:geogName:placeName:choice
-div_chapter|ch|0|head:w:p
-head|h|0|w:pc
-cb|cb|0|
-pb|pb|0|
-p|p|0|w:pc
-lg|lg|0|    
-l|l|0|w:pc
-w|w|0|
-pc|pc|0|
-persName|peNm|0|
-geogName|geNm|0|
-placeName|plNm|0|
-choice|chc|0|
+    Esempio di teimxmlid.csv  
 
-    La numerazione è definita a partire dall'elemento
-    con id=-1
+    #key|tag_id|id|children
+    div_episode|K|0|div_chapter:cb:pb:p:lg:l:persName:geogName:placeName:choice
+    div_chapter|ch|0|head:w:p
+    head|h|0|w:pc:gap
+    cb|cb|0|
+    pb|pb|0|
+    p|p|0|w:pc:gap
+    lg|lg|0|    
+    l|l|0|w:pc:gap
+    w|w|0|
+    pc|pc|0|
+    gap|gap|0|
+    persName|peNm|0|
+    geogName|geNm|0|
+    placeName|plNm|0|
+    choice|chc|0|
+
+    La numerazione è definita a partire da div_episode
     Viene stampato un file json che rappresenta la
     logica dell numerazione.
+    Se non vi sono direttive la numerazione degli id e delgi n 
+    inizia da 1
+
+    DIRETTIVE 
+    E' possibile settare id iniziale di eoisode
+    e n di capitoli e pargrafi
+
+    Numera <l> dopo il primo <lg> se NON hanno l'atributo n=..
+    La numerazione inizia dai valori settati con i flag id all'inizio
+    
+    del file testo.
+    @episode:sign=A
+    @episode:id=100
+    @chapter:n=100
+    @p:n=100
+    @l:n=100
+
+    ATTENZIONE 
+    - il sign del flag sostituisce quello definito nel file csv
+    - utilizzare id per episode (il solo tag per il quale è possibile)
+    - utilizzare n per gli altri
 
 -----------------------------------------------------
 

@@ -152,7 +152,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         self.tgid_js = {}
         self.flags_id = {}
 
-        # XXX self.input_err_active = True
+        # self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):
@@ -182,7 +182,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
                 }
                 self.tgid_js[key] = tgid
         except Exception as e:
-            msg = f'ERROR B build_tgid_js() \n{e}\n{row}'
+            msg = f'ERROR build_tgid_js() \n{e}\n{row}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -193,7 +193,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             s = json.dumps(self.tgid_js, indent=2)
             log_json(s)
         except Exception as e:
-            msg = f'ERROR 0 log_tgid_js() \n{e}'
+            msg = f'ERROR log_tgid_js() \n{e}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -201,6 +201,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         """legge il file csv
         costruisce un file json self.tgid_js[
         salva in un log il file json
+        #key|tag_id|id|children
         """
         tgid_rows = []
         with open(self.path_csv, "r") as f:
@@ -215,7 +216,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
                     flds = row.split(self.SEP)
                     tgid_rows.append(flds)
                 except Exception as e:
-                    msg = f'ERROR 1 read_csv() \n{e}\n row:{row}'
+                    msg = f'ERROR read_csv() \n{e}\n row:{row}'
                     self.log_err(msg)
                     sys.exit(msg)
         self.build_tgid_js(tgid_rows)
@@ -239,7 +240,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
                 tag_id = tgid[self.TAG_ID]
                 tgid[self.XID] = f'{xid_parent}{tag_id}'
         except KeyError as e:
-            msg = f'ERROR 2 init_tgid_children() \n{e}'
+            msg = f'ERROR init_tgid_children() \n{e}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -247,7 +248,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         try:
             self.tgid_js[key][k] = v
         except Exception as e:
-            msg = f'ERROR 3 set_tgid()\n{e}\ntag_name:{key} k:{k} v:{v}'
+            msg = f'ERROR set_tgid()\n{e}\ntag_name:{key} k:{k} v:{v}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -255,7 +256,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         try:
             tgid = self.tgid_js[key]
         except Exception as e:
-            msg = f'ERROR 4 get_tgid()\n{e}\ntag_name:{key}'
+            msg = f'ERROR get_tgid()\n{e}\ntag_name:{key}'
             self.log_err(msg)
             sys.exit(msg)
         else:
@@ -263,25 +264,21 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     def get_tgid_id(self, key):
         tgid = self.get_tgid(key)
-        id = tgid[self.ID]
-        return id
+        id_ = tgid[self.ID]
+        return id_
 
-    # def get_tgid_tag_id(self, key):
-    #     tgid = self.get_tgid(key)
-    #     tag_id = tgid[self.TAG_ID]
-    #     return tag_id
-
+    
     def get_tgid_xid(self, key):
         """
         rettitisce id preceduto dal suo tag
         """
         tgid = self.get_tgid(key)
-        id = tgid[self.ID]
+        id_ = tgid[self.ID]
         xid = tgid[self.XID]
-        if id < 0:
+        if id_ < 0:
             sid = f'{xid}'
         else:
-            sid = f'{xid}{id}'
+            sid = f'{xid}{id_}'
         return sid
 
     def next_tgid_xid(self, key):
@@ -314,7 +311,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             js = self.flags_id[key0]
             val = js[key1]
         except KeyError as e:
-            msg = f'ERROR 5 id_cfg\n{e}\n '
+            msg = f'ERROR get_flag_id\n{e}\n '
             self.log_err(msg)
             js = pp(self.flags_id, 30)
             self.log_err(js)
@@ -373,7 +370,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
                     continue
                 self.flags_id[key][k] = v.strip()
             except Exception as e:
-                msg = f'ERROR 6 set_id_cfg()\n{e}\n{row}'
+                msg = f'ERROR set_id_cfg()\n{e}\n{row}'
                 self.log_err(msg)
 
     def read_flags_id(self):
@@ -383,7 +380,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             ttread = TeimTxtRead(self.path_text, self.log_err)
             rows = ttread.read_flags_id()
         except Exception as e:
-            msg = f'ERROR 7 read_id_cfg() \n{e}'
+            msg = f'ERROR read_id_cfg() \n{e}'
             self.log_err(msg)
             sys.exit(msg)
         else:
@@ -424,7 +421,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             if pid > 0:
                 tag = tag[pid + 1:]
         except Exception as e:
-            msg = f'ERROR 8 node_tag()\n{e}'
+            msg = f'ERROR node_tag()\n{e}'
             self.log_err(msg)
             sys, exit(msg)
         else:
@@ -520,7 +517,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
                 self.updatte_node_id_descendants(chld_lst)
 
         if episode_num == 0:
-            msg = f"ERROR D  {self.path_text}\nepisode Not Found "
+            msg = f"ERROR {self.path_text}\nepisode Not Found "
             self.log_err(msg)
             self.input_err('>')
             # sys.exit(msg)
@@ -576,7 +573,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         no = n
         for nd in self.xml_root.iter(TAG):
             attrs = self.node_items(nd)
-            # HEACK if(val := attrs.get(TYPE, '')) == TYPE_VAL:
+            # TODO if(val := attrs.get(TYPE, '')) == TYPE_VAL:
             val = attrs.get(TYPE, '')
             if val == TYPE_VAL:
                 nd.set(ATTR_n, str(n))
@@ -590,7 +587,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             parser = etree.XMLParser(ns_clean=True)
             self.xml_root = etree.parse(self.path_in, parser)
         except Exception as e:
-            msg = f'ERROR 9 parse_xml()\n {e}'
+            msg = f'ERROR parse_xml()\n {e}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -613,7 +610,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
                 f.write(xml)
             os.chmod(self.path_out, 0o777)
         except Exception as e:
-            msg = f'ERROR A write_xml()\n {e}'
+            msg = f'ERROR write_xml()\n {e}'
             self.log_err(msg)
             sys.exit(msg)
 
@@ -628,8 +625,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         # legge tags
         self.read_csv()
 
-        # legge fla id  per numerazione
-        # setttate in self.flags_id
+        # legge flags id  per numerazione
         rows = self.read_flags_id()
         self.set_flags_id(rows)
         self.parse_xml()
