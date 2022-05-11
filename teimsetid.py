@@ -77,7 +77,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     Esempio di teimxmlid.csv  
     #key|tag_id|id|children
-    div_episode|K|-1|div_chapter:cb:pb:p:lg:l:persName:geogName:placeName:choice
+    div_episode|K|0|div_chapter:cb:pb:p:lg:l:persName:geogName:placeName:choice
     div_chapter|ch|0|head:w:p
     head|h|0|w:pc:gap
     cb|cb|0|
@@ -93,13 +93,19 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     placeName|plNm|0|
     choice|chc|0|
 
-    La numerazione è definita a partire dall'elemento
-    con id=-1
+    La numerazione è definita a partire da div_episode
     Viene stampato un file json che rappresenta la
     logica dell numerazione.
+    Se non vi sono direttive la numerazione degli id e delgi n 
+    inizia da 1
+
+    DIRETTIVE 
+    E' possibile settare id iniziale di eoisode
+    e n di capitoli e pargrafi
 
     Numera <l> dopo il primo <lg> se NON hanno l'atributo n=..
     La numerazione inizia dai valori settati con i flag id all'inizio
+    
     del file testo.
     @episode:sign=A
     @episode:id=100
@@ -107,7 +113,11 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     @p:n=100
     @l:n=100
 
-    ATTENZIONE il sign del flag sostituisce quello definito nel file csv
+    ATTENZIONE 
+    - il sign del flag sostituisce quello definito nel file csv
+    - utilizzare id per episode (il solo tag per il quale è possibile)
+    - utilizzare n per gli altri
+
     """
     TAG_ID = 'tag_id'
     ID = 'id'
@@ -328,7 +338,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         se testo_id.cfg non esiste utilizza i valori di default
 
         episode:sign=K
-        episode:id=0
+        episode:id=1
         chapter:n=1
         p:n=1
         l:n=1
@@ -476,7 +486,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         settai nei flag id all'inizio del testo sorgente
         es.
         @episode:sign=X
-        @episode:id=100
+        @episode:id=1
         @chapter:n=100
         @p:n=100
         @l:n=100
@@ -494,7 +504,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             # verifica el il tag esiste in quelli estratti da teimxmlid.csv
             if not self.tgid_exists(tgid_key):
                 continue
-            if tgid_key == 'div_episode':
+            if tgid_key == tg_episdode_key:
                 episode_num += 1
                 # setta xid di episode
                 xid = self.next_tgid_xid(tgid_key)
@@ -537,7 +547,6 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     def numerate_xml_p(self):
         """
-        TODO controllare numerazione paragrafi
         numerazione tag <p>
         set nel tag <p> n=".."
         iniziando dal flag nel testo:
