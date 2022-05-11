@@ -142,7 +142,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         self.tgid_js = {}
         self.flags_id = {}
 
-        #XXX self.input_err_active = True
+        # XXX self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):
@@ -250,7 +250,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             sys.exit(msg)
         else:
             return tgid
-    
+
     def get_tgid_id(self, key):
         tgid = self.get_tgid(key)
         id = tgid[self.ID]
@@ -276,14 +276,14 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     def next_tgid_xid(self, key):
         """
-        restituisce il successivoid preceduto dal suo tag
+        restituisce il successivo id preceduto dal suo tag
         """
         tgid = self.get_tgid(key)
-        id = tgid[self.ID]
+        id_ = tgid[self.ID]
         xid = tgid[self.XID]
-        id += 1
-        tgid[self.ID] = id
-        xid = f'{xid}{id}'
+        id_ += 1
+        tgid[self.ID] = id_
+        xid = f'{xid}{id_}'
         return xid
 
     def tgid_exists(self, key):
@@ -336,7 +336,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         self.flags_id = {
             "episode": {
                 "sign": "K",
-                "id": '0'
+                "id": '1'
             },
             "chapter": {
                 "n": '1'
@@ -462,10 +462,8 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             if not self.tgid_exists(tgid_key):
                 continue
             xid = self.next_tgid_xid(tgid_key)
-            # log
             liv = self.node_liv(nd)
             self.log_info(f'{self.SPS[:liv*2]}{tgid_key} {xid}')
-
             self.update_node_id(nd, xid)
             self.init_tgid_children(tgid_key)
             lst = self.node_descendants(nd)
@@ -484,35 +482,34 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         @l:n=100
 
         """
+        tg_episdode_key = "div_episode"
         sign = self.get_flag_id('episode', 'sign')
-        eps_id = self.get_flag_id_int('episode', 'id')
-        eps_xid = f'{sign}{eps_id}' if eps_id > 0 else sign
-        has_episode = False
+        eps_id = self.get_flag_id_int('episode', 'id')-1
+        self.set_tgid(tg_episdode_key, self.ID, eps_id)
+        self.set_tgid(tg_episdode_key, self.XID, sign)
+        episode_num = 0
         for nd in self.xml_root.iter(self.DIV):
-            attrs = self.node_items(nd)
-            tp = attrs.get('type', '')
-            if tp == 'episode':
-                has_episode = True
             # tag id estratto dal nodo xml
             tgid_key = self.node_tgid_key(nd)
-            #verifica el il tag esiste in quelli estratti 
-            # da teimxmlid.csv
-            if self.tgid_exists(tgid_key):
-                # estrae id da self.tgid_js (tags estatti da teimxmlid.csv) 
-                id = self.get_tgid_id(tgid_key)
-                if id < 0:
-                    # div root identificato da id < 0
-                    # setta xid di episode
-                    # quindi -1 è sosituito eps_xid
-                    self.set_tgid(tgid_key, self.XID, eps_xid)
-                    self.log_info(f'{tgid_key} {eps_xid}')
-                    # resetta la parte di id dei nodi figli
-                    self.init_tgid_children(tgid_key)
-                    #lista dei nodi figli
-                    chld_lst = self.node_children(nd)
-                    # aggiorna gli id di tutti i figli
-                    self.updatte_node_id_descendants(chld_lst)
-        if not has_episode:
+            # verifica el il tag esiste in quelli estratti da teimxmlid.csv
+            if not self.tgid_exists(tgid_key):
+                continue
+            if tgid_key == 'div_episode':
+                episode_num += 1
+                # setta xid di episode
+                xid = self.next_tgid_xid(tgid_key)
+                liv = self.node_liv(nd)
+                self.log_info(f'{self.SPS[:liv*2]}{tgid_key} {xid}')
+                self.update_node_id(nd, xid)
+
+                # resetta la parte di id dei nodi figli
+                self.init_tgid_children(tgid_key)
+                # lista dei nodi figli
+                chld_lst = self.node_children(nd)
+                # aggiorna gli id di tutti i figli
+                self.updatte_node_id_descendants(chld_lst)
+
+        if episode_num == 0:
             msg = f"ERROR D  {self.path_text}\nepisode Not Found "
             self.log_err(msg)
             self.input_err('>')
@@ -618,7 +615,6 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         except Exception:
             pass
 
-
     def update_xml(self):
         # legge tags
         self.read_csv()
@@ -633,16 +629,16 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         last_p = self.numerate_xml_p()
         last_l = self.numerate_xml_l()
         self.write_xml()
-        
+
         # ultimo capitolo
         last_chp = 0 if last_chp < 0 else last_chp-1
-        
+
         # ultimo paragrafo
         last_p = 0 if last_p < 0 else last_p-1
-        
+
         # ultima linea
         last_l = 0 if last_l < 0 else last_l-1
-        
+
         last = f"\nLAST:\nchapter:{last_chp}\nparagraph:{last_p}\nl:{last_l}\n"
         self.log_info(last)
         return last
