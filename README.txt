@@ -50,6 +50,8 @@ codic|fw-s-br|<fw type="sig" place="bot-right">$</fw>
 codic|fw-s-tc|<fw type="sig" place="top-center">$</fw>
 codic|fw-s-tr|<fw type="sig" place="top-right">$</fw>
 
+-------------------------------------------------
+
 teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     Setta gli attributi xml:id nei tag xml.
     Il criterio di assegnazione e numerazione è
@@ -71,10 +73,13 @@ persName|peNm|0|
 geogName|geNm|0|
 placeName|plNm|0|
 choice|chc|0|
+
     La numerazione è definita a partire dall'elemento
     con id=-1
     Viene stampato un file json che rappresenta la
     logica dell numerazione.
+
+-----------------------------------------------------
 
 teimover.py -i text.txt -c teimcfg/teimoverflow.csv
     legge da un file csv i tag per la gestione degli overflow
