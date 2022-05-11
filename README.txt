@@ -88,8 +88,8 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     Numera <l> dopo il primo <lg> se NON hanno l'atributo n=..
     La numerazione inizia dai valori settati con i flag id all'inizio
-    
     del file testo.
+    
     @episode:sign=A
     @episode:id=100
     @chapter:n=100
@@ -100,6 +100,13 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     - il sign del flag sostituisce quello definito nel file csv
     - utilizzare id per episode (il solo tag per il quale è possibile)
     - utilizzare n per gli altri
+
+VALORI DI DEFAULT
+    episode:sign=K
+    episode:id=1
+    chapter:n=1
+    p:n=1
+    l:n=1
 
 -----------------------------------------------------
 
