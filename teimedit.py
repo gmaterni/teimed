@@ -35,8 +35,8 @@ from teimsetid import do_main as do_main_setid
 from teimxml import do_main as do_main_xml
 from teixml2txt import do_main as do_main_xml2txt
 
-__date__ = "10-05-2022"
-__version__ = "1.2.6"
+__date__ = "20-05-2022"
+__version__ = "1.2.7"
 __author__ = "Marta Materni"
 
 
