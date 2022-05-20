@@ -643,7 +643,6 @@ class TeimXml(object):
             with open(self.path_out, "w+") as f:
                 f.write(src)
             os.chmod(self.path_out, 0o777)
-
         except Exception as e:
             msg = f'\nERROR_11 elab_rows()\n {e}'
             self.log_err(msg)
