@@ -21,10 +21,16 @@ def set_path_teim_out(path_text):
     path = path_text.replace('.txt', '_teim.txt')
     return add_log2path(path)
 
-# testo.txt => t./log/esto_teim.log
+# testo.txt => ./log/testo_teim.log
 def set_path_teim_log(path_text):
     path = path_text.replace('.txt', '_teim.log')
     return add_log2path(path)
+
+# AAA testo.txt => ./log/testo_teim_.xml
+def set_path_teim_xml_log(path_text):
+    path = path_text.replace('.txt', '_teim_.xml')
+    return add_log2path(path)
+
 
 # testo.txt => ./log/testo_teim.ERR.log
 def set_path_teim_err(path_text):

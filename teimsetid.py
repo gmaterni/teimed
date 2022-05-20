@@ -15,8 +15,8 @@ from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 import teimxmlformat as xmf
 
-__date__ = "10-53-2022"
-__version__ = "1.4.14"
+__date__ = "20-05-2022"
+__version__ = "1.4.15"
 __author__ = "Marta Materni"
 
 """
@@ -105,7 +105,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     Numera <l> dopo il primo <lg> se NON hanno l'atributo n=..
     La numerazione inizia dai valori settati con i flag id all'inizio
-    
+
     del file testo.
     @episode:sign=A
     @episode:id=100
@@ -267,7 +267,6 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         id_ = tgid[self.ID]
         return id_
 
-    
     def get_tgid_xid(self, key):
         """
         rettitisce id preceduto dal suo tag
@@ -528,7 +527,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         NON viene numerato se è prsente l'attributo n=".."
         la numerazione inizia dal valore del flag:
         @l:n=100
-
+        inizia da 1 per defualt
         """
         TAG = 'l'
         ATTR_N = 'n'
@@ -548,6 +547,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         set nel tag <p> n=".."
         iniziando dal flag nel testo:
         @p:n=100
+        iniza da 1 per default
 
         """
         TAG = 'p'
@@ -564,6 +564,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             numera i capitoli iniziando dal valore
             settato nel tsto sorgente con
             @chapter:n=100
+            per default inizia da 1
         """
         TAG = 'div'
         TYPE = 'type'
@@ -636,13 +637,17 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         self.write_xml()
 
         # ultimo capitolo
-        last_chp = 0 if last_chp < 0 else last_chp-1
+        # AAA last_chp = 0 if last_chp <= 0 else last_chp-1
+        # modificato ultimo numero attribuito
+        last_chp = 0 if last_chp <= 0 else last_chp
 
         # ultimo paragrafo
-        last_p = 0 if last_p < 0 else last_p-1
+        #last_p = 0 if last_p <=0 else last_p-1
+        last_p = 0 if last_p <= 0 else last_p
 
         # ultima linea
-        last_l = 0 if last_l < 0 else last_l-1
+        #last_l = 0 if last_l <= 0 else last_l-1
+        last_l = 0 if last_l <= 0 else last_l
 
         last = f"\nLAST:\nchapter:{last_chp}\nparagraph:{last_p}\nl:{last_l}\n"
         self.log_info(last)

@@ -13,9 +13,10 @@ from teimedlib.textentities import TextEntities
 from teimedlib.textentities_log import *
 from teimedlib.xml_const import *
 from teimedlib.teim_paths import *
+from teimedlib.check_teimxml import CheckTeimXml
 
-__date__ = "30-03-2022"
-__version__ = "1.6.3"
+__date__ = "20-05-2022"
+__version__ = "1.7.0"
 __author__ = "Marta Materni"
 
 """
@@ -34,7 +35,7 @@ elab_rows
             set_word_attr
                 remove_word_underscore
             check_xml
-    #check_xml
+    check_xml
 """
 
 
@@ -91,6 +92,10 @@ class TeimXml(object):
         # testo.txt => testo_txt.log
         path_info = set_path_teim_log(path_text)
         self.log_info = Log("w").open(path_info, 0).log
+
+        # testo.txt => testo_teim_.xml
+        self.path_xml = set_path_teim_xml_log(path_text)
+        self.log_teim_xml = Log("w").open(self.path_xml, 0).log
 
         # testo.txt => testo_txt.ERR.log
         path_err = set_path_teim_err(path_text)
@@ -639,19 +644,24 @@ class TeimXml(object):
                 f.write(src)
             os.chmod(self.path_out, 0o777)
 
-            # controllo XML
-            s, err = self.check_xml(src, "teimxml.py elab_rows()")
-            # TODO da valutare controllo final XML
-            # if err:
-            #     rs=s.split(os.linesep)
-            #     for i,r in enumerate(rs):
-            #         rs[i]=f'{i+1}) {r}'
-            #     s=os.linesep.join(rs)
-            #     self.log_err(f'\n{s}')
         except Exception as e:
             msg = f'\nERROR_11 elab_rows()\n {e}'
             self.log_err(msg)
             sys.exit(msg)
+
+        # controllo finale XML
+        # controolo costruzione strttura
+        xml, err = self.check_xml(src, "check xml")
+        if err:
+            rs=xml.split(os.linesep)
+            for i,r in enumerate(rs):
+                rs[i]=f'{i+1}) {r}'
+            xml=os.linesep.join(rs)
+            self.log_err(f'\n{xml}')
+        self.log_teim_xml(xml)
+
+        #controllo tag teim in XML
+        CheckTeimXml().check_tei_xml(self.path_xml,self.log_err)
 
     def check_xml(self, src='', msg=''):
         """
@@ -682,7 +692,6 @@ class TeimXml(object):
             return s, True
         else:
             return xml, False
-
 
 def do_main(path_text, path_tags):
     TeimXml(path_text, path_tags).elab_rows()
