@@ -78,12 +78,12 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     La numerazione è definita a partire da div_episode
     Viene stampato un file json che rappresenta la
-    logica dell numerazione.
+    logica della numerazione.
     Se non vi sono direttive la numerazione degli id e delgi n 
     inizia da 1
 
     DIRETTIVE 
-    E' possibile settare id iniziale di eoisode
+    E' possibile settare id iniziale di episode
     e n di capitoli e pargrafi
 
     Numera <l> dopo il primo <lg> se NON hanno l'atributo n=..
