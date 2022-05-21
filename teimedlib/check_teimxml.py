@@ -17,6 +17,16 @@ class CheckTeimXml:
     """
     controlla l'uso dei tag in tei-xml
     """
+    OWR_TAGS = [
+        '[', ']',
+        '[_', '_]',
+        '{', '}',
+        '{_', '_}',
+        '{3%', '%3}',
+        '{2%', '%2}',
+        '{1%', '%1}',
+        '{0%', '%0}'
+    ]
 
     def __init__(self):
         self.trace = False
@@ -134,12 +144,13 @@ class CheckTeimXml:
         row_num = data.get('row_num', '')
         if tag == 'w':
             if tail != '':
-                err = f"\n{row_num}) {tag}: text  out of word "
-                self.logerr(f"{err}")
-                msg = f"text:{text}"
-                self.logerr(msg)
-                msg = f"tail:{tail} "
-                self.logerr(msg)
+                if not tail.strip() in self.OWR_TAGS:
+                    err = f"\n{row_num}) {tag}: text  out of word "
+                    self.logerr(f"{err}")
+                    msg = f"text:{text}"
+                    self.logerr(msg)
+                    msg = f"tail:{tail} "
+                    self.logerr(msg)
 
     def check_tei_xml(self, path_xml, logerr):
         self.logerr = logerr
