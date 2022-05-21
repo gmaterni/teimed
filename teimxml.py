@@ -84,6 +84,17 @@ class TeimXml(object):
     UNDER = '_'   # carattere _ UNDERLINE
     SP_TMP = '|'     # spazio temporaneo usato neitag di riga
     LB_TMP = "XXXX"  # flag gestione parla spezzata a fine riga
+    
+    #tag interni a word che autorizano il tag <w></w>
+    W_CHILDREN = ['</c>',
+                    '</expan>',
+                    '</hi>',
+                    '</add>',
+                    '<gap>',
+                    '<gap'
+                    '</space>',
+                    '<space',
+                    '<cb']
 
     def __init__(self, path_text, path_tags):
         # testo.txt => testo_txt,txt
@@ -262,23 +273,8 @@ class TeimXml(object):
             return False
         if text.find('<note') > -1:
             return False
-        # modifica da controllare
-        # xw_children=['c','expan','hi','add']
-        # w_children = ['</c>',
-        #               '</expan>',
-        #               '</hi>',
-        #               '</add>']
-        w_children = ['</c>',
-                      '</expan>',
-                      '</hi>',
-                      '</add>',
-                      '<gap>',
-                      '<gap'
-                      '</space>',
-                      '<space']
         w_add_tag = False
-        for tag in w_children:
-            #if text.find(f'</{tag}>') > -1:
+        for tag in self.W_CHILDREN:
             if text.find(tag) > -1:
                 w_add_tag = True
                 break
@@ -629,7 +625,7 @@ class TeimXml(object):
                 row_text = self.elab_row(row_ent, bl_in_word)
                 if row_text == '':
                     continue
-                # UA controlla se nella riga l'ultima parola contiene LB_TMP
+                # controlla se nella riga l'ultima parola contiene LB_TMP
                 # il flag per non far insrire <lb/> nella riga successiva
                 bl_in_word = row_text.find(self.LB_TMP) > -1
                 if bl_in_word:
