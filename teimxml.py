@@ -84,17 +84,18 @@ class TeimXml(object):
     UNDER = '_'   # carattere _ UNDERLINE
     SP_TMP = '|'     # spazio temporaneo usato neitag di riga
     LB_TMP = "XXXX"  # flag gestione parla spezzata a fine riga
-    
-    #tag interni a word che autorizano il tag <w></w>
+
+    # tag interni a word che autorizano il tag <w></w>
     W_CHILDREN = ['</c>',
-                    '</expan>',
-                    '</hi>',
-                    '</add>',
-                    '<gap>',
-                    '<gap'
-                    '</space>',
-                    '<space',
-                    '<cb']
+                  '</expan>',
+                  '</hi>',
+                  '</add>',
+                  '<gap>',
+                  '<gap'
+                  '</space>',
+                  '<space','<cb'
+                  
+                  ]
 
     def __init__(self, path_text, path_tags):
         # testo.txt => testo_txt,txt
@@ -127,7 +128,7 @@ class TeimXml(object):
 
         self.trace = False
 
-        #XXX self.input_err_active = True
+        # XXX self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):
@@ -278,6 +279,20 @@ class TeimXml(object):
             if text.find(tag) > -1:
                 w_add_tag = True
                 break
+        # FIXME cintrollo speciale su zcb
+        # codic|cb-a|<cb n="a"/>
+        # codic|cb-b|<cb n="b"/>
+        # codic|cb-c|<cb n="c"/>
+        if w_add_tag:
+            if text.strip().find('<cb') == 0:
+                e=text.find('/>')+2
+                le=len(text)
+                # print(text)
+                # print(e,le)
+                # set_trace()
+                if le==e:
+                    w_add_tag = False
+
         return w_add_tag
 
     # def xis_tag_to_add_w(self, text):
@@ -407,7 +422,7 @@ class TeimXml(object):
         partendo da livello immediatamente successivo a quello corrente
         sostituisce le entities fino al livello 0
         """
-        
+
         # if word_ent.text == "°por&space-d;fitable":
         # if word_ent.text.find("&space-d") > -1:
         #     self.trace = True
@@ -648,15 +663,15 @@ class TeimXml(object):
         # controolo costruzione strttura
         xml, err = self.check_xml(src, "check xml")
         if err:
-            rs=xml.split(os.linesep)
-            for i,r in enumerate(rs):
-                rs[i]=f'{i+1}) {r}'
-            xml=os.linesep.join(rs)
+            rs = xml.split(os.linesep)
+            for i, r in enumerate(rs):
+                rs[i] = f'{i+1}) {r}'
+            xml = os.linesep.join(rs)
             self.log_err(f'\n{xml}')
         self.log_teim_xml(xml)
 
-        #controllo tag teim in XML
-        CheckTeimXml().check_tei_xml(self.path_xml,self.log_err)
+        # controllo tag teim in XML
+        CheckTeimXml().check_tei_xml(self.path_xml, self.log_err)
 
     def check_xml(self, src='', msg=''):
         """
@@ -687,6 +702,7 @@ class TeimXml(object):
             return s, True
         else:
             return xml, False
+
 
 def do_main(path_text, path_tags):
     TeimXml(path_text, path_tags).elab_rows()
