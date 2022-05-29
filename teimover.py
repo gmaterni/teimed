@@ -464,7 +464,7 @@ class TeimOverFlow(object):
                     ok_to=self.find_tag_to(src)
     
             if ok_to:
-                # il testo coincide con il tag
+                # FIXME il testo coincide con il tag
                 if src == self.row_tag_over_js[self.CL]:
                     nd_prev = self.get_prev(nd)
                     nd_data = self.get_node_data(nd_prev)
