@@ -464,8 +464,9 @@ class TeimOverFlow(object):
                     ok_to=self.find_tag_to(src)
     
             if ok_to:
-                # FIXME il testo coincide con il tag
+                # FIXME il testo coincide con il tag veificare tipo tag
                 if src == self.row_tag_over_js[self.CL]:
+                    # print(tag,src)
                     nd_prev = self.get_prev(nd)
                     nd_data = self.get_node_data(nd_prev)
                     self.set_to_id(nd_data)
@@ -519,11 +520,12 @@ class TeimOverFlow(object):
                 sp_data = self.span_data.get(nd_id, None)
                 if sp_data is not None:
                     self.add_xml_span(nd, sp_data)
-                # elimina word vuote
+                # FIXME limina word vuote  solo se != w e !=pc
                 val = nd_data['val']
                 if val == '':
-                    nd_p = nd.getparent()
-                    nd_p.remove(nd)
+                    if tag in ['w','pc']:
+                        nd_p = nd.getparent()
+                        nd_p.remove(nd)
 
     # start
     def add_xml_span_overflow_list(self, csv_path):
