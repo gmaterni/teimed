@@ -87,9 +87,7 @@ text|uncl-d|<unclear reason="damage">$</unclear>
 
 text|note-per|<note type="peritextuelle">$</note>
 
-
 seg|space-d|<space type="#degl"/>
-
 
 abbr|mlt|<expan corresp="#ab-ctr-mlt">m<ex>u</ex>lt</expan>
 abbr|Mlt|<expan corresp="#ab-ctr-mlt">M<ex>u</ex>lt</expan>
@@ -152,8 +150,8 @@ abbr|on|<expan corresp="#ab-tild-nas"><ex>on</ex></expan>
 abbr|pre|<expan corresp="#ab-tild-p">p<ex>re</ex></expan>
 abbr|que|<expan corresp="#ab-tild-q">q<ex>ue</ex></expan>
 abbr|Que|<expan corresp="#ab-tild-Q">Q<ex>ue</ex></expan>
-abbr|quelle|<w ana="#elis"><expan corresp="#ab-tild-q">q<ex>u</ex></expan></w><w><expan><ex>e</ex>lle</expan></w>
-abbr|quest|<w ana="#elis"><expan corresp="#ab-tild-q">q<ex>u</ex></expan></w><w><expan><ex>e</ex></expan>st</w>
+abbr|quelle|<w ana="#elis"><expan corresp="#ab-tild-q">q<ex>u</ex></expan></w><w><expan corresp="#ab-tild-q"><ex>e</ex>lle</expan></w>
+abbr|quest|<w ana="#elis"><expan corresp="#ab-tild-q">q<ex>u</ex></expan></w><w><expan corresp="#ab-tild-q"><ex>e</ex></expan>st</w>
 abbr|us|<expan corresp="#ab-tild-ap"><ex>us</ex></expan>
 abbr|os|<expan corresp="#ab-tild-ap"><ex>os</ex></expan>
 abbr|es|<expan corresp="#ab-tild-ap"><ex>es</ex></expan>
@@ -217,7 +215,6 @@ gen|sub-er-sup|<subst><del rend="eras">$</del><add place="sup">$</add></subst>
 gen|sub-er-int|<subst><del rend="eras">$</del><add place="interl">$</add></subst>
 
 gen|app1|<app resp="#1hd"><rdg varSeq="1"><w>$</w></rdg><rdg varSeq="2"><w>$</w></rdg><rdg varSeq="3"><w>$</w></rdg></app>
-
 
 mod|.|<pc resp="#ed">.</pc>
 mod|,|<pc resp="#ed">,</pc>

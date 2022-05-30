@@ -26,7 +26,7 @@ def set_path_teim_log(path_text):
     path = path_text.replace('.txt', '_teim.log')
     return add_log2path(path)
 
-# AAA testo.txt => ./log/testo_teim_.xml
+# testo.txt => ./log/testo_teim_.xml
 def set_path_teim_xml_log(path_text):
     path = path_text.replace('.txt', '_teim_.xml')
     return add_log2path(path)

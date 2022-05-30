@@ -268,7 +268,7 @@ class TeimPrjMap(object):
                     s = prj_wtn.replace('prj_', '')
                     # print(f"** prj_wtn:{prj_wtn}    wk:{w_k}    s:{s}")
                     # print(f"** txt_cmd:{txt_cmd} tk: {t_k}")
-                    # TODO if prj_wtn.find(w_k) == 0: inversione prj_
+                    # if prj_wtn.find(w_k) == 0: inversione prj_
                     if s.find(w_k) == 0:
                         if txt_cmd.find(t_k) == 0:
                             self._txt_cmds[w_k][t_k].append([x.name, json_cmd])

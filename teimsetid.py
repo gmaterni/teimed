@@ -636,7 +636,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         self.write_xml()
 
         # ultimo capitolo
-        # AAA last_chp = 0 if last_chp <= 0 else last_chp-1
+        # last_chp = 0 if last_chp <= 0 else last_chp-1
         # modificato ultimo numero attribuito
         last_chp = 0 if last_chp <= 0 else last_chp
 

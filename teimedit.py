@@ -1087,7 +1087,7 @@ class TeimEdit(object):
         self.add_tags(err_lst)
 
     def find_over(self, po, pc, *args):
-        # FIXME  controlla tag [] e [_ _]
+        # TODO  controlla tag [] e [_ _]
         text = self.text_edit.get('1.0', tk.END)
         txt_wrk = clean_text(text)
         m_lst = chk.check_overflow(txt_wrk, po, pc)

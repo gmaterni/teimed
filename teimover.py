@@ -16,8 +16,8 @@ from teimedlib.teim_paths import *
 import teimxmlformat as xmf
 
 
-__date__ = "10-05-2022"
-__version__ = "0.2.3"
+__date__ = "30-05-2022"
+__version__ = "0.2.4"
 __author__ = "Marta Materni"
 
 
@@ -466,7 +466,6 @@ class TeimOverFlow(object):
             if ok_to:
                 # FIXME il testo coincide con il tag veificare tipo tag
                 if src == self.row_tag_over_js[self.CL]:
-                    # print(tag,src)
                     nd_prev = self.get_prev(nd)
                     nd_data = self.get_node_data(nd_prev)
                     self.set_to_id(nd_data)
@@ -482,7 +481,7 @@ class TeimOverFlow(object):
             self.log_open(nd_last)
             msg = f"ERROR OVERFLOW \n{pp(self.row_js)}\n{pp(nd_data)}"
             self.logerr(msg)
-            # UA  controllo errore temporaneo
+            # controllo errore temporaneo
             input("ERROR W teimover.py overflow")
 
     ###################################
@@ -520,12 +519,12 @@ class TeimOverFlow(object):
                 sp_data = self.span_data.get(nd_id, None)
                 if sp_data is not None:
                     self.add_xml_span(nd, sp_data)
-                # FIXME limina word vuote  solo se != w e !=pc
-                val = nd_data['val']
-                if val == '':
-                    if tag in ['w','pc']:
-                        nd_p = nd.getparent()
-                        nd_p.remove(nd)
+                # TODO  eliminare tag vuoti ??
+                # val = nd_data['val']
+                # if val == '':
+                #     if tag in ['w','pc']:
+                #         nd_p = nd.getparent()
+                #         nd_p.remove(nd)
 
     # start
     def add_xml_span_overflow_list(self, csv_path):

@@ -128,7 +128,7 @@ class TeimXml(object):
 
         self.trace = False
 
-        # XXX self.input_err_active = True
+        # self.input_err_active = True
         self.input_err_active = False
 
     def input_err(self, msg='?'):
@@ -598,7 +598,7 @@ class TeimXml(object):
             lst.append(word_ent.text)
         row_text = ' '.join(lst).strip()
 
-        # UA setta il tipo di numerazione delle linee
+        # setta il tipo di numerazione delle linee
         # inizio numerazione linea tipo lg
         if row_text.find('<lg') > -1:
             self.type_line = self.LG_L
