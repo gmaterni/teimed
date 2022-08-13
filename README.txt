@@ -27,6 +27,7 @@ teimxml.py -i text.txt -t teimcfg/teimtags.csv
     La sostituzione delle entities teimed con
     i tag xml viene effettuato utilizzando
     un file temtags.csv dove sono definiti le entities.
+    
 Esempio iniziale di file teimtags.csv
 #categorie|tag TEI-Med|tag TEI-XML
 log|chB|<div type="chapter">
