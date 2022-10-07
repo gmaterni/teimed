@@ -669,7 +669,7 @@ class TeimXml(object):
                 rs[i] = f'{i+1}) {r}'
             xml_err = os.linesep.join(rs)
             self.log_err(f'\n{xml_err}')
-        #scrive in ogni caso il fle xml
+        #AAA scrive in ogni caso il fle xml 
         self.log_teim_xml(xml)
         # controllo tag teim in XML
         CheckTeimXml().check_tei_xml(self.path_xml, self.log_err)
