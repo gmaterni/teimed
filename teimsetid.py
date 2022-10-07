@@ -14,7 +14,7 @@ from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 import teimxmlformat as xmf
 
-__date__ = "20-05-2022"
+__date__ = "20-10-2022"
 __version__ = "1.4.15"
 __author__ = "Marta Materni"
 
@@ -114,7 +114,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
 
     ATTENZIONE 
     - il sign del flag sostituisce quello definito nel file csv
-    - utilizzare id per episode (il solo tag per il quale è possibile)
+    - utilizzare "id" per episode (il solo tag per il quale è possibile)
     - utilizzare n per gli altri
 
     """

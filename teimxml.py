@@ -15,7 +15,7 @@ from teimedlib.xml_const import *
 from teimedlib.teim_paths import *
 from teimedlib.check_teimxml import CheckTeimXml
 
-__date__ = "20-05-2022"
+__date__ = "07-10-2022"
 __version__ = "1.7.0"
 __author__ = "Marta Materni"
 
@@ -112,6 +112,7 @@ class TeimXml(object):
         # testo.txt => testo_txt.ERR.log
         path_err = set_path_teim_err(path_text)
         self.log_err = Log("w").open(path_err, 1).log
+
         try:
             self.text_entities = TextEntities(path_text,
                                               path_tags,
@@ -658,7 +659,7 @@ class TeimXml(object):
             msg = f'\nERROR_11 elab_rows()\n {e}'
             self.log_err(msg)
             sys.exit(msg)
-
+        
         # controllo finale XML
         # controolo costruzione strttura
         xml, err = self.check_xml(src, "check xml")
@@ -666,13 +667,13 @@ class TeimXml(object):
             rs = xml.split(os.linesep)
             for i, r in enumerate(rs):
                 rs[i] = f'{i+1}) {r}'
-            xml = os.linesep.join(rs)
-            self.log_err(f'\n{xml}')
+            xml_err = os.linesep.join(rs)
+            self.log_err(f'\n{xml_err}')
+        #scrive in ogni caso il fle xml
         self.log_teim_xml(xml)
-
         # controllo tag teim in XML
         CheckTeimXml().check_tei_xml(self.path_xml, self.log_err)
-
+    
     def check_xml(self, src='', msg=''):
         """
         controllo e format xml

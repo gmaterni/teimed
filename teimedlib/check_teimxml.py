@@ -140,7 +140,7 @@ class CheckTeimXml:
         tag = data.get('tag', "")
         tail = data.get("tail", '')
         text = data.get("text", '')
-        val = data.get("val", '')
+        # val = data.get("val", '')
         row_num = data.get('row_num', '')
         if tag == 'w':
             if tail != '':
