@@ -94,6 +94,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
     @episode:sign=A
     @episode:id=100
     @chapter:n=100
+    @head:n=100
     @p:n=100
     @l:n=100
 
@@ -106,6 +107,7 @@ VALORI DI DEFAULT
     episode:sign=K
     episode:id=1
     chapter:n=1
+    head:n=1
     p:n=1
     l:n=1
 
