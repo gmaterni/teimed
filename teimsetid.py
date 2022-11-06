@@ -14,8 +14,8 @@ from teimedlib.teimtxtread import TeimTxtRead
 from teimedlib.teim_paths import *
 import teimxmlformat as xmf
 
-__date__ = "20-10-2022"
-__version__ = "1.4.15"
+__date__ = "06-11-2022"
+__version__ = "1.4.16"
 __author__ = "Marta Materni"
 
 """
@@ -346,6 +346,9 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             "chapter": {
                 "n": '1'
             },
+            "head": {
+                "n": '1'
+            },
             "p": {
                 "n": '1'
             },
@@ -558,6 +561,24 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
             n += 1
         return -1 if n == no else n-1
 
+    def numerate_xml_head(self):
+        """
+        numerazione tag <head>
+        set nel tag <p> n=".."
+        iniziando dal flag nel testo:
+        @head:n=100
+        iniza da 1 per default
+
+        """
+        TAG = 'head'
+        ATTR_N = 'n'
+        n = self.get_flag_id_int('head', 'n')
+        no = n
+        for nd in self.xml_root.iter(TAG):
+            nd.set(ATTR_N, str(n))
+            n += 1
+        return -1 if n == no else n-1
+
     def numerate_xml_chapter(self):
         """
             numera i capitoli iniziando dal valore
@@ -631,6 +652,7 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         self.parse_xml()
         self.numerate_xml_id()
         last_chp = self.numerate_xml_chapter()
+        last_head = self.numerate_xml_head()
         last_p = self.numerate_xml_p()
         last_l = self.numerate_xml_l()
         self.write_xml()
@@ -640,6 +662,9 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         # modificato ultimo numero attribuito
         last_chp = 0 if last_chp <= 0 else last_chp
 
+        # ultimo head
+        last_head = 0 if last_head <= 0 else last_head
+
         # ultimo paragrafo
         #last_p = 0 if last_p <=0 else last_p-1
         last_p = 0 if last_p <= 0 else last_p
@@ -648,7 +673,11 @@ teimsetid.py -i text.txt -t teimcfg/teimxmlid.csv
         #last_l = 0 if last_l <= 0 else last_l-1
         last_l = 0 if last_l <= 0 else last_l
 
-        last = f"\nLAST:\nchapter:{last_chp}\nparagraph:{last_p}\nl:{last_l}\n"
+        last = f"""\nLAST:
+        chapter:{last_chp}
+        head:{last_head}
+        paragraph:{last_p}
+        l:{last_l}\n"""
         self.log_info(last)
         return last
 
