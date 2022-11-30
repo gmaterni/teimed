@@ -489,7 +489,7 @@ class TextEntities(object):
                     self.log_err(err)
                     sys.exit(err)
         if len(dupl) > 0:
-            self.log_err("\nERROR. read_tags_() Tag Duplicate")
+            self.log_err("\nERROR. read_tags() Tag Duplicate")
             for x in dupl:
                 self.log_err(x)
 
