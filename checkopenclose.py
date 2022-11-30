@@ -15,36 +15,37 @@ __author__ = "Marta Materni"
 def check_open_close_tag(text_path, tag_open, tag_close):
     text = open(text_path, "r").read()
     text = clean_text(text)
-    ptr = fr"({tag_open})|({tag_close})"
+    ptr_op = f"&{tag_open};"
+    ptr_cl = f"&{tag_close};"
+    ptr = fr"({ptr_op})|({ptr_cl})"
     lst = []
     n = 0
     oc = 0
-    err=False
+    err = False
     for m in re.finditer(ptr, text):
         s = m.group()
         x0 = m.start()
         x1 = m.end() + 50
         t = text[x0:x1]
-        if s == tag_open:
+        if s == ptr_op:
             n += 1
             if oc != 0:
                 lst.append(f"ERROR\n")
-                err=True
+                err = True
                 oc = 0
             lst.append(f"\n{n}")
             oc += 1
-        if s == tag_close:
+        if s == ptr_cl:
             oc -= 1
         lst.append(t)
 
-    op_cl = f'{tag_open.strip()}_{tag_close.strip()}'.replace(";", "").replace('&','')
+    log_path = text_path.replace(".txt", f"_{tag_open}_{tag_close}.log")
     if err:
-        log_path = text_path.replace(".txt", f"_{op_cl}_ERR.log.")
-    else:
-        log_path = text_path.replace(".txt", f"_{op_cl}.log")
+        log_path = log_path.replace(".log", "_ERR.log")
     log = Log("w").open(log_path, 1).log
     for x in lst:
         log(x)
+
 
 def do_main(text_path, tag_open, tag_close):
     check_open_close_tag(text_path, tag_open, tag_close)
@@ -71,11 +72,11 @@ if __name__ == "__main__":
                         dest="op",
                         required=True,
                         metavar="",
-                        help='-o "<tag_open>" ')
+                        help='-o <tag_open> ')
     parser.add_argument('-c',
                         dest="cl",
                         required=True,
                         metavar="",
-                        help='-c "<tag_close>"')
+                        help='-c <tag_close>')
     args = parser.parse_args()
     do_main(args.txt_path, args.op, args.cl)
